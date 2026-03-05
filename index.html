@@ -3,131 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vulploeg Manager - Kruidvat</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Vulploeg Manager — Kruidvat</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E2001A'/%3E%3Ccircle cx='12' cy='12' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='52' cy='12' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='12' cy='52' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='52' cy='52' r='5' fill='white' opacity='.35'/%3E%3Ctext x='32' y='42' font-family='Arial Black,sans-serif' font-size='26' font-weight='900' text-anchor='middle' fill='white'%3EKV%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f0f13;--surface:#18181f;--surface2:#22222c;--border:#2e2e3a;--accent:#e8473f;--accent2:#f5a623;--green:#3ecf8e;--text:#e8e8f0;--muted:#7a7a8e;--radius:12px}
+/* === KRUIDVAT THEMA === */
+:root{
+  --bg:#fff5f5;
+  --surface:#ffffff;
+  --surface2:#ffeaea;
+  --border:#f5c5c5;
+  --accent:#E2001A;
+  --accent-hover:#b80015;
+  --accent2:#f5a623;
+  --green:#1a9e5a;
+  --text:#1a0505;
+  --muted:#8a4a4a;
+  --radius:12px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;display:flex;align-items:center;gap:12px}
-.logo-badge{background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;letter-spacing:1px}
-.header-info{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted)}
-.tab-bar{display:flex;gap:4px;padding:24px 32px 0;border-bottom:1px solid var(--border)}
-.tab-btn{font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;padding:10px 20px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
-.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--accent);border-color:var(--accent)}
-main{padding:32px;max-width:1200px;margin:0 auto}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* Header */
+header{
+  background:var(--accent);
+  border-bottom:4px solid #b80015;
+  padding:0 32px;
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 3px 16px rgba(226,0,26,.35);
+}
+.logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.35rem;display:flex;align-items:center;gap:12px;color:white;text-decoration:none}
+.logo-svg{width:36px;height:36px;flex-shrink:0}
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-title{font-size:1.05rem;font-weight:900;letter-spacing:.3px}
+.logo-sub-text{font-size:.65rem;font-weight:600;opacity:.85;letter-spacing:1.5px;text-transform:uppercase}
+.header-info{font-family:'DM Mono',monospace;font-size:.75rem;color:rgba(255,255,255,.75)}
+.header-user{display:flex;align-items:center;gap:10px}
+.user-chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:5px 14px 5px 10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;display:flex;align-items:center;gap:8px;color:white}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:white;color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:900}
+.logout-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:5px 12px;color:white;font-size:.75rem;cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;font-weight:700}
+.logout-btn:hover{background:rgba(255,255,255,.28)}
+
+/* Tabs */
+.tab-bar{display:flex;gap:2px;padding:0 24px;background:white;border-bottom:2px solid var(--border);overflow-x:auto}
+.tab-btn{font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;padding:14px 18px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--accent)}.tab-btn.active{color:var(--accent);border-color:var(--accent);background:var(--surface2)}
+
+/* Main */
+main{padding:28px 32px;max-width:1200px;margin:0 auto}
 .tab-panel{display:none}.tab-panel.active{display:block}
-.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px}
-h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem}h2 span{color:var(--accent)}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px}
+h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.55rem}h2 span{color:var(--accent)}
 .sub{color:var(--muted);font-size:.85rem;margin-top:4px}
-.btn{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:#d43e37;transform:translateY(-1px)}
-.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--muted)}
+
+/* Buttons */
+.btn{font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(226,0,26,.3)}
+.btn-secondary{background:white;color:var(--text);border:2px solid var(--border)}.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
 .btn-sm{padding:6px 12px;font-size:.78rem}
-.btn-danger{background:transparent;color:var(--accent);border:1px solid var(--accent)}.btn-danger:hover{background:var(--accent);color:white}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
-.avond-selector{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
-.avond-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 24px;cursor:pointer;transition:all .2s;min-width:160px;text-align:center}
-.avond-card:hover{border-color:var(--accent)}.avond-card.selected{border-color:var(--accent);background:rgba(232,71,63,.1)}
-.avond-card .dag{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
-.avond-card .datum{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);margin-top:4px}
-.avond-card .vracht-badge{display:inline-block;margin-top:8px;background:var(--surface2);padding:3px 10px;border-radius:20px;font-size:.75rem;color:var(--muted)}
-.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-label{font-size:.78rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-input,select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s}
-input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var(--muted)}
-.medewerker-lijst{display:flex;flex-direction:column;gap:12px}
-.medewerker-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.medewerker-main{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:16px;align-items:center;padding:16px 20px}
-.medewerker-naam{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
-.colli-target{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent2)}.colli-label{font-size:.72rem;color:var(--muted)}
-.karten-sectie{border-top:1px solid var(--border);padding:16px 20px;background:var(--surface2)}
-.karten-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.karten-titel{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.kar-lijst{display:flex;flex-direction:column;gap:8px}
-.kar-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
-.kar-naam-display{font-weight:600;font-size:.9rem}.tijd-display{font-family:'DM Mono',monospace;font-size:.82rem}
-.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
-.badge-ok{background:rgba(62,207,142,.15);color:var(--green)}.badge-te-snel{background:rgba(245,166,35,.15);color:var(--accent2)}
-.badge-te-langzaam{background:rgba(232,71,63,.15);color:var(--accent)}.badge-bezig{background:rgba(122,122,142,.15);color:var(--muted)}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1}.stat-label{font-size:.78rem;color:var(--muted);margin-top:6px}
-.progress-bar-bg{background:var(--surface2);border-radius:4px;height:6px;overflow:hidden}
+.btn-danger{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}.btn-danger:hover{background:var(--accent);color:white}
+
+/* Cards */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px;box-shadow:0 1px 6px rgba(226,0,26,.06)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.card-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem}
+
+/* Avond selector */
+.avond-selector{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.avond-card{background:white;border:2px solid var(--border);border-radius:var(--radius);padding:14px 20px;cursor:pointer;transition:all .2s;min-width:150px;text-align:center}
+.avond-card:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(226,0,26,.12)}
+.avond-card.selected{border-color:var(--accent);background:rgba(226,0,26,.06)}
+.avond-card .dag{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem}
+.avond-card .datum{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:3px}
+.avond-card .vracht-badge{display:inline-block;margin-top:7px;background:var(--surface2);padding:2px 9px;border-radius:20px;font-size:.72rem;color:var(--muted)}
+
+/* Forms */
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+label{font-size:.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);background:white}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+textarea{resize:vertical;min-height:60px}
+
+/* Team lijst */
+.medewerker-lijst{display:flex;flex-direction:column;gap:10px}
+.medewerker-row{background:white;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s}
+.medewerker-row:hover{border-color:var(--accent)}
+.medewerker-main{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:14px;align-items:start;padding:14px 18px}
+.medewerker-naam{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem}
+.medewerker-notitie{font-size:.78rem;color:var(--muted);font-style:italic;margin-top:3px;background:rgba(226,0,26,.05);border-left:2px solid var(--accent);padding:3px 7px;border-radius:0 4px 4px 0}
+.colli-target{font-family:'DM Mono',monospace;font-size:.85rem;color:#b80015;font-weight:600}.colli-label{font-size:.7rem;color:var(--muted)}
+.karten-sectie{border-top:1.5px solid var(--border);padding:14px 18px;background:var(--surface2)}
+.karten-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.karten-titel{font-size:.77rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.kar-lijst{display:flex;flex-direction:column;gap:7px}
+.kar-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:center;background:white;border:1.5px solid var(--border);border-radius:8px;padding:9px 13px}
+.kar-naam-display{font-weight:800;font-size:.88rem}.tijd-display{font-family:'DM Mono',monospace;font-size:.8rem}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:800}
+.badge-ok{background:rgba(26,158,90,.12);color:var(--green)}.badge-te-snel{background:rgba(245,166,35,.15);color:#c47d00}
+.badge-te-langzaam{background:rgba(226,0,26,.12);color:var(--accent)}.badge-bezig{background:rgba(138,74,74,.1);color:var(--muted)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:18px}
+.stat-value{font-family:'Nunito',sans-serif;font-weight:900;font-size:2rem;line-height:1}.stat-label{font-size:.76rem;color:var(--muted);margin-top:5px;font-weight:700}
+.progress-bar-bg{background:var(--surface2);border-radius:4px;height:7px;overflow:hidden}
 .progress-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
 .fill-green{background:var(--green)}.fill-orange{background:var(--accent2)}.fill-red{background:var(--accent)}
+
+/* Tables */
 .history-table{width:100%;border-collapse:collapse}
-.history-table th{font-family:'Syne',sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
-.history-table td{padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.history-table th{font-family:'Nunito',sans-serif;font-size:.73rem;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:2px solid var(--border)}
+.history-table td{padding:11px 14px;font-size:.87rem;border-bottom:1px solid var(--border);vertical-align:middle}
 .history-table tr:last-child td{border-bottom:none}.history-table tr:hover td{background:var(--surface2)}
 .mono{font-family:'DM Mono',monospace;font-size:.82rem}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,5,5,.6);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:90%;max-width:480px;transform:translateY(20px);transition:transform .2s}
+.modal{background:white;border:2px solid var(--border);border-top:5px solid var(--accent);border-radius:16px;padding:28px;width:90%;max-width:480px;transform:translateY(20px);transition:transform .2s}
 .modal-overlay.open .modal{transform:translateY(0)}
-.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:20px}
-.modal-actions{display:flex;gap:10px;margin-top:24px;justify-content:flex-end}
-.empty{text-align:center;padding:48px;color:var(--muted)}.empty-icon{font-size:3rem;margin-bottom:12px}.empty-text{font-size:.9rem}
-.toast{position:fixed;bottom:32px;right:32px;background:var(--green);color:#0f0f13;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;padding:12px 20px;border-radius:10px;transform:translateY(80px);transition:transform .3s;z-index:300}
+.modal-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.25rem;margin-bottom:18px;color:var(--accent)}
+.modal-actions{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
+
+/* Empty states */
+.empty{text-align:center;padding:48px;color:var(--muted)}.empty-icon{font-size:3rem;margin-bottom:12px}.empty-text{font-size:.9rem;font-weight:600}
+
+/* Toast */
+.toast{position:fixed;bottom:32px;right:32px;background:var(--accent);color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;padding:12px 20px;border-radius:10px;transform:translateY(80px);transition:transform .3s;z-index:300;box-shadow:0 4px 20px rgba(226,0,26,.4)}
 .toast.show{transform:translateY(0)}
-@media(max-width:768px){header{padding:14px 16px}main{padding:16px}.tab-bar{padding:16px 16px 0;overflow-x:auto}.medewerker-main{grid-template-columns:1fr 1fr}.kar-row{grid-template-columns:1fr 1fr}.stats-grid{grid-template-columns:1fr 1fr}}
+
+/* Tag */
+.tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.73rem;font-family:'DM Mono',monospace;color:var(--muted)}
+.flex{display:flex}.gap-8{gap:8px}
+
+/* Login */
+#loginScreen{position:fixed;inset:0;background:var(--accent);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#loginScreen::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='8' fill='rgba(255,255,255,0.06)'/%3E%3C/svg%3E") repeat;pointer-events:none}
+.login-box{background:white;border-radius:20px;padding:44px 40px;width:90%;max-width:420px;text-align:center;animation:fadeUp .4s ease;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-logo-wrap{margin-bottom:20px}
+.login-kv-logo{width:80px;height:80px}
+.login-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.8rem;margin-bottom:4px;color:var(--accent);line-height:1.1}
+.login-sub{color:var(--muted);font-size:.88rem;margin-bottom:28px;font-weight:600}
+.login-input-wrap{position:relative;margin-bottom:12px}
+.login-input-wrap input{width:100%;padding:13px 16px;font-size:.95rem;text-align:center;border-radius:10px;background:var(--surface2);border:2px solid var(--border);color:var(--text);font-family:'Nunito',sans-serif;font-weight:700;outline:none;transition:border-color .2s}
+.login-input-wrap input:focus{border-color:var(--accent);background:white}
+.login-input-wrap input::placeholder{color:var(--muted);font-weight:500}
+.login-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--accent);color:white;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;transition:all .15s;margin-bottom:18px;letter-spacing:.3px}
+.login-btn:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 6px 20px rgba(226,0,26,.3)}
+.login-accounts{border-top:1.5px solid var(--border);padding-top:18px;margin-top:4px}
+.login-accounts-title{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:800}
+.login-account-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.login-account-chip{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;font-weight:800}
+.login-account-chip:hover{border-color:var(--accent);color:var(--accent);background:rgba(226,0,26,.05)}
+
+/* Rooster upload */
+@media(max-width:768px){header{padding:0 16px}main{padding:16px}.tab-bar{padding:0 8px;overflow-x:auto}.medewerker-main{grid-template-columns:1fr 1fr}.kar-row{grid-template-columns:1fr 1fr}.stats-grid{grid-template-columns:1fr 1fr}}
 .upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
-.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(232,71,63,.06)}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(226,0,26,.04)}
 .upload-zone-icon{font-size:2.5rem;margin-bottom:12px}
-.upload-zone-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px}
+.upload-zone-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;margin-bottom:6px}
 .upload-zone-sub{color:var(--muted);font-size:.82rem}
 .upload-zone input[type=file]{display:none}
 .rooster-preview-table{width:100%;border-collapse:collapse;font-size:.82rem}
-.rooster-preview-table th{font-family:'Syne',sans-serif;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2)}
+.rooster-preview-table th{font-family:'Nunito',sans-serif;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1.5px solid var(--border);background:var(--surface2);font-weight:800}
 .rooster-preview-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
 .rooster-preview-table tr:hover td{background:var(--surface2)}
 .rooster-preview-table tr:last-child td{border-bottom:none}
-.date-match-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;background:rgba(62,207,142,.15);color:var(--green)}
-.rooster-datum-groep{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
-.rooster-datum-header{background:var(--surface2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.rooster-datum-titel{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}
-.rooster-datum-count{font-size:.78rem;color:var(--muted)}
+.date-match-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:800;background:rgba(26,158,90,.12);color:var(--green)}
+.rooster-datum-groep{border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.rooster-datum-header{background:var(--surface2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .15s}
+.rooster-datum-header:hover{background:#ffdada}
+.rooster-datum-titel{font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem}
+.rooster-datum-count{font-size:.78rem;color:var(--muted);font-weight:700}
 .import-row-check{width:16px;height:16px;accent-color:var(--accent)}
-.template-info{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:8px;padding:14px 16px;font-size:.82rem;color:var(--accent2);margin-bottom:20px;line-height:1.6}
+.template-info{background:rgba(245,166,35,.07);border:1.5px solid rgba(245,166,35,.3);border-radius:8px;padding:14px 16px;font-size:.82rem;color:#a06800;margin-bottom:20px;line-height:1.6;font-weight:600}
 .col-map-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
 .col-map-row:last-child{border-bottom:none}
-.col-map-label{font-size:.82rem;font-weight:600}
+.col-map-label{font-size:.82rem;font-weight:800}
 .col-map-sub{font-size:.72rem;color:var(--muted)}
-.tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--muted)}
-.flex{display:flex}.gap-8{gap:8px}
-#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:90%;max-width:420px;text-align:center;animation:fadeUp .4s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.login-badge{background:var(--accent);color:white;display:inline-block;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;letter-spacing:1px;margin-bottom:20px}
-.login-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;margin-bottom:6px;line-height:1.1}.login-title span{color:var(--accent)}
-.login-sub{color:var(--muted);font-size:.88rem;margin-bottom:32px}
-.login-input-wrap{position:relative;margin-bottom:14px}
-.login-input-wrap input{width:100%;padding:14px 16px;font-size:1rem;text-align:center;border-radius:12px;background:var(--surface2);border:2px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;outline:none;transition:border-color .2s}
-.login-input-wrap input:focus{border-color:var(--accent)}.login-input-wrap input::placeholder{color:var(--muted);font-weight:400;letter-spacing:0}
-.login-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:all .15s;margin-bottom:20px}
-.login-btn:hover{background:#d43e37;transform:translateY(-1px)}
-.login-accounts{border-top:1px solid var(--border);padding-top:20px;margin-top:8px}
-.login-accounts-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
-.login-account-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.login-account-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'Syne',sans-serif;font-weight:600}
-.login-account-chip:hover{border-color:var(--accent);color:var(--accent)}
-.header-user{display:flex;align-items:center;gap:10px}
-.user-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 14px 5px 10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;display:flex;align-items:center;gap:8px}
-.user-avatar{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:white}
-.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
-.logout-btn:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
 
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-badge">KRUIDVAT</div>
-    <div class="login-title">Vulploeg<br><span>Manager</span></div>
+    <div class="login-logo-wrap">
+      <svg class="login-kv-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="60" rx="10" fill="#E2001A"/>
+        <circle cx="10" cy="10" r="7" fill="white" opacity=".2"/>
+        <circle cx="110" cy="10" r="7" fill="white" opacity=".2"/>
+        <circle cx="10" cy="50" r="7" fill="white" opacity=".2"/>
+        <circle cx="110" cy="50" r="7" fill="white" opacity=".2"/>
+        <text x="60" y="40" font-family="Arial Black,sans-serif" font-size="28" font-weight="900" text-anchor="middle" fill="white">kruidvat</text>
+      </svg>
+    </div>
+    <div class="login-title">Vulploeg Manager</div>
     <div class="login-sub">Alleen voor vulploeg leiders</div>
     <div class="login-input-wrap">
       <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
@@ -137,7 +212,7 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
       <input type="password" id="loginWachtwoord" placeholder="Wachtwoord..." maxlength="30"
         onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <div id="loginError" style="display:none;color:var(--accent);font-size:.82rem;margin-bottom:12px;text-align:center">
+    <div id="loginError" style="display:none;color:var(--accent);font-size:.82rem;margin-bottom:12px;text-align:center;font-weight:800">
       &#10060; Onjuist wachtwoord.
     </div>
     <button class="login-btn" onclick="doLogin()">Inloggen &#8594;</button>
@@ -149,7 +224,20 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
 </div>
 
 <header>
-  <div class="logo"><div class="logo-badge">KV</div>Vulploeg Manager</div>
+  <div class="logo">
+    <svg class="logo-svg" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+      <rect width="64" height="32" rx="6" fill="white" opacity=".15"/>
+      <circle cx="7" cy="7" r="5" fill="white" opacity=".3"/>
+      <circle cx="57" cy="7" r="5" fill="white" opacity=".3"/>
+      <circle cx="7" cy="25" r="5" fill="white" opacity=".3"/>
+      <circle cx="57" cy="25" r="5" fill="white" opacity=".3"/>
+      <text x="32" y="22" font-family="Arial Black,sans-serif" font-size="14" font-weight="900" text-anchor="middle" fill="white">kruidvat</text>
+    </svg>
+    <div class="logo-text">
+      <span class="logo-title">Vulploeg Manager</span>
+      <span class="logo-sub-text">Kruidvat intern</span>
+    </div>
+  </div>
   <div class="header-user">
     <div class="header-info" id="headerDate">selecteer een avond</div>
     <div class="user-chip"><div class="user-avatar" id="userAvatar">?</div><span id="userNaamDisplay">-</span></div>
@@ -184,7 +272,15 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
     <div class="card-header"><div class="card-title">&#9881;&#65039; Avondgegevens</div></div>
     <div class="form-row">
       <div class="form-group"><label>Datum</label><input type="date" id="avondDatum"></div>
-      <div class="form-group"><label>Dag</label><select id="avondDag"><option value="dinsdag">Dinsdag</option><option value="donderdag">Donderdag</option></select></div>
+      <div class="form-group"><label>Dag</label><select id="avondDag">
+        <option value="maandag">Maandag</option>
+        <option value="dinsdag">Dinsdag</option>
+        <option value="woensdag">Woensdag</option>
+        <option value="donderdag">Donderdag</option>
+        <option value="vrijdag">Vrijdag</option>
+        <option value="zaterdag">Zaterdag</option>
+        <option value="zondag">Zondag</option>
+      </select></div>
       <div class="form-group"><label>Totaal colli</label><input type="number" id="avondColli" value="2000"></div>
       <div class="form-group"><label>Norm (colli/uur)</label><input type="number" id="avondNorm" value="80"></div>
     </div>
@@ -269,6 +365,9 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
     </div>
     <div class="form-group" style="margin-top:14px">
       <label>Pauze (minuten)</label><input type="number" id="modalPauze" value="30" min="0">
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Notitie (optioneel)</label><textarea id="modalNotitie" placeholder="bv. kas doen, eerder weg, speciale taak..."></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalMedewerker')">Annuleren</button>
@@ -453,7 +552,7 @@ function renderTeam(){
     if(lid.karten&&lid.karten.length>0){
       kh=lid.karten.map((kar,ki)=>{const s=getKarStatus(kar);return'<div class="kar-row"><div><div class="kar-naam-display">'+kar.naam+'</div><div class="tag">kar '+(ki+1)+'</div></div><div><div class="colli-label">Verwacht</div><div class="tijd-display">'+(kar.verwacht?kar.verwacht+' min':'--')+'</div></div><div><div class="colli-label">Werkelijk</div><div class="tijd-display"><input type="number" value="'+(kar.werkelijk||'')+'" placeholder="min" style="width:80px;padding:4px 8px;font-size:.82rem;" onchange="updateKarWerkelijk('+i+','+ki+',this.value)"></div></div><div><span class="status-badge '+s.cls+'">'+s.label+'</span></div><button class="btn btn-danger btn-sm" onclick="verwijderKar('+i+','+ki+')">&#10005;</button></div>';}).join('');
     }else{kh='<div style="color:var(--muted);font-size:.82rem;padding:4px 0">Nog geen karren toegevoegd</div>';}
-    row.innerHTML='<div class="medewerker-main"><div><div class="medewerker-naam">'+lid.naam+'</div><div class="tag">'+lid.start+' - '+lid.eind+'</div>'+(lid.pauze?'<div class="tag" style="margin-top:4px">&#9749; '+lid.pauze+' min pauze</div>':'')+'</div><div><div class="colli-label">Uren</div><div class="colli-target">'+uren.toFixed(1)+'u</div></div><div><div class="colli-label">Target colli</div><div class="colli-target">'+target+'</div></div><div><div class="colli-label">Karren</div><div class="colli-target">'+(lid.karten?lid.karten.length:0)+'</div></div><div class="flex gap-8"><button class="btn btn-secondary btn-sm" onclick="openKarModal('+i+')">+ Kar</button><button class="btn btn-danger btn-sm" onclick="verwijderLid('+i+')">&#10005;</button></div></div><div class="karten-sectie"><div class="karten-header"><span class="karten-titel">&#128717; Karren</span></div><div class="kar-lijst">'+kh+'</div></div>';
+    row.innerHTML='<div class="medewerker-main"><div><div class="medewerker-naam">'+lid.naam+'</div><div class="tag" style="margin-top:4px">'+lid.start+' - '+lid.eind+'</div>'+(lid.pauze?'<div class="tag" style="margin-top:4px">&#9749; '+lid.pauze+' min pauze</div>':'')+(lid.notitie?'<div class="medewerker-notitie" style="margin-top:6px">&#128221; '+lid.notitie+'</div>':'')+'<div style="margin-top:8px"><button class="btn btn-secondary btn-sm" onclick="bewerkNotitie('+i+')" style="font-size:.7rem;padding:3px 8px;">&#9998; Notitie</button></div></div><div><div class="colli-label">Uren</div><div class="colli-target">'+uren.toFixed(1)+'u</div></div><div><div class="colli-label">Target colli</div><div class="colli-target">'+target+'</div></div><div><div class="colli-label">Karren</div><div class="colli-target">'+(lid.karten?lid.karten.length:0)+'</div></div><div class="flex gap-8"><button class="btn btn-secondary btn-sm" onclick="openKarModal('+i+')">+ Kar</button><button class="btn btn-danger btn-sm" onclick="verwijderLid('+i+')">&#10005;</button></div></div><div class="karten-sectie"><div class="karten-header"><span class="karten-titel">&#128717; Karren</span></div><div class="kar-lijst">'+kh+'</div></div>';
     c.appendChild(row);
   });
 }
@@ -461,19 +560,28 @@ function renderTeam(){
 function updateKarWerkelijk(li,ki,val){state.huidigAvond.team[li].karten[ki].werkelijk=parseInt(val)||null;}
 function verwijderKar(li,ki){state.huidigAvond.team[li].karten.splice(ki,1);renderTeam();}
 function verwijderLid(idx){state.huidigAvond.team.splice(idx,1);renderTeam();}
+function bewerkNotitie(idx){
+  const huidig=state.huidigAvond.team[idx].notitie||'';
+  const nieuw=prompt('Notitie voor '+state.huidigAvond.team[idx].naam+':',huidig);
+  if(nieuw===null)return;
+  state.huidigAvond.team[idx].notitie=nieuw.trim();
+  renderTeam();
+  showToast('Notitie opgeslagen');
+}
 
 function openMedewerkerModal(){
   const sel=document.getElementById('modalSelectMedewerker');
   sel.innerHTML='<option value="">-- Kies medewerker --</option>';
   state.medewerkers.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.naam;sel.appendChild(o);});
   const oh=document.createElement('option');oh.value='nieuw';oh.textContent='+ Handmatig invoeren...';sel.appendChild(oh);
+  document.getElementById('modalNotitie').value='';
   document.getElementById('modalMedewerker').classList.add('open');
 }
 function voegMedewerkerToe(){
-  const selVal=document.getElementById('modalSelectMedewerker').value;const start=document.getElementById('modalStarttijd').value;const eind=document.getElementById('modalEindtijd').value;const pauze=parseInt(document.getElementById('modalPauze').value)||0;
+  const selVal=document.getElementById('modalSelectMedewerker').value;const start=document.getElementById('modalStarttijd').value;const eind=document.getElementById('modalEindtijd').value;const pauze=parseInt(document.getElementById('modalPauze').value)||0;const notitie=document.getElementById('modalNotitie').value.trim();
   if(!selVal){alert('Kies een medewerker.');return;}
   let naam;if(selVal==='nieuw'){naam=prompt('Voer naam in:');if(!naam)return;}else{const m=state.medewerkers.find(m=>m.id==selVal);naam=m?m.naam:selVal;}
-  state.huidigAvond.team.push({naam,start,eind,pauze,karten:[]});closeModal('modalMedewerker');renderTeam();showToast('Medewerker toegevoegd');
+  state.huidigAvond.team.push({naam,start,eind,pauze,notitie,karten:[]});closeModal('modalMedewerker');renderTeam();showToast('Medewerker toegevoegd');
 }
 
 function openKarModal(lidIdx){state.huidigeKarMedewerkerIndex=lidIdx;document.getElementById('modalKarNaam').value='';document.getElementById('modalKarVerwacht').value='';document.getElementById('modalKarWerkelijk').value='';document.getElementById('modalKar').classList.add('open');}
@@ -505,13 +613,13 @@ function renderOverzicht(){
   const pct=Math.min(100,Math.round((totT/av.colli)*100));const fc=pct>=100?'fill-green':pct>=70?'fill-orange':'fill-red';
   let html='<div class="stats-grid"><div class="stat-card"><div class="stat-value" style="color:var(--accent)">'+av.team.length+'</div><div class="stat-label">Medewerkers</div></div><div class="stat-card"><div class="stat-value" style="color:var(--accent2)">'+totU.toFixed(1)+'</div><div class="stat-label">Totaal uren</div></div><div class="stat-card"><div class="stat-value" style="color:var(--green)">'+totT+'</div><div class="stat-label">Target colli team</div></div><div class="stat-card"><div class="stat-value">'+av.colli+'</div><div class="stat-label">Vracht (colli)</div></div></div>';
   html+='<div class="card" style="margin-bottom:20px"><div class="card-title" style="margin-bottom:12px">&#128230; Vracht afgedekt</div><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:.85rem;color:var(--muted)">Team target vs vracht</span><span style="font-size:.9rem">'+totT+' / '+av.colli+' ('+pct+'%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill '+fc+'" style="width:'+pct+'%"></div></div>'+(pct<100?'<div style="margin-top:8px;font-size:.8rem;color:var(--accent)">&#9888; Team dekt '+(av.colli-totT)+' colli tekort.</div>':'<div style="margin-top:8px;font-size:.8rem;color:var(--green)">&#10003; Vracht volledig afgedekt.</div>')+'</div>';
-  html+='<div class="card"><div class="card-title" style="margin-bottom:16px">&#128101; Prestaties</div><table class="history-table"><thead><tr><th>Naam</th><th>Uren</th><th>Pauze</th><th>Target</th><th>Karren</th><th>Verwacht</th><th>Werkelijk</th><th>Status</th></tr></thead><tbody>';
+  html+='<div class="card"><div class="card-title" style="margin-bottom:16px">&#128101; Prestaties</div><table class="history-table"><thead><tr><th>Naam</th><th>Uren</th><th>Pauze</th><th>Target</th><th>Karren</th><th>Verwacht</th><th>Werkelijk</th><th>Status</th><th>Notitie</th></tr></thead><tbody>';
   av.team.forEach(lid=>{
     const u=berekenUren(lid.start,lid.eind,lid.pauze);const target=Math.round(u*norm);const karten=lid.karten||[];
     const tV=karten.reduce((s,k)=>s+(k.verwacht||0),0);const tW=karten.reduce((s,k)=>s+(k.werkelijk||0),0);
     const p=tV>0&&tW>0?tW/tV:null;let st='<span class="status-badge badge-bezig">&#9203; Bezig</span>';
     if(p!==null){if(p<=0.9)st='<span class="status-badge badge-te-snel">&#9889; Snel</span>';else if(p<=1.1)st='<span class="status-badge badge-ok">&#10003; Op tijd</span>';else st='<span class="status-badge badge-te-langzaam">&#9888; Te langzaam</span>';}
-    html+='<tr><td><strong>'+lid.naam+'</strong><br><span class="tag">'+lid.start+'-'+lid.eind+'</span></td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+(lid.pauze?lid.pauze+' min':'--')+'</td><td class="mono">'+target+'</td><td class="mono">'+karten.length+'</td><td class="mono">'+(tV>0?tV+' min':'--')+'</td><td class="mono">'+(tW>0?tW+' min':'--')+'</td><td>'+st+'</td></tr>';
+    html+='<tr><td><strong>'+lid.naam+'</strong><br><span class="tag">'+lid.start+'-'+lid.eind+'</span></td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+(lid.pauze?lid.pauze+' min':'--')+'</td><td class="mono">'+target+'</td><td class="mono">'+karten.length+'</td><td class="mono">'+(tV>0?tV+' min':'--')+'</td><td class="mono">'+(tW>0?tW+' min':'--')+'</td><td>'+st+'</td><td style="font-size:.8rem;color:var(--muted);font-style:italic">'+(lid.notitie?'&#128221; '+lid.notitie:'—')+'</td></tr>';
   });
   html+='</tbody></table></div>';c.innerHTML=html;
 }
@@ -807,11 +915,9 @@ function laadRoosterVoorDatum(datum){
   // Sync the avond date & navigate to vulavond tab
   state.huidigAvond.datum = datum;
   const d = new Date(datum+'T00:00:00');
-  const dagNr = d.getDay(); // 0=Sun,1=Mon,...
-  // Map to dinsdag/donderdag if possible
+  // Map day number to Dutch name
   const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-  const dagNaam = dagNamen[dagNr];
-  if(dagNaam==='dinsdag'||dagNaam==='donderdag') state.huidigAvond.dag=dagNaam;
+  state.huidigAvond.dag = dagNamen[d.getDay()];
   
   // Replace team with rooster entries
   state.huidigAvond.team = leden.map(l=>({
@@ -819,6 +925,7 @@ function laadRoosterVoorDatum(datum){
     start: l.start,
     eind: l.eind,
     pauze: l.pauze||0,
+    notitie: l.notitie||'',
     karten:[]
   }));
   
@@ -838,20 +945,27 @@ function laadRoosterVoorDatum(datum){
   document.getElementById('headerDate').textContent=label;
 }
 
-// Override datum input to auto-load rooster when date is changed
+// Auto-set dag dropdown when datum changes
 document.addEventListener('DOMContentLoaded', ()=>{
   const datumInput = document.getElementById('avondDatum');
   if(datumInput){
     datumInput.addEventListener('change', function(){
       const datum = this.value;
       if(!datum) return;
+      // Auto set dag dropdown based on selected date
+      const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+      const d = new Date(datum+'T00:00:00');
+      const dagNaam = dagNamen[d.getDay()];
+      document.getElementById('avondDag').value = dagNaam;
+      state.huidigAvond.dag = dagNaam;
+      // Check rooster
       const savedRooster = huidigGebruiker ? localStorage.getItem(userKey('rooster')) : null;
       if(!savedRooster) return;
       const rd = JSON.parse(savedRooster);
       if(rd[datum] && rd[datum].length>0){
-        const d = new Date(datum+'T00:00:00');
         const label = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
         if(confirm(`Er staan ${rd[datum].length} medewerker(s) in het rooster voor ${label}. Automatisch inladen?`)){
+          roosterData = rd;
           laadRoosterVoorDatum(datum);
         }
       }
