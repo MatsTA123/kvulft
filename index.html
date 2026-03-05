@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vulploeg Manager - Kruidvat</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f13;--surface:#18181f;--surface2:#22222c;--border:#2e2e3a;--accent:#e8473f;--accent2:#f5a623;--green:#3ecf8e;--text:#e8e8f0;--muted:#7a7a8e;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;display:flex;align-items:center;gap:12px}
+.logo-badge{background:var(--accent);color:white;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;letter-spacing:1px}
+.header-info{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--muted)}
+.tab-bar{display:flex;gap:4px;padding:24px 32px 0;border-bottom:1px solid var(--border)}
+.tab-btn{font-family:'Syne',sans-serif;font-weight:600;font-size:.9rem;padding:10px 20px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--accent);border-color:var(--accent)}
+main{padding:32px;max-width:1200px;margin:0 auto}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px}
+h2{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem}h2 span{color:var(--accent)}
+.sub{color:var(--muted);font-size:.85rem;margin-top:4px}
+.btn{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;padding:10px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:#d43e37;transform:translateY(-1px)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}.btn-secondary:hover{border-color:var(--muted)}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.btn-danger{background:transparent;color:var(--accent);border:1px solid var(--accent)}.btn-danger:hover{background:var(--accent);color:white}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
+.avond-selector{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.avond-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 24px;cursor:pointer;transition:all .2s;min-width:160px;text-align:center}
+.avond-card:hover{border-color:var(--accent)}.avond-card.selected{border-color:var(--accent);background:rgba(232,71,63,.1)}
+.avond-card .dag{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+.avond-card .datum{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);margin-top:4px}
+.avond-card .vracht-badge{display:inline-block;margin-top:8px;background:var(--surface2);padding:3px 10px;border-radius:20px;font-size:.75rem;color:var(--muted)}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+label{font-size:.78rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+input,select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s}
+input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var(--muted)}
+.medewerker-lijst{display:flex;flex-direction:column;gap:12px}
+.medewerker-row{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.medewerker-main{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:16px;align-items:center;padding:16px 20px}
+.medewerker-naam{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem}
+.colli-target{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent2)}.colli-label{font-size:.72rem;color:var(--muted)}
+.karten-sectie{border-top:1px solid var(--border);padding:16px 20px;background:var(--surface2)}
+.karten-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.karten-titel{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.kar-lijst{display:flex;flex-direction:column;gap:8px}
+.kar-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.kar-naam-display{font-weight:600;font-size:.9rem}.tijd-display{font-family:'DM Mono',monospace;font-size:.82rem}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-ok{background:rgba(62,207,142,.15);color:var(--green)}.badge-te-snel{background:rgba(245,166,35,.15);color:var(--accent2)}
+.badge-te-langzaam{background:rgba(232,71,63,.15);color:var(--accent)}.badge-bezig{background:rgba(122,122,142,.15);color:var(--muted)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.stat-value{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;line-height:1}.stat-label{font-size:.78rem;color:var(--muted);margin-top:6px}
+.progress-bar-bg{background:var(--surface2);border-radius:4px;height:6px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.fill-green{background:var(--green)}.fill-orange{background:var(--accent2)}.fill-red{background:var(--accent)}
+.history-table{width:100%;border-collapse:collapse}
+.history-table th{font-family:'Syne',sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.history-table td{padding:12px 16px;font-size:.88rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.history-table tr:last-child td{border-bottom:none}.history-table tr:hover td{background:var(--surface2)}
+.mono{font-family:'DM Mono',monospace;font-size:.82rem}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;width:90%;max-width:480px;transform:translateY(20px);transition:transform .2s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:20px}
+.modal-actions{display:flex;gap:10px;margin-top:24px;justify-content:flex-end}
+.empty{text-align:center;padding:48px;color:var(--muted)}.empty-icon{font-size:3rem;margin-bottom:12px}.empty-text{font-size:.9rem}
+.toast{position:fixed;bottom:32px;right:32px;background:var(--green);color:#0f0f13;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;padding:12px 20px;border-radius:10px;transform:translateY(80px);transition:transform .3s;z-index:300}
+.toast.show{transform:translateY(0)}
+@media(max-width:768px){header{padding:14px 16px}main{padding:16px}.tab-bar{padding:16px 16px 0;overflow-x:auto}.medewerker-main{grid-template-columns:1fr 1fr}.kar-row{grid-template-columns:1fr 1fr}.stats-grid{grid-template-columns:1fr 1fr}}
+.tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--muted)}
+.flex{display:flex}.gap-8{gap:8px}
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:90%;max-width:420px;text-align:center;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-badge{background:var(--accent);color:white;display:inline-block;padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:700;letter-spacing:1px;margin-bottom:20px}
+.login-title{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;margin-bottom:6px;line-height:1.1}.login-title span{color:var(--accent)}
+.login-sub{color:var(--muted);font-size:.88rem;margin-bottom:32px}
+.login-input-wrap{position:relative;margin-bottom:14px}
+.login-input-wrap input{width:100%;padding:14px 16px;font-size:1rem;text-align:center;border-radius:12px;background:var(--surface2);border:2px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;outline:none;transition:border-color .2s}
+.login-input-wrap input:focus{border-color:var(--accent)}.login-input-wrap input::placeholder{color:var(--muted);font-weight:400;letter-spacing:0}
+.login-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:all .15s;margin-bottom:20px}
+.login-btn:hover{background:#d43e37;transform:translateY(-1px)}
+.login-accounts{border-top:1px solid var(--border);padding-top:20px;margin-top:8px}
+.login-accounts-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.login-account-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.login-account-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'Syne',sans-serif;font-weight:600}
+.login-account-chip:hover{border-color:var(--accent);color:var(--accent)}
+.header-user{display:flex;align-items:center;gap:10px}
+.user-chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 14px 5px 10px;font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;display:flex;align-items:center;gap:8px}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:white}
+.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--muted);font-size:.75rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.logout-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-badge">KRUIDVAT</div>
+    <div class="login-title">Vulploeg<br><span>Manager</span></div>
+    <div class="login-sub">Alleen voor vulploeg leiders</div>
+    <div class="login-input-wrap">
+      <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
+        onkeydown="if(event.key==='Enter')document.getElementById('loginWachtwoord').focus()">
+    </div>
+    <div class="login-input-wrap">
+      <input type="password" id="loginWachtwoord" placeholder="Wachtwoord..." maxlength="30"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="loginError" style="display:none;color:var(--accent);font-size:.82rem;margin-bottom:12px;text-align:center">
+      &#10060; Onjuist wachtwoord.
+    </div>
+    <button class="login-btn" onclick="doLogin()">Inloggen &#8594;</button>
+    <div id="loginAccountsWrap" class="login-accounts" style="display:none">
+      <div class="login-accounts-title">Eerder ingelogd</div>
+      <div class="login-account-list" id="loginAccountList"></div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="logo"><div class="logo-badge">KV</div>Vulploeg Manager</div>
+  <div class="header-user">
+    <div class="header-info" id="headerDate">selecteer een avond</div>
+    <div class="user-chip"><div class="user-avatar" id="userAvatar">?</div><span id="userNaamDisplay">-</span></div>
+    <button class="logout-btn" onclick="doLogout()">Uitloggen</button>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('avond')">&#128230; Vulavond</button>
+  <button class="tab-btn" onclick="showTab('overzicht')">&#128202; Overzicht</button>
+  <button class="tab-btn" onclick="showTab('medewerkers')">&#128100; Medewerkers</button>
+  <button class="tab-btn" onclick="showTab('history')">&#128193; Geschiedenis</button>
+</div>
+
+<main>
+<div id="tab-avond" class="tab-panel active">
+  <div class="section-header">
+    <div><h2>Vulavond <span id="avondTitle">instellen</span></h2><div class="sub">Registreer medewerkers, uren en karren</div></div>
+    <div class="flex gap-8">
+      <button class="btn btn-secondary" onclick="openNieuweAvond()">+ Nieuwe avond</button>
+      <button class="btn btn-secondary" onclick="printRooster()">&#128424; Print</button>
+      <button class="btn btn-primary" onclick="slaAvondOp()">&#128190; Opslaan</button>
+    </div>
+  </div>
+  <div id="avondSelector" class="avond-selector">
+    <div class="avond-card selected" onclick="selectAvond('nieuw')">
+      <div class="dag">+ Nieuwe</div><div class="datum">avond aanmaken</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">&#9881;&#65039; Avondgegevens</div></div>
+    <div class="form-row">
+      <div class="form-group"><label>Datum</label><input type="date" id="avondDatum"></div>
+      <div class="form-group"><label>Dag</label><select id="avondDag"><option value="dinsdag">Dinsdag</option><option value="donderdag">Donderdag</option></select></div>
+      <div class="form-group"><label>Totaal colli</label><input type="number" id="avondColli" value="2000"></div>
+      <div class="form-group"><label>Norm (colli/uur)</label><input type="number" id="avondNorm" value="80"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">&#128101; Team van de avond</div>
+      <button class="btn btn-secondary btn-sm" onclick="openMedewerkerModal()">+ Voeg toe</button>
+    </div>
+    <div id="medewerkerLijst" class="medewerker-lijst">
+      <div class="empty"><div class="empty-icon">&#128119;</div><div class="empty-text">Nog geen medewerkers toegevoegd.</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-overzicht" class="tab-panel">
+  <div class="section-header"><div><h2>Overzicht <span id="overzichtTitel">avond</span></h2><div class="sub">Prestaties en statistieken</div></div></div>
+  <div id="overzichtContent"><div class="empty"><div class="empty-icon">&#128202;</div><div class="empty-text">Geen avond geselecteerd.</div></div></div>
+</div>
+
+<div id="tab-medewerkers" class="tab-panel">
+  <div class="section-header">
+    <div><h2>Medewerkers <span>beheer</span></h2><div class="sub">Beheer je vaste vulploeg</div></div>
+    <button class="btn btn-primary" onclick="openNieuweMedewerkerModal()">+ Nieuwe medewerker</button>
+  </div>
+  <div id="medewerkersBeheerLijst" class="card"><div class="empty"><div class="empty-icon">&#128100;</div><div class="empty-text">Nog geen medewerkers.</div></div></div>
+</div>
+
+<div id="tab-history" class="tab-panel">
+  <div class="section-header"><div><h2>Geschiedenis <span>avonden</span></h2><div class="sub">Alle opgeslagen vulavonden</div></div></div>
+  <div class="card"><div id="historyContent"><div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div></div></div>
+</div>
+</main>
+
+<div class="modal-overlay" id="modalMedewerker">
+  <div class="modal">
+    <div class="modal-title">Medewerker toevoegen</div>
+    <div class="form-group" style="margin-bottom:14px"><label>Naam</label><select id="modalSelectMedewerker"><option value="">-- Kies medewerker --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Starttijd</label><input type="time" id="modalStarttijd" value="18:00"></div>
+      <div class="form-group"><label>Eindtijd</label><input type="time" id="modalEindtijd" value="22:00"></div>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label>Pauze (minuten)</label><input type="number" id="modalPauze" value="30" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalMedewerker')">Annuleren</button>
+      <button class="btn btn-primary" onclick="voegMedewerkerToe()">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalKar">
+  <div class="modal">
+    <div class="modal-title">Kar toevoegen</div>
+    <div class="form-group" style="margin-bottom:14px"><label>Karnaam</label><input type="text" id="modalKarNaam" placeholder="bv. Shampoo, Kar 12..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Verwacht (min)</label><input type="number" id="modalKarVerwacht" placeholder="bv. 45"></div>
+      <div class="form-group"><label>Werkelijk (min)</label><input type="number" id="modalKarWerkelijk" placeholder="Na afloop"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalKar')">Annuleren</button>
+      <button class="btn btn-primary" onclick="voegKarToe()">Toevoegen</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalNieuweMedewerker">
+  <div class="modal">
+    <div class="modal-title">Nieuwe medewerker</div>
+    <div class="form-group" style="margin-bottom:14px"><label>Naam</label><input type="text" id="nieuweMedewerkerNaam" placeholder="Voor- en achternaam"></div>
+    <div class="form-group"><label>Functie</label><input type="text" id="nieuweMedewerkerFunctie" placeholder="bv. vast, oproep..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalNieuweMedewerker')">Annuleren</button>
+      <button class="btn btn-primary" onclick="slaaNieuweMedewerkerOp()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Opgeslagen</div>
+
+<script>
+let huidigGebruiker=null;
+function userKey(k){return'kv_'+huidigGebruiker+'_'+k;}
+const WACHTWOORD='KV3581';
+const DEFAULT_MEDEWERKERS=[
+{id:1000,naam:'Debby Weikamp',functie:'Filiaalmanager'},
+{id:1001,naam:'Sanne Moreno',functie:'Assistent Filiaalmanager'},
+{id:1002,naam:'Danielle Harleman',functie:'Teamleider'},
+{id:1003,naam:'Mats ter Avest',functie:'Vulploegleider / Sleutelhouder'},
+{id:1004,naam:'Suze Kersten',functie:'Sleutelhouder'},
+{id:1005,naam:'Simone Kremer',functie:'Vaste Medewerker'},
+{id:1006,naam:'Sanne Aalders',functie:'Vaste Medewerker'},
+{id:1007,naam:'Lillian Lukkassen',functie:'Vulploeg Medewerker'},
+{id:1008,naam:'Justin Beijer',functie:'Vulploeg Medewerker'},
+{id:1009,naam:'Medine Ozdemir',functie:'Vulploeg Medewerker'},
+{id:1010,naam:'Arwen Striekwold',functie:'Vulploeg Medewerker'},
+{id:1011,naam:'Esm\u00e9e Witteveen',functie:'Vulploeg Medewerker'},
+{id:1012,naam:'Eva van Amerongen',functie:'Vulploeg Medewerker'},
+{id:1013,naam:'Indya Visser',functie:'Vulploeg Medewerker'},
+{id:1014,naam:'Elise Krabbenborg',functie:'Vulploeg Medewerker'},
+{id:1015,naam:'Demi Hagedoorn',functie:'Vulploeg Medewerker'},
+{id:1016,naam:'Serena Roelofs',functie:'Vulploeg Medewerker'},
+{id:1017,naam:'Abayomi Sessink',functie:'Vulploeg Medewerker'},
+{id:1018,naam:'Sofie van Hal',functie:'Vulploeg Medewerker'},
+{id:1019,naam:'Mustafa Hassan',functie:'Vulploeg Medewerker'},
+{id:1020,naam:'Ayla Jong-Wolthers',functie:'Vulploeg Medewerker'},
+{id:1021,naam:'Diede Krul',functie:'Vulploeg Medewerker'},
+{id:1022,naam:'Esmee Radstaak',functie:'Vulploeg Medewerker'},
+{id:1023,naam:'Dieke Scholten',functie:'Vulploeg Medewerker'}
+];
+
+let state={medewerkers:[],avonden:[],huidigAvondId:null,huidigAvond:null,huidigeKarMedewerkerIndex:null};
+
+function nieuwLeegAvond(){return{id:Date.now(),datum:new Date().toISOString().split('T')[0],dag:'dinsdag',colli:2000,norm:80,team:[],opgeslagen:false};}
+state.huidigAvond=nieuwLeegAvond();
+
+function laadDefaultMedewerkers(){
+  const b=localStorage.getItem(userKey('medewerkers'));
+  if(!b||JSON.parse(b).length===0){
+    localStorage.setItem(userKey('medewerkers'),JSON.stringify(DEFAULT_MEDEWERKERS));
+    state.medewerkers=JSON.parse(JSON.stringify(DEFAULT_MEDEWERKERS));
+  }
+}
+
+function doLogin(){
+  const naam=document.getElementById('loginNaam').value.trim();
+  const ww=document.getElementById('loginWachtwoord').value;
+  const err=document.getElementById('loginError');
+  if(!naam){document.getElementById('loginNaam').focus();return;}
+  if(ww!==WACHTWOORD){err.style.display='block';document.getElementById('loginWachtwoord').value='';document.getElementById('loginWachtwoord').focus();return;}
+  err.style.display='none';
+  const schoon=naam.charAt(0).toUpperCase()+naam.slice(1).toLowerCase();
+  let acc=JSON.parse(localStorage.getItem('kv_accounts')||'[]');
+  if(!acc.includes(schoon)){acc.push(schoon);localStorage.setItem('kv_accounts',JSON.stringify(acc));}
+  huidigGebruiker=schoon;
+  localStorage.setItem('kv_huidigUser',schoon);
+  state.medewerkers=JSON.parse(localStorage.getItem(userKey('medewerkers'))||'[]');
+  state.avonden=JSON.parse(localStorage.getItem(userKey('avonden'))||'[]');
+  state.huidigAvond=nieuwLeegAvond();state.huidigAvondId=null;
+  laadDefaultMedewerkers();
+  document.getElementById('userNaamDisplay').textContent=schoon;
+  document.getElementById('userAvatar').textContent=schoon.charAt(0).toUpperCase();
+  document.getElementById('loginScreen').style.display='none';
+  syncFormFromAvond();renderAvondSelector();renderTeam();
+}
+
+function doLogout(){
+  huidigGebruiker=null;localStorage.removeItem('kv_huidigUser');
+  state.medewerkers=[];state.avonden=[];state.huidigAvond=nieuwLeegAvond();state.huidigAvondId=null;
+  document.getElementById('loginNaam').value='';document.getElementById('loginWachtwoord').value='';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('headerDate').textContent='selecteer een avond';
+  renderLoginAccounts();document.getElementById('loginScreen').style.display='flex';
+}
+
+function renderLoginAccounts(){
+  const acc=JSON.parse(localStorage.getItem('kv_accounts')||'[]');
+  const wrap=document.getElementById('loginAccountsWrap');const list=document.getElementById('loginAccountList');
+  if(acc.length===0){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  list.innerHTML=acc.map(a=>'<div class="login-account-chip" onclick="quickLogin(\''+a+'\')">'+a+'</div>').join('');
+}
+function quickLogin(naam){document.getElementById('loginNaam').value=naam;doLogin();}
+
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if(name==='overzicht')renderOverzicht();
+  if(name==='history')renderHistory();
+  if(name==='medewerkers')renderMedewerkersBeheer();
+}
+
+function renderAvondSelector(){
+  const c=document.getElementById('avondSelector');
+  c.innerHTML='<div class="avond-card '+(!state.huidigAvondId?'selected':'')+'" onclick="selectAvond(\'nieuw\')"><div class="dag">+ Nieuwe</div><div class="datum">avond aanmaken</div></div>';
+  state.avonden.slice(-6).reverse().forEach(av=>{
+    const d=new Date(av.datum);const sel=state.huidigAvondId===av.id;
+    c.innerHTML+='<div class="avond-card '+(sel?'selected':'')+'" onclick="selectAvond('+av.id+')"><div class="dag">'+av.dag.charAt(0).toUpperCase()+av.dag.slice(1)+'</div><div class="datum">'+d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'short'})+'</div><div class="vracht-badge">'+av.colli+' colli</div></div>';
+  });
+}
+
+function selectAvond(id){
+  if(id==='nieuw'){state.huidigAvondId=null;state.huidigAvond=nieuwLeegAvond();document.getElementById('avondTitle').textContent='instellen';document.getElementById('headerDate').textContent='nieuwe avond';}
+  else{const av=state.avonden.find(a=>a.id===id);if(!av)return;state.huidigAvondId=id;state.huidigAvond=JSON.parse(JSON.stringify(av));const d=new Date(av.datum);document.getElementById('avondTitle').textContent=av.dag+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});document.getElementById('headerDate').textContent=av.dag+' - '+av.colli+' colli';}
+  renderAvondSelector();syncFormFromAvond();renderTeam();
+}
+
+function syncFormFromAvond(){
+  document.getElementById('avondDatum').value=state.huidigAvond.datum;
+  document.getElementById('avondDag').value=state.huidigAvond.dag;
+  document.getElementById('avondColli').value=state.huidigAvond.colli;
+  document.getElementById('avondNorm').value=state.huidigAvond.norm;
+}
+function syncAvondFromForm(){
+  state.huidigAvond.datum=document.getElementById('avondDatum').value;
+  state.huidigAvond.dag=document.getElementById('avondDag').value;
+  state.huidigAvond.colli=parseInt(document.getElementById('avondColli').value)||2000;
+  state.huidigAvond.norm=parseInt(document.getElementById('avondNorm').value)||80;
+}
+function openNieuweAvond(){selectAvond('nieuw');}
+
+function slaAvondOp(){
+  syncAvondFromForm();state.huidigAvond.opgeslagen=true;
+  if(state.huidigAvondId){const idx=state.avonden.findIndex(a=>a.id===state.huidigAvondId);if(idx>=0)state.avonden[idx]=JSON.parse(JSON.stringify(state.huidigAvond));}
+  else{state.avonden.push(JSON.parse(JSON.stringify(state.huidigAvond)));state.huidigAvondId=state.huidigAvond.id;}
+  localStorage.setItem(userKey('avonden'),JSON.stringify(state.avonden));
+  renderAvondSelector();const d=new Date(state.huidigAvond.datum);
+  document.getElementById('avondTitle').textContent=state.huidigAvond.dag+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  document.getElementById('headerDate').textContent=state.huidigAvond.dag+' - '+state.huidigAvond.colli+' colli';
+  showToast('Avond opgeslagen!');
+}
+
+function berekenUren(s,e,p){if(!s||!e)return 0;const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);let m=(eh*60+em)-(sh*60+sm);if(m<0)m+=24*60;m-=(p||0);return Math.max(0,m)/60;}
+
+function getKarStatus(kar){
+  if(!kar.werkelijk||!kar.verwacht)return{cls:'badge-bezig',label:'&#9203; Bezig'};
+  const p=parseInt(kar.werkelijk)/parseInt(kar.verwacht);
+  if(p<=0.9)return{cls:'badge-te-snel',label:'&#9889; Te snel'};
+  if(p<=1.1)return{cls:'badge-ok',label:'&#10003; Op tijd'};
+  return{cls:'badge-te-langzaam',label:'&#9888; Te langzaam'};
+}
+
+function renderTeam(){
+  const c=document.getElementById('medewerkerLijst');const team=state.huidigAvond.team;const norm=state.huidigAvond.norm||80;
+  if(!team||team.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128119;</div><div class="empty-text">Nog geen medewerkers toegevoegd.<br>Klik op "+ Voeg toe" om te beginnen.</div></div>';return;}
+  c.innerHTML='';
+  team.forEach((lid,i)=>{
+    const uren=berekenUren(lid.start,lid.eind,lid.pauze);const target=Math.round(uren*norm);
+    const row=document.createElement('div');row.className='medewerker-row';
+    let kh='';
+    if(lid.karten&&lid.karten.length>0){
+      kh=lid.karten.map((kar,ki)=>{const s=getKarStatus(kar);return'<div class="kar-row"><div><div class="kar-naam-display">'+kar.naam+'</div><div class="tag">kar '+(ki+1)+'</div></div><div><div class="colli-label">Verwacht</div><div class="tijd-display">'+(kar.verwacht?kar.verwacht+' min':'--')+'</div></div><div><div class="colli-label">Werkelijk</div><div class="tijd-display"><input type="number" value="'+(kar.werkelijk||'')+'" placeholder="min" style="width:80px;padding:4px 8px;font-size:.82rem;" onchange="updateKarWerkelijk('+i+','+ki+',this.value)"></div></div><div><span class="status-badge '+s.cls+'">'+s.label+'</span></div><button class="btn btn-danger btn-sm" onclick="verwijderKar('+i+','+ki+')">&#10005;</button></div>';}).join('');
+    }else{kh='<div style="color:var(--muted);font-size:.82rem;padding:4px 0">Nog geen karren toegevoegd</div>';}
+    row.innerHTML='<div class="medewerker-main"><div><div class="medewerker-naam">'+lid.naam+'</div><div class="tag">'+lid.start+' - '+lid.eind+'</div>'+(lid.pauze?'<div class="tag" style="margin-top:4px">&#9749; '+lid.pauze+' min pauze</div>':'')+'</div><div><div class="colli-label">Uren</div><div class="colli-target">'+uren.toFixed(1)+'u</div></div><div><div class="colli-label">Target colli</div><div class="colli-target">'+target+'</div></div><div><div class="colli-label">Karren</div><div class="colli-target">'+(lid.karten?lid.karten.length:0)+'</div></div><div class="flex gap-8"><button class="btn btn-secondary btn-sm" onclick="openKarModal('+i+')">+ Kar</button><button class="btn btn-danger btn-sm" onclick="verwijderLid('+i+')">&#10005;</button></div></div><div class="karten-sectie"><div class="karten-header"><span class="karten-titel">&#128717; Karren</span></div><div class="kar-lijst">'+kh+'</div></div>';
+    c.appendChild(row);
+  });
+}
+
+function updateKarWerkelijk(li,ki,val){state.huidigAvond.team[li].karten[ki].werkelijk=parseInt(val)||null;}
+function verwijderKar(li,ki){state.huidigAvond.team[li].karten.splice(ki,1);renderTeam();}
+function verwijderLid(idx){state.huidigAvond.team.splice(idx,1);renderTeam();}
+
+function openMedewerkerModal(){
+  const sel=document.getElementById('modalSelectMedewerker');
+  sel.innerHTML='<option value="">-- Kies medewerker --</option>';
+  state.medewerkers.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.naam;sel.appendChild(o);});
+  const oh=document.createElement('option');oh.value='nieuw';oh.textContent='+ Handmatig invoeren...';sel.appendChild(oh);
+  document.getElementById('modalMedewerker').classList.add('open');
+}
+function voegMedewerkerToe(){
+  const selVal=document.getElementById('modalSelectMedewerker').value;const start=document.getElementById('modalStarttijd').value;const eind=document.getElementById('modalEindtijd').value;const pauze=parseInt(document.getElementById('modalPauze').value)||0;
+  if(!selVal){alert('Kies een medewerker.');return;}
+  let naam;if(selVal==='nieuw'){naam=prompt('Voer naam in:');if(!naam)return;}else{const m=state.medewerkers.find(m=>m.id==selVal);naam=m?m.naam:selVal;}
+  state.huidigAvond.team.push({naam,start,eind,pauze,karten:[]});closeModal('modalMedewerker');renderTeam();showToast('Medewerker toegevoegd');
+}
+
+function openKarModal(lidIdx){state.huidigeKarMedewerkerIndex=lidIdx;document.getElementById('modalKarNaam').value='';document.getElementById('modalKarVerwacht').value='';document.getElementById('modalKarWerkelijk').value='';document.getElementById('modalKar').classList.add('open');}
+function voegKarToe(){
+  const naam=document.getElementById('modalKarNaam').value.trim();const verwacht=parseInt(document.getElementById('modalKarVerwacht').value)||null;const werkelijk=parseInt(document.getElementById('modalKarWerkelijk').value)||null;
+  if(!naam){alert('Geef de kar een naam.');return;}
+  const i=state.huidigeKarMedewerkerIndex;if(!state.huidigAvond.team[i].karten)state.huidigAvond.team[i].karten=[];
+  state.huidigAvond.team[i].karten.push({naam,verwacht,werkelijk});closeModal('modalKar');renderTeam();showToast('Kar toegevoegd');
+}
+
+function openNieuweMedewerkerModal(){document.getElementById('nieuweMedewerkerNaam').value='';document.getElementById('nieuweMedewerkerFunctie').value='';document.getElementById('modalNieuweMedewerker').classList.add('open');}
+function slaaNieuweMedewerkerOp(){
+  const naam=document.getElementById('nieuweMedewerkerNaam').value.trim();const functie=document.getElementById('nieuweMedewerkerFunctie').value.trim();
+  if(!naam){alert('Vul een naam in.');return;}
+  state.medewerkers.push({id:Date.now(),naam,functie});localStorage.setItem(userKey('medewerkers'),JSON.stringify(state.medewerkers));closeModal('modalNieuweMedewerker');renderMedewerkersBeheer();showToast('Medewerker opgeslagen');
+}
+function renderMedewerkersBeheer(){
+  const c=document.getElementById('medewerkersBeheerLijst');
+  if(state.medewerkers.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128100;</div><div class="empty-text">Nog geen medewerkers aangemaakt.</div></div>';return;}
+  c.innerHTML='<table class="history-table"><thead><tr><th>Naam</th><th>Functie</th><th>Actie</th></tr></thead><tbody>'+state.medewerkers.map((m,i)=>'<tr><td><strong>'+m.naam+'</strong></td><td><span class="tag">'+(m.functie||'--')+'</span></td><td><button class="btn btn-danger btn-sm" onclick="verwijderMedewerker('+i+')">Verwijder</button></td></tr>').join('')+'</tbody></table>';
+}
+function verwijderMedewerker(idx){if(!confirm('Verwijderen?'))return;state.medewerkers.splice(idx,1);localStorage.setItem(userKey('medewerkers'),JSON.stringify(state.medewerkers));renderMedewerkersBeheer();}
+
+function renderOverzicht(){
+  const c=document.getElementById('overzichtContent');const av=state.huidigAvond;const norm=av.norm||80;
+  if(!av.team||av.team.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128202;</div><div class="empty-text">Voeg eerst medewerkers toe.</div></div>';document.getElementById('overzichtTitel').textContent='';return;}
+  const d=new Date(av.datum);document.getElementById('overzichtTitel').textContent=av.dag+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  let totU=0,totT=0;av.team.forEach(l=>{const u=berekenUren(l.start,l.eind,l.pauze);totU+=u;totT+=Math.round(u*norm);});
+  const pct=Math.min(100,Math.round((totT/av.colli)*100));const fc=pct>=100?'fill-green':pct>=70?'fill-orange':'fill-red';
+  let html='<div class="stats-grid"><div class="stat-card"><div class="stat-value" style="color:var(--accent)">'+av.team.length+'</div><div class="stat-label">Medewerkers</div></div><div class="stat-card"><div class="stat-value" style="color:var(--accent2)">'+totU.toFixed(1)+'</div><div class="stat-label">Totaal uren</div></div><div class="stat-card"><div class="stat-value" style="color:var(--green)">'+totT+'</div><div class="stat-label">Target colli team</div></div><div class="stat-card"><div class="stat-value">'+av.colli+'</div><div class="stat-label">Vracht (colli)</div></div></div>';
+  html+='<div class="card" style="margin-bottom:20px"><div class="card-title" style="margin-bottom:12px">&#128230; Vracht afgedekt</div><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:.85rem;color:var(--muted)">Team target vs vracht</span><span style="font-size:.9rem">'+totT+' / '+av.colli+' ('+pct+'%)</span></div><div class="progress-bar-bg"><div class="progress-bar-fill '+fc+'" style="width:'+pct+'%"></div></div>'+(pct<100?'<div style="margin-top:8px;font-size:.8rem;color:var(--accent)">&#9888; Team dekt '+(av.colli-totT)+' colli tekort.</div>':'<div style="margin-top:8px;font-size:.8rem;color:var(--green)">&#10003; Vracht volledig afgedekt.</div>')+'</div>';
+  html+='<div class="card"><div class="card-title" style="margin-bottom:16px">&#128101; Prestaties</div><table class="history-table"><thead><tr><th>Naam</th><th>Uren</th><th>Pauze</th><th>Target</th><th>Karren</th><th>Verwacht</th><th>Werkelijk</th><th>Status</th></tr></thead><tbody>';
+  av.team.forEach(lid=>{
+    const u=berekenUren(lid.start,lid.eind,lid.pauze);const target=Math.round(u*norm);const karten=lid.karten||[];
+    const tV=karten.reduce((s,k)=>s+(k.verwacht||0),0);const tW=karten.reduce((s,k)=>s+(k.werkelijk||0),0);
+    const p=tV>0&&tW>0?tW/tV:null;let st='<span class="status-badge badge-bezig">&#9203; Bezig</span>';
+    if(p!==null){if(p<=0.9)st='<span class="status-badge badge-te-snel">&#9889; Snel</span>';else if(p<=1.1)st='<span class="status-badge badge-ok">&#10003; Op tijd</span>';else st='<span class="status-badge badge-te-langzaam">&#9888; Te langzaam</span>';}
+    html+='<tr><td><strong>'+lid.naam+'</strong><br><span class="tag">'+lid.start+'-'+lid.eind+'</span></td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+(lid.pauze?lid.pauze+' min':'--')+'</td><td class="mono">'+target+'</td><td class="mono">'+karten.length+'</td><td class="mono">'+(tV>0?tV+' min':'--')+'</td><td class="mono">'+(tW>0?tW+' min':'--')+'</td><td>'+st+'</td></tr>';
+  });
+  html+='</tbody></table></div>';c.innerHTML=html;
+}
+
+function renderHistory(){
+  const c=document.getElementById('historyContent');
+  if(state.avonden.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div>';return;}
+  const rows=[...state.avonden].reverse().map(av=>{const d=new Date(av.datum);const u=av.team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);const t=av.team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*av.norm),0);return'<tr><td><strong>'+av.dag.charAt(0).toUpperCase()+av.dag.slice(1)+'</strong></td><td class="mono">'+d.toLocaleDateString('nl-NL')+'</td><td class="mono">'+av.team.length+' pers.</td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+av.colli+'</td><td class="mono">'+t+'</td><td><button class="btn btn-secondary btn-sm" onclick="laadAvond('+av.id+')">Open</button> <button class="btn btn-danger btn-sm" onclick="verwijderAvond('+av.id+')">&#10005;</button></td></tr>';}).join('');
+  c.innerHTML='<table class="history-table"><thead><tr><th>Dag</th><th>Datum</th><th>Team</th><th>Uren</th><th>Colli</th><th>Target</th><th>Actie</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function laadAvond(id){selectAvond(id);document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach((b,i)=>{b.classList.remove('active');if(i===0)b.classList.add('active');});document.getElementById('tab-avond').classList.add('active');showToast('Avond geladen');}
+function verwijderAvond(id){if(!confirm('Avond verwijderen?'))return;state.avonden=state.avonden.filter(a=>a.id!==id);localStorage.setItem(userKey('avonden'),JSON.stringify(state.avonden));if(state.huidigAvondId===id){state.huidigAvondId=null;state.huidigAvond=nieuwLeegAvond();syncFormFromAvond();renderTeam();}renderHistory();renderAvondSelector();showToast('Avond verwijderd');}
+
+function printRooster(){
+  const av=state.huidigAvond;const norm=av.norm||80;
+  if(!av.team||av.team.length===0){alert('Voeg eerst medewerkers toe.');return;}
+  const d=new Date(av.datum);const ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tR=av.team.map(lid=>{const u=berekenUren(lid.start,lid.eind,lid.pauze);const t=Math.round(u*norm);const kr=Array(6).fill(null).map((_,i)=>'<tr><td style="width:30px;text-align:center;color:#999;font-size:10px;background:#fafafa">'+(i+1)+'</td><td style="border-bottom:1px solid #eee;height:34px;min-width:160px"></td><td style="border-bottom:1px solid #eee;min-width:90px"></td><td style="border-bottom:1px solid #eee;min-width:90px"></td><td style="border-bottom:1px solid #eee;min-width:80px"></td></tr>').join('');return'<div style="margin-bottom:22px;border:1px solid #ddd;border-radius:8px;overflow:hidden;break-inside:avoid"><div style="display:flex;justify-content:space-between;align-items:center;background:#111;color:white;padding:8px 14px"><div><strong>'+lid.naam+'</strong><span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 7px;font-size:10px;margin-left:8px">'+lid.start+' - '+lid.eind+'</span>'+(lid.pauze?'<span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 7px;font-size:10px;margin-left:8px">pauze '+lid.pauze+' min</span>':'')+'</div><div style="text-align:right;font-size:11px;color:#ccc">Werktijd: <strong style="color:#fff">'+u.toFixed(1)+' uur</strong><br>Target: <strong style="color:#fff">'+t+' colli</strong></div></div><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#f0f0f0"><th style="padding:6px 10px;font-size:10px;border-bottom:1px solid #ddd">#</th><th style="padding:6px 10px;font-size:10px;border-bottom:1px solid #ddd">Karnaam</th><th style="padding:6px 10px;font-size:10px;border-bottom:1px solid #ddd">Verwacht (min)</th><th style="padding:6px 10px;font-size:10px;border-bottom:1px solid #ddd">Werkelijk (min)</th><th style="padding:6px 10px;font-size:10px;border-bottom:1px solid #ddd">Parafering</th></tr></thead><tbody>'+kr+'</tbody></table><div style="font-size:10px;color:#888;padding:8px 14px;background:#fafafa;border-top:1px solid #eee">Opmerkingen: _______________________________________________</div></div>';}).join('');
+  const w=window.open('','_blank');w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rooster</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;color:#111;padding:20px;font-size:12px}@media print{@page{margin:1cm}}</style></head><body><div style="display:flex;justify-content:space-between;border-bottom:3px solid #e8473f;padding-bottom:12px;margin-bottom:20px"><div><div style="font-size:20px;font-weight:800;color:#e8473f">Vulploeg Rooster - Kruidvat</div><div style="font-size:11px;color:#666;margin-top:4px">'+ds+'</div></div><div style="text-align:right;font-size:11px;color:#444">Norm: <strong>'+norm+' colli/uur</strong><br>Vracht: <strong>'+av.colli+' colli</strong></div></div>'+tR+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),500);
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent='&#10003; '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+renderLoginAccounts();
+const savedUser=localStorage.getItem('kv_huidigUser');
+if(savedUser){
+  huidigGebruiker=savedUser;
+  state.medewerkers=JSON.parse(localStorage.getItem(userKey('medewerkers'))||'[]');
+  state.avonden=JSON.parse(localStorage.getItem(userKey('avonden'))||'[]');
+  state.huidigAvond=nieuwLeegAvond();state.huidigAvondId=null;
+  laadDefaultMedewerkers();
+  document.getElementById('userNaamDisplay').textContent=savedUser;
+  document.getElementById('userAvatar').textContent=savedUser.charAt(0).toUpperCase();
+  document.getElementById('loginScreen').style.display='none';
+  syncFormFromAvond();renderAvondSelector();renderTeam();
+}else{document.getElementById('loginScreen').style.display='flex';}
+</script>
+</body>
+</html>
