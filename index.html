@@ -75,6 +75,28 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
 .toast{position:fixed;bottom:32px;right:32px;background:var(--green);color:#0f0f13;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;padding:12px 20px;border-radius:10px;transform:translateY(80px);transition:transform .3s;z-index:300}
 .toast.show{transform:translateY(0)}
 @media(max-width:768px){header{padding:14px 16px}main{padding:16px}.tab-bar{padding:16px 16px 0;overflow-x:auto}.medewerker-main{grid-template-columns:1fr 1fr}.kar-row{grid-template-columns:1fr 1fr}.stats-grid{grid-template-columns:1fr 1fr}}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface2)}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:rgba(232,71,63,.06)}
+.upload-zone-icon{font-size:2.5rem;margin-bottom:12px}
+.upload-zone-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px}
+.upload-zone-sub{color:var(--muted);font-size:.82rem}
+.upload-zone input[type=file]{display:none}
+.rooster-preview-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.rooster-preview-table th{font-family:'Syne',sans-serif;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2)}
+.rooster-preview-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.rooster-preview-table tr:hover td{background:var(--surface2)}
+.rooster-preview-table tr:last-child td{border-bottom:none}
+.date-match-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;background:rgba(62,207,142,.15);color:var(--green)}
+.rooster-datum-groep{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.rooster-datum-header{background:var(--surface2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.rooster-datum-titel{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem}
+.rooster-datum-count{font-size:.78rem;color:var(--muted)}
+.import-row-check{width:16px;height:16px;accent-color:var(--accent)}
+.template-info{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);border-radius:8px;padding:14px 16px;font-size:.82rem;color:var(--accent2);margin-bottom:20px;line-height:1.6}
+.col-map-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.col-map-row:last-child{border-bottom:none}
+.col-map-label{font-size:.82rem;font-weight:600}
+.col-map-sub{font-size:.72rem;color:var(--muted)}
 .tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.75rem;font-family:'DM Mono',monospace;color:var(--muted)}
 .flex{display:flex}.gap-8{gap:8px}
 #loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
@@ -140,6 +162,7 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
   <button class="tab-btn" onclick="showTab('overzicht')">&#128202; Overzicht</button>
   <button class="tab-btn" onclick="showTab('medewerkers')">&#128100; Medewerkers</button>
   <button class="tab-btn" onclick="showTab('history')">&#128193; Geschiedenis</button>
+  <button class="tab-btn" onclick="showTab('rooster')">&#128197; Rooster Upload</button>
 </div>
 
 <main>
@@ -193,6 +216,46 @@ input:focus,select:focus{border-color:var(--accent)}input::placeholder{color:var
 <div id="tab-history" class="tab-panel">
   <div class="section-header"><div><h2>Geschiedenis <span>avonden</span></h2><div class="sub">Alle opgeslagen vulavonden</div></div></div>
   <div class="card"><div id="historyContent"><div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div></div></div>
+</div>
+
+<div id="tab-rooster" class="tab-panel">
+  <div class="section-header">
+    <div><h2>Rooster <span>Upload</span></h2><div class="sub">Laad een rooster in — medewerkers worden automatisch ingevuld bij het selecteren van een datum</div></div>
+    <div class="flex gap-8">
+      <button class="btn btn-secondary" onclick="downloadRoosterTemplate()">&#11015; Download template</button>
+      <button class="btn btn-danger btn-sm" onclick="verwijderRooster()" id="btnVerwijderRooster" style="display:none">&#10005; Rooster wissen</button>
+    </div>
+  </div>
+  <div class="template-info">
+    <strong>&#128161; Hoe werkt het?</strong><br>
+    Upload een CSV- of Excel-bestand met kolommen: <strong>Datum</strong>, <strong>Naam</strong>, <strong>Starttijd</strong>, <strong>Eindtijd</strong> en optioneel <strong>Pauze</strong>.<br>
+    Klik daarna op "Download template" voor een voorbeeld. Wanneer je een datum kiest in Vulavond, worden de medewerkers van die dag automatisch ingeladen.
+  </div>
+  <div class="card" id="roosterUploadCard">
+    <label class="upload-zone" id="uploadZone" for="roosterFileInput">
+      <div class="upload-zone-icon">&#128196;</div>
+      <div class="upload-zone-title">Sleep je bestand hierheen of klik om te uploaden</div>
+      <div class="upload-zone-sub">CSV of Excel (.xlsx, .xls)</div>
+      <input type="file" id="roosterFileInput" accept=".csv,.xlsx,.xls" onchange="handleRoosterUpload(this)">
+    </label>
+  </div>
+  <div id="roosterKolombinding" class="card" style="display:none">
+    <div class="card-header"><div class="card-title">&#128279; Kolommen koppelen</div></div>
+    <div class="sub" style="margin-bottom:16px">Koppel de kolommen uit jouw bestand aan de juiste velden</div>
+    <div id="kolombindingInhoud"></div>
+    <div style="margin-top:20px;display:flex;justify-content:flex-end">
+      <button class="btn btn-primary" onclick="verwerkRoosterMetBinding()">&#10003; Rooster verwerken</button>
+    </div>
+  </div>
+  <div id="roosterPreview" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#128200; Rooster overzicht</div>
+        <span id="roosterSamenvatting" style="font-size:.82rem;color:var(--muted)"></span>
+      </div>
+      <div id="roosterPreviewInhoud"></div>
+    </div>
+  </div>
 </div>
 </main>
 
@@ -327,15 +390,7 @@ function renderLoginAccounts(){
 }
 function quickLogin(naam){document.getElementById('loginNaam').value=naam;doLogin();}
 
-function showTab(name){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  event.target.classList.add('active');
-  if(name==='overzicht')renderOverzicht();
-  if(name==='history')renderHistory();
-  if(name==='medewerkers')renderMedewerkersBeheer();
-}
+
 
 function renderAvondSelector(){
   const c=document.getElementById('avondSelector');
@@ -481,6 +536,342 @@ function printRooster(){
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent='&#10003; '+msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+
+// ===== ROOSTER UPLOAD =====
+let roosterData = {}; // { 'YYYY-MM-DD': [{naam, start, eind, pauze}, ...] }
+let roosterRawRows = [];
+let roosterHeaders = [];
+
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if(name==='overzicht')renderOverzicht();
+  if(name==='history')renderHistory();
+  if(name==='medewerkers')renderMedewerkersBeheer();
+  if(name==='rooster')renderRoosterTab();
+}
+
+function renderRoosterTab(){
+  const savedRooster = localStorage.getItem(userKey('rooster'));
+  if(savedRooster){
+    roosterData = JSON.parse(savedRooster);
+    document.getElementById('btnVerwijderRooster').style.display='';
+    renderRoosterPreview();
+    document.getElementById('roosterUploadCard').style.display='none';
+  } else {
+    document.getElementById('roosterPreview').style.display='none';
+    document.getElementById('roosterUploadCard').style.display='';
+    document.getElementById('btnVerwijderRooster').style.display='none';
+  }
+}
+
+function verwijderRooster(){
+  if(!confirm('Rooster wissen? Automatisch invullen werkt dan niet meer.'))return;
+  roosterData={};
+  localStorage.removeItem(userKey('rooster'));
+  document.getElementById('roosterPreview').style.display='none';
+  document.getElementById('roosterUploadCard').style.display='';
+  document.getElementById('roosterKolombinding').style.display='none';
+  document.getElementById('btnVerwijderRooster').style.display='none';
+  showToast('Rooster gewist');
+}
+
+// Drag & drop support
+document.addEventListener('DOMContentLoaded', ()=>{
+  const zone = document.getElementById('uploadZone');
+  if(!zone) return;
+  zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave', ()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e=>{
+    e.preventDefault();zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file) parseRoosterFile(file);
+  });
+});
+
+function handleRoosterUpload(input){
+  const file = input.files[0];
+  if(!file) return;
+  parseRoosterFile(file);
+}
+
+function parseRoosterFile(file){
+  const name = file.name.toLowerCase();
+  if(name.endsWith('.csv')){
+    const reader = new FileReader();
+    reader.onload = e => parseCsvRooster(e.target.result);
+    reader.readAsText(file, 'UTF-8');
+  } else if(name.endsWith('.xlsx')||name.endsWith('.xls')){
+    const reader = new FileReader();
+    reader.onload = e => parseXlsxRooster(e.target.result);
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert('Alleen CSV of Excel bestanden worden ondersteund.');
+  }
+}
+
+function parseCsvRooster(text){
+  // Detect delimiter
+  const firstLine = text.split('\n')[0];
+  const delim = firstLine.includes(';') ? ';' : ',';
+  const lines = text.split('\n').filter(l=>l.trim());
+  roosterHeaders = lines[0].split(delim).map(h=>h.trim().replace(/^"|"$/g,''));
+  roosterRawRows = lines.slice(1).map(l=>{
+    const cols = l.split(delim).map(c=>c.trim().replace(/^"|"$/g,''));
+    const obj={};
+    roosterHeaders.forEach((h,i)=>obj[h]=cols[i]||'');
+    return obj;
+  }).filter(r=>Object.values(r).some(v=>v));
+  toonKolombinding();
+}
+
+function parseXlsxRooster(buffer){
+  // Use SheetJS if available, else fallback message
+  if(typeof XLSX === 'undefined'){
+    // Load SheetJS dynamically
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    script.onload = ()=>{
+      const wb = XLSX.read(new Uint8Array(buffer),{type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws,{defval:''});
+      if(json.length===0){alert('Geen data gevonden in het Excel bestand.');return;}
+      roosterHeaders = Object.keys(json[0]);
+      roosterRawRows = json;
+      toonKolombinding();
+    };
+    document.head.appendChild(script);
+  } else {
+    const wb = XLSX.read(new Uint8Array(buffer),{type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(ws,{defval:''});
+    if(json.length===0){alert('Geen data gevonden in het Excel bestand.');return;}
+    roosterHeaders = Object.keys(json[0]);
+    roosterRawRows = json;
+    toonKolombinding();
+  }
+}
+
+function toonKolombinding(){
+  if(roosterRawRows.length===0){alert('Geen rijen gevonden in het bestand.');return;}
+  const velden = [
+    {key:'datum', label:'Datum', sub:'bv. 2025-06-03 of 03-06-2025', required:true},
+    {key:'naam',  label:'Naam medewerker', sub:'Voornaam of volledige naam', required:true},
+    {key:'start', label:'Starttijd', sub:'bv. 18:00', required:true},
+    {key:'eind',  label:'Eindtijd',  sub:'bv. 22:00', required:true},
+    {key:'pauze', label:'Pauze (min)', sub:'Optioneel, standaard 0', required:false},
+  ];
+  // Auto-detect
+  const autoMap = {};
+  const looksLike = {
+    datum:  /datum|date|dag/i,
+    naam:   /naam|name|medewerker|employee/i,
+    start:  /start|begin|van|from/i,
+    eind:   /eind|end|tot|until|to/i,
+    pauze:  /pauze|pause|break/i,
+  };
+  roosterHeaders.forEach(h=>{
+    Object.keys(looksLike).forEach(k=>{
+      if(!autoMap[k]&&looksLike[k].test(h)) autoMap[k]=h;
+    });
+  });
+  const opties = roosterHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
+  const html = velden.map(v=>`
+    <div class="col-map-row">
+      <div><div class="col-map-label">${v.required?'<span style="color:var(--accent)">*</span> ':''}${v.label}</div><div class="col-map-sub">${v.sub}</div></div>
+      <select id="colmap_${v.key}" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:DM Sans,sans-serif;font-size:.85rem;width:100%">
+        ${v.required?'':'<option value="">-- Niet gebruiken --</option>'}
+        ${opties}
+      </select>
+    </div>`).join('');
+  document.getElementById('kolombindingInhoud').innerHTML=html;
+  // Set auto-detected values
+  velden.forEach(v=>{if(autoMap[v.key])document.getElementById('colmap_'+v.key).value=autoMap[v.key];});
+  document.getElementById('roosterKolombinding').style.display='';
+  document.getElementById('roosterUploadCard').style.display='none';
+  document.getElementById('roosterPreview').style.display='none';
+}
+
+function normalizeDate(raw){
+  if(!raw) return null;
+  const s = String(raw).trim();
+  // ISO format YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // DD-MM-YYYY or DD/MM/YYYY
+  const m1 = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+  if(m1) return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  // Excel serial number
+  if(/^\d{5}$/.test(s)){
+    const d = new Date(Math.round((parseInt(s)-25569)*86400*1000));
+    return d.toISOString().split('T')[0];
+  }
+  // Try native parse
+  const d = new Date(s);
+  if(!isNaN(d)) return d.toISOString().split('T')[0];
+  return null;
+}
+
+function normalizeTime(raw){
+  if(!raw) return '18:00';
+  const s = String(raw).trim();
+  if(/^\d{2}:\d{2}$/.test(s)) return s;
+  if(/^\d{1,2}:\d{2}$/.test(s)) return s.padStart(5,'0');
+  // Excel decimal time  e.g. 0.75 = 18:00
+  const n = parseFloat(s);
+  if(!isNaN(n) && n >= 0 && n < 1){
+    const totalMin = Math.round(n*24*60);
+    const h = Math.floor(totalMin/60);
+    const m = totalMin%60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+  return s;
+}
+
+function verwerkRoosterMetBinding(){
+  const get = id => document.getElementById(id).value;
+  const colDatum = get('colmap_datum');
+  const colNaam  = get('colmap_naam');
+  const colStart = get('colmap_start');
+  const colEind  = get('colmap_eind');
+  const colPauze = get('colmap_pauze');
+  if(!colDatum||!colNaam||!colStart||!colEind){alert('Koppel tenminste Datum, Naam, Starttijd en Eindtijd.');return;}
+  
+  const nieuwRooster = {};
+  let fouten=0;
+  roosterRawRows.forEach(row=>{
+    const datum = normalizeDate(row[colDatum]);
+    const naam  = String(row[colNaam]||'').trim();
+    if(!datum||!naam){fouten++;return;}
+    if(!nieuwRooster[datum]) nieuwRooster[datum]=[];
+    nieuwRooster[datum].push({
+      naam,
+      start: normalizeTime(row[colStart]),
+      eind:  normalizeTime(row[colEind]),
+      pauze: parseInt(row[colPauze])||0
+    });
+  });
+  
+  const aantalDagen = Object.keys(nieuwRooster).length;
+  const aantalRijen = Object.values(nieuwRooster).reduce((s,a)=>s+a.length,0);
+  if(aantalRijen===0){alert('Geen geldige rijen gevonden. Controleer de kolom-koppeling en datumopmaak.');return;}
+  
+  roosterData = nieuwRooster;
+  localStorage.setItem(userKey('rooster'), JSON.stringify(roosterData));
+  document.getElementById('roosterKolombinding').style.display='none';
+  document.getElementById('btnVerwijderRooster').style.display='';
+  renderRoosterPreview();
+  showToast(`Rooster geladen: ${aantalRijen} medewerkers op ${aantalDagen} datums`+(fouten?` (${fouten} rijen overgeslagen)`:''));
+}
+
+function renderRoosterPreview(){
+  const datums = Object.keys(roosterData).sort();
+  if(datums.length===0){document.getElementById('roosterPreview').style.display='none';return;}
+  document.getElementById('roosterSamenvatting').textContent=`${datums.length} dag(en), ${Object.values(roosterData).reduce((s,a)=>s+a.length,0)} medewerkers`;
+  
+  const html = datums.map(datum=>{
+    const leden = roosterData[datum];
+    const d = new Date(datum+'T00:00:00');
+    const label = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const rijen = leden.map(l=>`<tr>
+      <td><strong>${l.naam}</strong></td>
+      <td class="mono">${l.start}</td>
+      <td class="mono">${l.eind}</td>
+      <td class="mono">${l.pauze?l.pauze+' min':'—'}</td>
+      <td><button class="btn btn-primary btn-sm" onclick="laadRoosterVoorDatum('${datum}')">&#128230; Laden in vulavond</button></td>
+    </tr>`).join('');
+    return `<div class="rooster-datum-groep">
+      <div class="rooster-datum-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <span class="rooster-datum-titel">${label}</span>
+        <span class="rooster-datum-count">${leden.length} medewerker(s)</span>
+      </div>
+      <div style="overflow:hidden">
+        <table class="rooster-preview-table">
+          <thead><tr><th>Naam</th><th>Start</th><th>Eind</th><th>Pauze</th><th>Actie</th></tr></thead>
+          <tbody>${rijen}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+  
+  document.getElementById('roosterPreviewInhoud').innerHTML=html;
+  document.getElementById('roosterPreview').style.display='';
+}
+
+function laadRoosterVoorDatum(datum){
+  const leden = roosterData[datum];
+  if(!leden||leden.length===0){showToast('Geen medewerkers voor deze datum.');return;}
+  
+  // Sync the avond date & navigate to vulavond tab
+  state.huidigAvond.datum = datum;
+  const d = new Date(datum+'T00:00:00');
+  const dagNr = d.getDay(); // 0=Sun,1=Mon,...
+  // Map to dinsdag/donderdag if possible
+  const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const dagNaam = dagNamen[dagNr];
+  if(dagNaam==='dinsdag'||dagNaam==='donderdag') state.huidigAvond.dag=dagNaam;
+  
+  // Replace team with rooster entries
+  state.huidigAvond.team = leden.map(l=>({
+    naam: l.naam,
+    start: l.start,
+    eind: l.eind,
+    pauze: l.pauze||0,
+    karten:[]
+  }));
+  
+  // Switch to vulavond tab
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-avond').classList.add('active');
+  document.querySelectorAll('.tab-btn')[0].classList.add('active');
+  
+  syncFormFromAvond();
+  renderTeam();
+  renderAvondSelector();
+  
+  const label = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+  showToast(`${leden.length} medewerkers geladen voor ${label}`);
+  document.getElementById('avondTitle').textContent=state.huidigAvond.dag+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  document.getElementById('headerDate').textContent=label;
+}
+
+// Override datum input to auto-load rooster when date is changed
+document.addEventListener('DOMContentLoaded', ()=>{
+  const datumInput = document.getElementById('avondDatum');
+  if(datumInput){
+    datumInput.addEventListener('change', function(){
+      const datum = this.value;
+      if(!datum) return;
+      const savedRooster = huidigGebruiker ? localStorage.getItem(userKey('rooster')) : null;
+      if(!savedRooster) return;
+      const rd = JSON.parse(savedRooster);
+      if(rd[datum] && rd[datum].length>0){
+        const d = new Date(datum+'T00:00:00');
+        const label = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+        if(confirm(`Er staan ${rd[datum].length} medewerker(s) in het rooster voor ${label}. Automatisch inladen?`)){
+          laadRoosterVoorDatum(datum);
+        }
+      }
+    });
+  }
+});
+
+function downloadRoosterTemplate(){
+  const csv = 'Datum;Naam;Starttijd;Eindtijd;Pauze\n'+
+    '2025-06-03;Sanne Moreno;18:00;22:00;30\n'+
+    '2025-06-03;Justin Beijer;18:00;22:00;30\n'+
+    '2025-06-03;Lillian Lukkassen;19:00;22:00;0\n'+
+    '2025-06-05;Sanne Aalders;18:00;22:00;30\n'+
+    '2025-06-05;Medine Ozdemir;18:30;22:00;0\n';
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url;a.download='rooster_template.csv';a.click();
+  URL.revokeObjectURL(url);
+}
 
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
