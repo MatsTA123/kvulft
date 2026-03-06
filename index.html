@@ -346,6 +346,7 @@ body.dark-mode .record-badge{background:rgba(245,166,35,.2);color:#e09020}
       </svg>
     </div>
     <div class="login-title">Vulploeg Manager</div>
+    <div class="login-sub">Alleen voor vulploeg leiders</div>
     <div class="login-input-wrap">
       <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
         onkeydown="if(event.key==='Enter')document.getElementById('loginWachtwoord').focus()">
@@ -377,7 +378,7 @@ body.dark-mode .record-badge{background:rgba(245,166,35,.2);color:#e09020}
     </svg>
     <div class="logo-text">
       <span class="logo-title">Vulploeg Manager</span>
-      <span class="logo-sub-text">Kruidvat Ulft</span>
+      <span class="logo-sub-text">Kruidvat intern</span>
     </div>
   </div>
   <div class="header-user">
@@ -1869,34 +1870,64 @@ function updateEindtijd(){
   const doel=state.huidigAvond.colli||2000;
   const verwerkt=state.huidigAvond.colliVerwerkt||0;
   const resterend=Math.max(0,doel-verwerkt);
-  // Totaal beschikbare uren op dit moment (medewerkers die nog aan het werk zijn)
   const now=new Date();
   const nowMin=now.getHours()*60+now.getMinutes();
-  let actiefColli=0;
+
+  // Bereken totaal beschikbare colli — gebruik MAX(start, nu) zodat
+  // medewerkers die nog niet begonnen zijn NIET al meegeteld worden
+  let totaalBeschikbaarMin=0;
+  let vroegsteStart=null;
   team.forEach(l=>{
     if(!l.start||!l.eind)return;
+    const [sh,sm]=l.start.split(':').map(Number);
     const [eh,em]=l.eind.split(':').map(Number);
+    const startMin=sh*60+sm;
     const eindMin=eh*60+em;
-    if(eindMin>nowMin){
-      // nog aan het werk, bereken resterend
-      const resteUren=(eindMin-nowMin)/60;
-      actiefColli+=resteUren*norm;
-    }
+    if(eindMin<=nowMin)return; // al weg
+    const effectiefStart=Math.max(startMin,nowMin);
+    const pauzeMin=l.pauze||0;
+    const nettoMin=Math.max(0,(eindMin-effectiefStart)-pauzeMin);
+    totaalBeschikbaarMin+=nettoMin;
+    if(startMin>nowMin&&(vroegsteStart===null||startMin<vroegsteStart))vroegsteStart=startMin;
   });
-  if(actiefColli<=0){banner.style.display='none';return;}
-  // Benodigde uren voor resterend colli
-  const benodigdMin=(resterend/norm)*60;
-  const eindMin=nowMin+benodigdMin;
-  const eindH=Math.floor(eindMin/60)%24;
-  const eindM=Math.round(eindMin%60);
+
+  if(totaalBeschikbaarMin<=0){banner.style.display='none';return;}
+  const totaalBeschikbaarColli=(totaalBeschikbaarMin/60)*norm;
+  const kanWorden=totaalBeschikbaarColli>=resterend;
+
+  // Loop minuut voor minuut om exacte eindtijd te berekenen
+  // (houdt rekening met wisselende teamgrootte door de avond heen)
+  let colliOver=resterend;
+  let eindTijdMin=nowMin;
+  for(let t=nowMin;t<=nowMin+720;t++){
+    let colliPerMin=0;
+    team.forEach(l=>{
+      if(!l.start||!l.eind)return;
+      const [sh,sm]=l.start.split(':').map(Number);
+      const [eh,em]=l.eind.split(':').map(Number);
+      if(t>=sh*60+sm&&t<eh*60+em)colliPerMin+=(norm/60);
+    });
+    colliOver-=colliPerMin;
+    if(colliOver<=0){eindTijdMin=t;break;}
+    eindTijdMin=t;
+  }
+
+  const eindH=Math.floor(eindTijdMin/60)%24;
+  const eindM=Math.round(eindTijdMin%60);
   const eindStr=String(eindH).padStart(2,'0')+':'+String(eindM).padStart(2,'0');
   document.getElementById('eindtijdTijd').textContent=eindStr;
-  const kanWorden=actiefColli>=resterend;
+
+  let extraTekst='';
+  if(vroegsteStart!==null&&nowMin<vroegsteStart){
+    const wMin=vroegsteStart-nowMin;
+    const wH=Math.floor(wMin/60);const wM=wMin%60;
+    extraTekst=' · start over '+(wH>0?wH+'u ':'')+wM+'min';
+  }
   document.getElementById('eindtijdDetail').innerHTML=
-    resterend+' colli resterend · '+Math.round(benodigdMin)+' min werk · '
+    resterend+' colli resterend'+extraTekst+' · '
     +(kanWorden
       ?'<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>'
-      :'<span style="color:var(--accent);font-weight:800">⚠ Team dekt '+(resterend-Math.round(actiefColli))+' colli tekort</span>');
+      :'<span style="color:var(--accent);font-weight:800">⚠ '+(resterend-Math.round(totaalBeschikbaarColli))+' colli tekort</span>');
   banner.style.display='flex';
 }
 
