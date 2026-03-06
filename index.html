@@ -297,7 +297,38 @@ textarea{resize:vertical;min-height:60px}
   .stats-persoon-tabel th,.stats-persoon-tabel td{padding:7px 8px}
   header{padding:0 14px}
   header .header-info{display:none}
+  .colli-teller-card{flex-direction:column;align-items:flex-start}
+  .colli-teller-getal{font-size:2rem}
 }
+/* Colli teller */
+.colli-teller-card{background:var(--accent);color:white;border-radius:var(--radius);padding:18px 24px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 4px 20px rgba(226,0,26,.25)}
+.colli-teller-links{display:flex;flex-direction:column;gap:2px;flex:1}
+.colli-teller-label{font-size:.72rem;font-weight:800;opacity:.8;text-transform:uppercase;letter-spacing:.5px}
+.colli-teller-getal{font-family:'DM Mono',monospace;font-size:2.4rem;font-weight:700;line-height:1}
+.colli-teller-sub{font-size:.78rem;opacity:.8;margin-top:2px}
+.colli-teller-rechts{display:flex;align-items:center;gap:10px}
+.colli-teller-btn{background:rgba(255,255,255,.22);border:2px solid rgba(255,255,255,.4);border-radius:10px;color:white;font-size:1.6rem;font-weight:900;width:52px;height:52px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .12s;font-family:'Nunito',sans-serif;line-height:1;user-select:none}
+.colli-teller-btn:hover{background:rgba(255,255,255,.35)}
+.colli-teller-btn:active{transform:scale(.91)}
+.colli-teller-progress{height:6px;background:rgba(255,255,255,.25);border-radius:3px;margin-top:10px;overflow:hidden}
+.colli-teller-fill{height:100%;background:white;border-radius:3px;transition:width .3s}
+/* Pauze timer */
+.pauze-chip{display:inline-flex;align-items:center;gap:5px;background:#fff3e0;border:1.5px solid #ff9800;color:#e65100;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:800;cursor:pointer;transition:all .15s;white-space:nowrap}
+.pauze-chip.actief{background:#e65100;color:white;border-color:#e65100;animation:pulseOranje 2s infinite}
+.pauze-chip.laat{background:var(--accent);color:white;border-color:var(--accent);animation:pulseRed 1s infinite}
+@keyframes pulseOranje{0%,100%{box-shadow:0 0 0 0 rgba(230,81,0,.4)}50%{box-shadow:0 0 0 6px rgba(230,81,0,0)}}
+body.dark-mode .pauze-chip{background:#3a1a00;color:#ffb74d;border-color:#e65100}
+/* Eindtijd banner */
+.eindtijd-banner{display:flex;align-items:center;gap:16px;background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--green);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;flex-wrap:wrap}
+.eindtijd-tijd{font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--green)}
+.eindtijd-label{font-size:.75rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.eindtijd-detail{font-size:.84rem;color:var(--text);margin-top:3px}
+/* Records & vergelijking */
+.record-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(245,166,35,.15);color:#c47d00;border-radius:6px;padding:1px 7px;font-size:.7rem;font-weight:800}
+body.dark-mode .record-badge{background:rgba(245,166,35,.2);color:#e09020}
+.vergelijk-beter{color:var(--green);font-weight:800}
+.vergelijk-slechter{color:var(--accent);font-weight:800}
+.vergelijk-gelijk{color:var(--muted);font-weight:700}
 </style>
 </head>
 <body>
@@ -315,7 +346,6 @@ textarea{resize:vertical;min-height:60px}
       </svg>
     </div>
     <div class="login-title">Vulploeg Manager</div>
-    <div class="login-sub">Alleen voor vulploeg leiders</div>
     <div class="login-input-wrap">
       <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
         onkeydown="if(event.key==='Enter')document.getElementById('loginWachtwoord').focus()">
@@ -347,7 +377,7 @@ textarea{resize:vertical;min-height:60px}
     </svg>
     <div class="logo-text">
       <span class="logo-title">Vulploeg Manager</span>
-      <span class="logo-sub-text">Kruidvat intern</span>
+      <span class="logo-sub-text">Kruidvat Ulft</span>
     </div>
   </div>
   <div class="header-user">
@@ -408,6 +438,29 @@ textarea{resize:vertical;min-height:60px}
     </div>
   </div>
   <div id="avondAfgeslotenBanner" style="display:none" class="avond-afgesloten">&#10003; Avond afgesloten &mdash; <span id="avondAfgeslotenTekst"></span></div>
+
+  <!-- Live colli teller -->
+  <div class="colli-teller-card" id="colliTellerCard">
+    <div class="colli-teller-links">
+      <div class="colli-teller-label">&#9889; Colli verwerkt</div>
+      <div class="colli-teller-getal"><span id="colliTellerGetal">0</span> <span style="font-size:1rem;opacity:.7">/ <span id="colliTellerDoel">2000</span></span></div>
+      <div class="colli-teller-sub" id="colliTellerPct">0% klaar</div>
+      <div class="colli-teller-progress"><div class="colli-teller-fill" id="colliTellerFill" style="width:0%"></div></div>
+    </div>
+    <div class="colli-teller-rechts">
+      <button class="colli-teller-btn" onclick="tellerAanpassen(-10)" title="-10">−</button>
+      <button class="colli-teller-btn" onclick="tellerAanpassen(10)" title="+10">+</button>
+    </div>
+  </div>
+
+  <!-- Verwachte eindtijd banner -->
+  <div class="eindtijd-banner" id="eindtijdBanner" style="display:none">
+    <div>
+      <div class="eindtijd-label">&#128336; Verwachte eindtijd</div>
+      <div class="eindtijd-tijd" id="eindtijdTijd">--:--</div>
+    </div>
+    <div id="eindtijdDetail" class="eindtijd-detail"></div>
+  </div>
   <div id="avondSelector" class="avond-selector">
     <div class="avond-card selected" onclick="selectAvond('nieuw')">
       <div class="dag">+ Nieuwe</div><div class="datum">avond aanmaken</div>
@@ -495,7 +548,7 @@ textarea{resize:vertical;min-height:60px}
   </div>
 </div>
 
-
+<div id="tab-rooster" class="tab-panel">
   <div class="section-header">
     <div><h2>Rooster <span>Upload</span></h2><div class="sub">Upload een rooster — wordt gedeeld met alle vulploeg leiders die inloggen</div></div>
     <div class="flex gap-8">
@@ -612,10 +665,27 @@ textarea{resize:vertical;min-height:60px}
   <div class="modal">
     <div class="modal-title">&#128717; Kar toevoegen aan pool</div>
     <div class="form-group" style="margin-bottom:12px"><label>Karnaam / afdeling</label><input type="text" id="poolKarNaam" placeholder="bv. Shampoo, Kar 12, Cosmetica..."></div>
-    <div class="form-row">
-      <div class="form-group"><label>Verwacht (min)</label><input type="number" id="poolKarVerwacht" placeholder="bv. 45"></div>
-      <div class="form-group"><label>Werkelijk (min)</label><input type="number" id="poolKarWerkelijk" placeholder="Na afloop"></div>
+
+    <!-- Colli ↔ Tijd calculator -->
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">&#128257; Colli &#8596; Tijd berekening <span style="font-size:.65rem;color:var(--muted)" id="karCalcNormTip"></span></div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center">
+        <div class="form-group">
+          <label>Aantal colli</label>
+          <input type="number" id="poolKarColli" placeholder="bv. 120" min="1"
+            oninput="bereken_colliNaarTijd()">
+        </div>
+        <div style="font-size:1.4rem;color:var(--muted);text-align:center;padding-top:18px">&#8646;</div>
+        <div class="form-group">
+          <label>Verwacht (min)</label>
+          <input type="number" id="poolKarVerwacht" placeholder="bv. 45" min="1"
+            oninput="bereken_tijdNaarColli()">
+        </div>
+      </div>
+      <div id="karCalcTip" style="font-size:.75rem;color:var(--accent);font-weight:700;margin-top:6px;min-height:18px"></div>
     </div>
+
+    <div class="form-group" style="margin-bottom:4px"><label>Werkelijk (min) <span style="font-size:.68rem;color:var(--muted)">— invullen na afloop</span></label><input type="number" id="poolKarWerkelijk" placeholder="Na afloop"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="closeModal('modalNieuweKar')">Annuleren</button>
       <button class="btn btn-primary" onclick="voegPoolKarToe()">Toevoegen</button>
@@ -799,6 +869,7 @@ function syncFormFromAvond(){
   document.getElementById('avondDag').value=state.huidigAvond.dag;
   document.getElementById('avondColli').value=state.huidigAvond.colli;
   document.getElementById('avondNorm').value=state.huidigAvond.norm;
+  updateColliTeller();
 }
 function syncAvondFromForm(){
   state.huidigAvond.datum=document.getElementById('avondDatum').value;
@@ -831,14 +902,13 @@ function getKarStatus(kar){
 
 function renderTeam(){
   const c=document.getElementById('medewerkerLijst');const team=state.huidigAvond.team;const norm=state.huidigAvond.norm||80;
-  if(!team||team.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128119;</div><div class="empty-text">Nog geen medewerkers toegevoegd.<br>Klik op "+ Voeg toe" om te beginnen.</div></div>';return;}
+  if(!team||team.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128119;</div><div class="empty-text">Nog geen medewerkers toegevoegd.<br>Klik op "+ Voeg toe" om te beginnen.</div></div>';updateColliTeller();return;}
   c.innerHTML='';
   team.forEach((lid,i)=>{
     const uren=berekenUren(lid.start,lid.eind,lid.pauze);const target=Math.round(uren*norm);
     const karten=lid.karten||[];
     const tW=karten.reduce((s,k)=>s+(k.werkelijk||0),0);
     const tV=karten.reduce((s,k)=>s+(k.verwacht||0),0);
-    // Live voortgang: karren gedaan vs verwacht
     const gedaan=karten.filter(k=>k.werkelijk>0).length;
     const totKar=karten.length;
     const vgPct=totKar>0?Math.min(100,Math.round(gedaan/totKar*100)):0;
@@ -850,9 +920,17 @@ function renderTeam(){
       kh=karten.map((kar,ki)=>{const s=getKarStatus(kar);return'<div class="kar-row"><div><div class="kar-naam-display">'+kar.naam+'</div><div class="tag">kar '+(ki+1)+'</div></div><div><div class="colli-label">Verwacht</div><div class="tijd-display">'+(kar.verwacht?kar.verwacht+' min':'--')+'</div></div><div><div class="colli-label">Werkelijk</div><div class="tijd-display"><input type="number" value="'+(kar.werkelijk||'')+'" placeholder="min" style="width:80px;padding:4px 8px;font-size:.82rem;" onchange="updateKarWerkelijk('+i+','+ki+',this.value)"></div></div><div><span class="status-badge '+s.cls+'">'+s.label+'</span></div><button class="btn btn-danger btn-sm" onclick="verwijderKar('+i+','+ki+')">&#10005;</button></div>';}).join('');
     }else{kh='<div style="color:var(--muted);font-size:.82rem;padding:4px 0">Nog geen karren — koppel via Karren-tab of voeg direct toe</div>';}
     const naamHTML=lid.naam+(lid.ziek?'<span class="ziek-badge">&#128164; Ziek</span>':'')+(lid.vervanger?'<span class="vervanger-badge">&#8594; '+lid.vervanger+'</span>':'');
-    row.innerHTML='<div class="medewerker-main"><div><div class="medewerker-naam">'+naamHTML+'</div><div class="tag" style="margin-top:4px">'+lid.start+' - '+lid.eind+'</div>'+(lid.pauze?'<div class="tag" style="margin-top:4px">&#9749; '+lid.pauze+' min</div>':'')+(lid.notitie?'<div class="medewerker-notitie" style="margin-top:5px">&#128221; '+lid.notitie+'</div>':'')+'<div style="margin-top:7px;display:flex;gap:4px;flex-wrap:wrap"><button class="btn btn-secondary btn-sm" onclick="bewerkNotitie('+i+')" style="font-size:.68rem;padding:3px 7px">&#9998; Notitie</button><button class="btn btn-secondary btn-sm" onclick="openZiekModalVoor('+i+')" style="font-size:.68rem;padding:3px 7px">&#128164; Ziek</button></div></div><div><div class="colli-label">Uren</div><div class="colli-target">'+uren.toFixed(1)+'u</div></div><div><div class="colli-label">Target</div><div class="colli-target">'+target+'</div></div><div><div class="colli-label">Karren ('+gedaan+'/'+totKar+')</div><div class="colli-target">'+totKar+'</div><div class="voortgang-wrap"><div class="voortgang-bar-bg"><div class="voortgang-bar-fill '+vgKls+'" style="width:'+vgPct+'%"></div></div></div></div><div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-secondary btn-sm" onclick="openKarModal('+i+')">+ Kar</button><button class="btn btn-danger btn-sm" onclick="verwijderLid('+i+')">&#10005;</button></div></div><div class="karten-sectie"><div class="karten-header"><span class="karten-titel">&#128717; Karren</span></div><div class="kar-lijst">'+kh+'</div></div>';
+    // Pauze chip
+    const pauzeKey=lid.naam;
+    const pauzeActief=pauzeTimers[pauzeKey];
+    const safeId='pauze_'+lid.naam.replace(/\s/g,'_');
+    const pauzeHtml=pauzeActief
+      ?`<span class="pauze-chip actief" id="${safeId}" onclick="stopPauzeTimer('${pauzeKey}')">⏸ ...</span>`
+      :`<button class="btn btn-secondary btn-sm" onclick="openPauzeModal('${pauzeKey}')" style="font-size:.68rem;padding:3px 7px">⏸ Pauze</button>`;
+    row.innerHTML='<div class="medewerker-main"><div><div class="medewerker-naam">'+naamHTML+'</div><div class="tag" style="margin-top:4px">'+lid.start+' - '+lid.eind+'</div>'+(lid.pauze?'<div class="tag" style="margin-top:4px">&#9749; '+lid.pauze+' min</div>':'')+(lid.notitie?'<div class="medewerker-notitie" style="margin-top:5px">&#128221; '+lid.notitie+'</div>':'')+'<div style="margin-top:7px;display:flex;gap:4px;flex-wrap:wrap"><button class="btn btn-secondary btn-sm" onclick="bewerkNotitie('+i+')" style="font-size:.68rem;padding:3px 7px">&#9998; Notitie</button><button class="btn btn-secondary btn-sm" onclick="openZiekModalVoor('+i+')" style="font-size:.68rem;padding:3px 7px">&#128164; Ziek</button>'+pauzeHtml+'</div></div><div><div class="colli-label">Uren</div><div class="colli-target">'+uren.toFixed(1)+'u</div></div><div><div class="colli-label">Target</div><div class="colli-target">'+target+'</div></div><div><div class="colli-label">Karren ('+gedaan+'/'+totKar+')</div><div class="colli-target">'+totKar+'</div><div class="voortgang-wrap"><div class="voortgang-bar-bg"><div class="voortgang-bar-fill '+vgKls+'" style="width:'+vgPct+'%"></div></div></div></div><div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-secondary btn-sm" onclick="openKarModal('+i+')">+ Kar</button><button class="btn btn-danger btn-sm" onclick="verwijderLid('+i+')">&#10005;</button></div></div><div class="karten-sectie"><div class="karten-header"><span class="karten-titel">&#128717; Karren</span></div><div class="kar-lijst">'+kh+'</div></div>';
     c.appendChild(row);
   });
+  updateColliTeller();
 }
 
 // updateKarWerkelijk defined below with pool sync
@@ -1320,6 +1398,34 @@ function downloadRoosterTemplate(){
 
 // ===== KARRENPOOL =====
 let timerInterval=null;
+// ===== GELUID =====
+let audioCtx=null;
+function getAudioCtx(){
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function speelAlarmGeluid(){
+  try{
+    const ctx=getAudioCtx();
+    // Drie korte piepjes — urgent maar niet irritant
+    [0, 0.25, 0.5].forEach(offset=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';
+      osc.frequency.setValueAtTime(880,ctx.currentTime+offset);
+      osc.frequency.setValueAtTime(1100,ctx.currentTime+offset+0.08);
+      gain.gain.setValueAtTime(0.4,ctx.currentTime+offset);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+offset+0.18);
+      osc.start(ctx.currentTime+offset);
+      osc.stop(ctx.currentTime+offset+0.2);
+    });
+  }catch(e){}
+}
+
+// Track welke karren al een alarm gehad hebben (reset bij stop)
+const alarmGegeven=new Set();
+
 function startTimerInterval(){
   if(timerInterval)return;
   timerInterval=setInterval(()=>{
@@ -1328,11 +1434,28 @@ function startTimerInterval(){
     if(actief){
       pool.forEach((kar,i)=>{
         if(kar.timerStart&&!kar.timerStop){
+          const secs=Math.floor((Date.now()-kar.timerStart)/1000);
+          // Update timer display
           const el=document.getElementById('timerDisplay_'+i);
-          if(el){const secs=Math.floor((Date.now()-kar.timerStart)/1000);el.textContent=formatSecs(secs);}
+          if(el)el.textContent=formatSecs(secs);
+          // Overschrijding check — alarm bij >20% over verwacht
+          if(kar.verwacht){
+            const verstrekenMin=secs/60;
+            const overPct=((verstrekenMin-kar.verwacht)/kar.verwacht)*100;
+            const alarmKey=kar.id+'_'+Math.floor(overPct/20);
+            if(overPct>=20&&!alarmGegeven.has(alarmKey)){
+              alarmGegeven.add(alarmKey);
+              speelAlarmGeluid();
+              // Toon waarschuwing in UI
+              const badge=document.getElementById('overschrijding_'+i);
+              if(badge){badge.textContent='⚠ +'+Math.round(overPct)+'% over tijd';badge.style.display='inline-flex';}
+            }
+          }
         }
       });
-    }else{clearInterval(timerInterval);timerInterval=null;}
+    }else{
+      clearInterval(timerInterval);timerInterval=null;
+    }
   },1000);
 }
 function formatSecs(s){const m=Math.floor(s/60);const sec=s%60;return m+'m '+String(sec).padStart(2,'0')+'s';}
@@ -1345,10 +1468,13 @@ function stopKarTimer(idx){
   const kar=state.huidigAvond.karrenPool[idx];
   kar.timerStop=Date.now();
   kar.werkelijk=Math.max(1,Math.round((kar.timerStop-kar.timerStart)/60000));
+  // Verwijder alarm-keys voor deze kar
+  [...alarmGegeven].filter(k=>k.startsWith(kar.id+'_')).forEach(k=>alarmGegeven.delete(k));
   syncEenPoolKarNaarTeam(idx);renderKarrenPool();renderTeam();showToast(kar.naam+': '+kar.werkelijk+' min');
 }
 function resetKarTimer(idx){
   const kar=state.huidigAvond.karrenPool[idx];
+  [...alarmGegeven].filter(k=>k.startsWith(kar.id+'_')).forEach(k=>alarmGegeven.delete(k));
   kar.timerStart=null;kar.timerStop=null;kar.werkelijk=null;
   syncEenPoolKarNaarTeam(idx);renderKarrenPool();renderTeam();
 }
@@ -1378,8 +1504,14 @@ function renderKarrenPool(){
           <span style="font-size:.72rem;color:var(--muted)">min</span>
         </div>`;
     }else if(bezig){
+      const verstrekenMin=elapsed/60;
+      const overPct=kar.verwacht?Math.round(((verstrekenMin-kar.verwacht)/kar.verwacht)*100):null;
+      const overBadge=overPct!==null&&overPct>=20
+        ?`<div class="kar-overschrijding" id="overschrijding_${i}">⚠ +${overPct}% over tijd</div>`
+        :`<div class="kar-overschrijding" id="overschrijding_${i}" style="display:none"></div>`;
       timerHtml=`<button class="kar-timer-btn timer-stop" onclick="stopKarTimer(${i})">&#9646;&#9646; Stop</button>
-        <div class="timer-display" id="timerDisplay_${i}" style="margin-top:5px">${formatSecs(elapsed)}</div>`;
+        <div class="timer-display" id="timerDisplay_${i}" style="margin-top:5px">${formatSecs(elapsed)}</div>
+        ${overBadge}`;
     }else{
       timerHtml=`<div style="font-weight:800;color:var(--green);font-size:.92rem">&#10003; ${kar.werkelijk} min</div>
         <button class="btn btn-secondary btn-sm" onclick="resetKarTimer(${i})" style="margin-top:4px;font-size:.7rem">&#8635; Reset</button>`;
@@ -1411,6 +1543,10 @@ function openNieuweKarModal(){
   document.getElementById('poolKarNaam').value='';
   document.getElementById('poolKarVerwacht').value='';
   document.getElementById('poolKarWerkelijk').value='';
+  document.getElementById('poolKarColli').value='';
+  document.getElementById('karCalcTip').textContent='';
+  const norm=state.huidigAvond.norm||80;
+  document.getElementById('karCalcNormTip').textContent='(norm: '+norm+' colli/uur)';
   document.getElementById('modalNieuweKar').classList.add('open');
 }
 
@@ -1418,9 +1554,10 @@ function voegPoolKarToe(){
   const naam=document.getElementById('poolKarNaam').value.trim();
   const verwacht=parseInt(document.getElementById('poolKarVerwacht').value)||null;
   const werkelijk=parseInt(document.getElementById('poolKarWerkelijk').value)||null;
+  const colli=parseInt(document.getElementById('poolKarColli').value)||null;
   if(!naam){alert('Geef de kar een naam.');return;}
   if(!state.huidigAvond.karrenPool)state.huidigAvond.karrenPool=[];
-  state.huidigAvond.karrenPool.push({id:Date.now(),naam,verwacht,werkelijk,medewerker:null});
+  state.huidigAvond.karrenPool.push({id:Date.now(),naam,verwacht,werkelijk,colli,medewerker:null});
   closeModal('modalNieuweKar');renderKarrenPool();showToast('Kar toegevoegd aan pool');
 }
 
@@ -1609,12 +1746,13 @@ function renderStatistieken(){
   const c=document.getElementById('statistiekenContent');
   const alleAvonden=[...state.avonden].filter(av=>av.team&&av.team.length>0);
   if(alleAvonden.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#127942;</div><div class="empty-text">Nog geen opgeslagen avonden om statistieken te tonen.</div></div>';return;}
-  // Bouw per-medewerker stats
+
+  // Bouw per-medewerker stats + persoonlijk record snelste kar
   const stats={};
   alleAvonden.forEach(av=>{
     const norm=av.norm||80;
     av.team.forEach(lid=>{
-      if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totTarget:0,totKarren:0,opTijd:0,snel:0,langzaam:0,bezig:0};
+      if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totTarget:0,totKarren:0,opTijd:0,snel:0,langzaam:0,bezig:0,snelsteKar:null,snelsteKarNaam:''};
       const s=stats[lid.naam];
       const u=berekenUren(lid.start,lid.eind,lid.pauze);
       const karten=lid.karten||[];
@@ -1622,31 +1760,190 @@ function renderStatistieken(){
       const tW=karten.reduce((x,k)=>x+(k.werkelijk||0),0);
       s.avonden++;s.totUren+=u;s.totTarget+=Math.round(u*norm);s.totKarren+=karten.length;
       if(tV>0&&tW>0){const p=tW/tV;if(p<=0.9)s.snel++;else if(p<=1.1)s.opTijd++;else s.langzaam++;}else s.bezig++;
+      // Persoonlijk record: snelste kar = kleinste (werkelijk/verwacht) ratio met werkelijk > 0
+      karten.forEach(k=>{
+        if(k.werkelijk>0&&k.verwacht>0){
+          const ratio=k.werkelijk/k.verwacht;
+          if(s.snelsteKar===null||ratio<s.snelsteKar){s.snelsteKar=ratio;s.snelsteKarNaam=k.naam;s.snelsteKarMin=k.werkelijk;s.snelsteKarVerwacht=k.verwacht;}
+        }
+      });
     });
   });
+
+  // Vergelijking vorige week: groepeer avonden per dag van de week
+  const dagGroepen={};
+  alleAvonden.forEach(av=>{
+    const d=new Date(av.datum+'T00:00:00');
+    const dag=d.getDay(); // 0=zo,1=ma,...
+    if(!dagGroepen[dag])dagGroepen[dag]=[];
+    dagGroepen[dag].push(av);
+  });
+  // Pak de meest recente dag die minstens 2 avonden heeft voor vergelijking
+  let vergelijkHtml='';
+  const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  Object.entries(dagGroepen).forEach(([dag,avonden])=>{
+    if(avonden.length<2)return;
+    const gesorteerd=[...avonden].sort((a,b)=>a.datum.localeCompare(b.datum));
+    const huidig=gesorteerd[gesorteerd.length-1];
+    const vorig=gesorteerd[gesorteerd.length-2];
+    const huidigeNorm=huidig.norm||80;
+    const vorigeNorm=vorig.norm||80;
+    const hPct=huidig.werkelijkColli?Math.round((huidig.werkelijkColli/huidig.colli)*100):null;
+    const vPct=vorig.werkelijkColli?Math.round((vorig.werkelijkColli/vorig.colli)*100):null;
+    const hTeam=huidig.team.length;const vTeam=vorig.team.length;
+    const hUren=huidig.team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
+    const vUren=vorig.team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
+    const dH=new Date(huidig.datum);const dV=new Date(vorig.datum);
+    vergelijkHtml+=`<div style="margin-bottom:20px">
+      <div style="font-weight:900;font-size:.95rem;margin-bottom:10px;color:var(--accent)">📅 ${dagNamen[dag].charAt(0).toUpperCase()+dagNamen[dag].slice(1)} — vergelijking</div>
+      <table class="history-table">
+        <thead><tr><th></th><th>${dH.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</th><th>${dV.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</th><th>Verschil</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Team</strong></td><td class="mono">${hTeam} pers.</td><td class="mono">${vTeam} pers.</td><td>${hTeam>vTeam?`<span class="vergelijk-beter">+${hTeam-vTeam}</span>`:(hTeam<vTeam?`<span class="vergelijk-slechter">${hTeam-vTeam}</span>`:'<span class="vergelijk-gelijk">=</span>')}</td></tr>
+          <tr><td><strong>Uren</strong></td><td class="mono">${hUren.toFixed(1)}u</td><td class="mono">${vUren.toFixed(1)}u</td><td>${hUren>vUren?`<span class="vergelijk-beter">+${(hUren-vUren).toFixed(1)}u</span>`:(hUren<vUren?`<span class="vergelijk-slechter">${(hUren-vUren).toFixed(1)}u</span>`:'<span class="vergelijk-gelijk">=</span>')}</td></tr>
+          <tr><td><strong>Vracht</strong></td><td class="mono">${huidig.colli}</td><td class="mono">${vorig.colli}</td><td class="vergelijk-gelijk">—</td></tr>
+          ${hPct!==null&&vPct!==null?`<tr><td><strong>Gehaald</strong></td><td class="mono">${hPct}%</td><td class="mono">${vPct}%</td><td>${hPct>vPct?`<span class="vergelijk-beter">+${hPct-vPct}%</span>`:(hPct<vPct?`<span class="vergelijk-slechter">${hPct-vPct}%</span>`:'<span class="vergelijk-gelijk">=</span>')}</td></tr>`:''}
+        </tbody>
+      </table>
+    </div>`;
+  });
+
   const rijen=Object.values(stats).sort((a,b)=>b.avonden-a.avonden).map(s=>{
     const gemUren=s.avonden>0?(s.totUren/s.avonden).toFixed(1):0;
     const prestGoed=s.opTijd+s.snel;const prestTot=prestGoed+s.langzaam;
     const prestPct=prestTot>0?Math.round(prestGoed/prestTot*100):null;
     const barKls=prestPct>=80?'background:var(--green)':prestPct>=50?'background:var(--accent2)':'background:var(--accent)';
+    const recordHtml=s.snelsteKar!==null
+      ?`<span class="record-badge">🏆 ${s.snelsteKarNaam} ${s.snelsteKarMin}/${s.snelsteKarVerwacht}min</span>`
+      :'—';
     return`<tr>
       <td><strong>${s.naam}</strong></td>
       <td class="mono">${s.avonden}</td>
       <td class="mono">${s.totUren.toFixed(1)}u <span style="color:var(--muted);font-size:.75rem">(gem. ${gemUren}u)</span></td>
       <td class="mono">${s.totKarren}</td>
-      <td>
-        ${prestPct!==null?`<div style="font-size:.8rem;font-weight:700">${prestPct}%</div><div class="perf-bar-bg" style="min-width:70px"><div class="perf-bar-fill" style="width:${prestPct}%;${barKls};height:7px;border-radius:3px"></div></div>`:'<span style="color:var(--muted);font-size:.78rem">Nog geen data</span>'}
-      </td>
+      <td>${prestPct!==null?`<div style="font-size:.8rem;font-weight:700">${prestPct}%</div><div class="perf-bar-bg" style="min-width:70px"><div class="perf-bar-fill" style="width:${prestPct}%;${barKls};height:7px;border-radius:3px"></div></div>`:'<span style="color:var(--muted);font-size:.78rem">Nog geen data</span>'}</td>
       <td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--accent2)">${s.snel}⚡</span> <span style="color:var(--accent)">${s.langzaam}⚠</span></td>
+      <td>${recordHtml}</td>
     </tr>`;
   }).join('');
-  c.innerHTML=`<table class="stats-persoon-tabel">
-    <thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th></tr></thead>
-    <tbody>${rijen}</tbody>
-  </table>`;
+
+  c.innerHTML=(vergelijkHtml?`<div class="card" style="margin-bottom:16px"><div class="card-title" style="margin-bottom:16px">📈 Vergelijking per dag</div>${vergelijkHtml}</div>`:'')
+    +`<div class="card"><div class="card-title" style="margin-bottom:16px">🏆 Persoonlijke statistieken</div>
+    <table class="stats-persoon-tabel">
+      <thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Record kar</th></tr></thead>
+      <tbody>${rijen}</tbody>
+    </table></div>`;
 }
 
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ===== COLLI TELLER =====
+function tellerAanpassen(delta){
+  const huidig=state.huidigAvond.colliVerwerkt||0;
+  const doel=state.huidigAvond.colli||2000;
+  state.huidigAvond.colliVerwerkt=Math.max(0,Math.min(doel,huidig+delta));
+  updateColliTeller();
+}
+function updateColliTeller(){
+  const huidig=state.huidigAvond.colliVerwerkt||0;
+  const doel=state.huidigAvond.colli||2000;
+  const pct=doel>0?Math.min(100,Math.round(huidig/doel*100)):0;
+  const gelEl=document.getElementById('colliTellerGetal');
+  const doelEl=document.getElementById('colliTellerDoel');
+  const pctEl=document.getElementById('colliTellerPct');
+  const fillEl=document.getElementById('colliTellerFill');
+  if(gelEl)gelEl.textContent=huidig;
+  if(doelEl)doelEl.textContent=doel;
+  if(pctEl)pctEl.textContent=pct+'% klaar'+(pct>=100?' 🎉':'');
+  if(fillEl)fillEl.style.width=pct+'%';
+  updateEindtijd();
+}
+
+// ===== VERWACHTE EINDTIJD =====
+function updateEindtijd(){
+  const banner=document.getElementById('eindtijdBanner');
+  if(!banner)return;
+  const team=state.huidigAvond.team||[];
+  if(team.length===0){banner.style.display='none';return;}
+  const norm=state.huidigAvond.norm||80;
+  const doel=state.huidigAvond.colli||2000;
+  const verwerkt=state.huidigAvond.colliVerwerkt||0;
+  const resterend=Math.max(0,doel-verwerkt);
+  // Totaal beschikbare uren op dit moment (medewerkers die nog aan het werk zijn)
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  let actiefColli=0;
+  team.forEach(l=>{
+    if(!l.start||!l.eind)return;
+    const [eh,em]=l.eind.split(':').map(Number);
+    const eindMin=eh*60+em;
+    if(eindMin>nowMin){
+      // nog aan het werk, bereken resterend
+      const resteUren=(eindMin-nowMin)/60;
+      actiefColli+=resteUren*norm;
+    }
+  });
+  if(actiefColli<=0){banner.style.display='none';return;}
+  // Benodigde uren voor resterend colli
+  const benodigdMin=(resterend/norm)*60;
+  const eindMin=nowMin+benodigdMin;
+  const eindH=Math.floor(eindMin/60)%24;
+  const eindM=Math.round(eindMin%60);
+  const eindStr=String(eindH).padStart(2,'0')+':'+String(eindM).padStart(2,'0');
+  document.getElementById('eindtijdTijd').textContent=eindStr;
+  const kanWorden=actiefColli>=resterend;
+  document.getElementById('eindtijdDetail').innerHTML=
+    resterend+' colli resterend · '+Math.round(benodigdMin)+' min werk · '
+    +(kanWorden
+      ?'<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>'
+      :'<span style="color:var(--accent);font-weight:800">⚠ Team dekt '+(resterend-Math.round(actiefColli))+' colli tekort</span>');
+  banner.style.display='flex';
+}
+
+// ===== PAUZE TIMERS =====
+let pauzeTimers={};   // { lidNaam: { start: timestamp, duur: minuten } }
+let pauzeInterval=null;
+
+function startPauzeTimer(lidNaam, duurMin){
+  pauzeTimers[lidNaam]={start:Date.now(),duur:duurMin||30};
+  startPauzeInterval();
+  renderTeam();
+  showToast(lidNaam+' op pauze — '+duurMin+' min');
+}
+function stopPauzeTimer(lidNaam){
+  delete pauzeTimers[lidNaam];
+  renderTeam();
+}
+function startPauzeInterval(){
+  if(pauzeInterval)return;
+  pauzeInterval=setInterval(()=>{
+    const actief=Object.keys(pauzeTimers).length>0;
+    if(!actief){clearInterval(pauzeInterval);pauzeInterval=null;return;}
+    Object.entries(pauzeTimers).forEach(([naam,p])=>{
+      const verstrekenMin=(Date.now()-p.start)/60000;
+      const resterendSec=Math.max(0,Math.round((p.duur-verstrekenMin)*60));
+      const el=document.getElementById('pauze_'+naam.replace(/\s/g,'_'));
+      if(el){
+        if(resterendSec<=0){
+          el.className='pauze-chip laat';
+          el.textContent='⚠ '+naam.split(' ')[0]+' terug!';
+          // Geluid
+          if(!p.alarmGegeven){p.alarmGegeven=true;speelAlarmGeluid();}
+        }else{
+          const m=Math.floor(resterendSec/60);const s=resterendSec%60;
+          el.className='pauze-chip actief';
+          el.textContent='⏸ '+m+'m'+String(s).padStart(2,'0')+'s';
+        }
+      }
+    });
+  },1000);
+}
+
+function openPauzeModal(lidNaam){
+  const duur=prompt('Pauze voor '+lidNaam+' — hoeveel minuten?','30');
+  if(!duur)return;
+  startPauzeTimer(lidNaam, parseInt(duur)||30);
+}
 
 // ===== DONKERE MODUS =====
 function toggleDarkMode(){
@@ -1659,6 +1956,32 @@ function laadDarkMode(){
     document.body.classList.add('dark-mode');
     const btn=document.getElementById('darkToggleBtn');
     if(btn)btn.textContent='☀️';
+  }
+}
+
+// ===== COLLI ↔ TIJD CALCULATOR =====
+function bereken_colliNaarTijd(){
+  const colli=parseInt(document.getElementById('poolKarColli').value)||0;
+  const norm=state.huidigAvond.norm||80;
+  if(colli>0){
+    const minuten=Math.round((colli/norm)*60);
+    document.getElementById('poolKarVerwacht').value=minuten;
+    document.getElementById('karCalcTip').textContent=colli+' colli ÷ '+norm+' colli/u × 60 = '+minuten+' min';
+  }else{
+    document.getElementById('poolKarVerwacht').value='';
+    document.getElementById('karCalcTip').textContent='';
+  }
+}
+function bereken_tijdNaarColli(){
+  const min=parseInt(document.getElementById('poolKarVerwacht').value)||0;
+  const norm=state.huidigAvond.norm||80;
+  if(min>0){
+    const colli=Math.round((min/60)*norm);
+    document.getElementById('poolKarColli').value=colli;
+    document.getElementById('karCalcTip').textContent=min+' min × '+norm+' colli/u ÷ 60 = '+colli+' colli';
+  }else{
+    document.getElementById('poolKarColli').value='';
+    document.getElementById('karCalcTip').textContent='';
   }
 }
 
