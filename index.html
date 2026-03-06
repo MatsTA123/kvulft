@@ -21,6 +21,58 @@
   --muted:#8a4a4a;
   --radius:12px;
 }
+body.dark-mode{
+  --bg:#1a1010;
+  --surface:#261616;
+  --surface2:#2e1a1a;
+  --border:#4a2a2a;
+  --accent:#ff2a3c;
+  --accent-hover:#e0001a;
+  --accent2:#e09020;
+  --green:#22bb6a;
+  --text:#f5e0e0;
+  --muted:#b07070;
+}
+body.dark-mode header{background:#1a0000;border-color:#3a0000;}
+body.dark-mode .tab-bar{background:#1e1010;}
+body.dark-mode .bottom-nav{background:#1e1010;border-color:#4a2a2a;}
+body.dark-mode .modal{background:#261616;border-color:#4a2a2a;}
+body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:#1a1010;color:var(--text);border-color:#4a2a2a;}
+body.dark-mode .login-box{background:#261616;border-color:#4a2a2a;}
+body.dark-mode .avond-card{background:#261616;}
+body.dark-mode .pool-kar-row{background:#261616;}
+body.dark-mode .medewerker-row{background:#261616;}
+body.dark-mode .kar-row{background:#1e1010;}
+/* Dark mode toggle button */
+.dark-toggle{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:5px 12px;color:white;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;font-weight:700;display:flex;align-items:center;gap:5px;}
+.dark-toggle:hover{background:rgba(255,255,255,.28);}
+/* Snelle kar-klaar knop */
+.btn-klaar{background:#e8f5e9;border:2px solid var(--green);color:var(--green);border-radius:8px;padding:8px 14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+.btn-klaar:hover{background:var(--green);color:white;}
+.btn-klaar.gedaan{background:var(--green);color:white;}
+/* Overschrijding melding */
+.kar-overschrijding{background:#fff3e0;border:1.5px solid #ff9800;border-radius:8px;padding:5px 10px;font-size:.75rem;color:#e65100;font-weight:800;display:inline-flex;align-items:center;gap:4px;margin-top:4px;}
+body.dark-mode .kar-overschrijding{background:#3a1a00;border-color:#ff9800;color:#ffb74d;}
+/* Sjablonen */
+.sjabloon-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 20px;cursor:pointer;transition:all .2s;position:relative;}
+.sjabloon-card:hover{border-color:var(--accent);box-shadow:0 2px 12px rgba(226,0,26,.12);}
+.sjabloon-naam{font-weight:900;font-size:1rem;margin-bottom:4px;}
+.sjabloon-meta{font-size:.78rem;color:var(--muted);}
+.sjabloon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px;}
+/* Zoekbalk */
+.zoek-wrap{position:relative;margin-bottom:16px;}
+.zoek-input{width:100%;padding:10px 16px 10px 40px;border:1.5px solid var(--border);border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;background:var(--surface);color:var(--text);transition:border .15s;}
+.zoek-input:focus{outline:none;border-color:var(--accent);}
+.zoek-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;opacity:.5;}
+/* Mini grafiek */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;padding:8px 0;}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;}
+.bar{width:100%;border-radius:4px 4px 0 0;transition:height .4s;min-height:3px;}
+.bar-label{font-size:.62rem;font-weight:800;color:var(--muted);text-align:center;line-height:1.2;word-break:break-word;max-width:48px;}
+.bar-val{font-size:.62rem;font-weight:800;color:var(--text);}
+/* Notificatie badge op nav */
+.bnav-badge{position:absolute;top:6px;right:18%;background:var(--accent);color:white;border-radius:10px;font-size:.55rem;font-weight:900;padding:1px 5px;min-width:16px;text-align:center;}
+.bnav-btn{position:relative;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:20px}
 
@@ -263,6 +315,7 @@ textarea{resize:vertical;min-height:60px}
       </svg>
     </div>
     <div class="login-title">Vulploeg Manager</div>
+    <div class="login-sub">Alleen voor vulploeg leiders</div>
     <div class="login-input-wrap">
       <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
         onkeydown="if(event.key==='Enter')document.getElementById('loginWachtwoord').focus()">
@@ -294,11 +347,12 @@ textarea{resize:vertical;min-height:60px}
     </svg>
     <div class="logo-text">
       <span class="logo-title">Vulploeg Manager</span>
-      <span class="logo-sub-text">Kruidvat Ulft</span>
+      <span class="logo-sub-text">Kruidvat intern</span>
     </div>
   </div>
   <div class="header-user">
     <div class="header-info" id="headerDate">selecteer een avond</div>
+    <button class="dark-toggle" onclick="toggleDarkMode()" id="darkToggleBtn" title="Donkere modus">🌙</button>
     <div class="user-chip"><div class="user-avatar" id="userAvatar">?</div><span id="userNaamDisplay">-</span></div>
     <button class="logout-btn" onclick="doLogout()">Uitloggen</button>
   </div>
@@ -321,6 +375,7 @@ textarea{resize:vertical;min-height:60px}
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
     <button class="btn btn-secondary" onclick="showTabFromMeer('medewerkers')" style="justify-content:flex-start">👤 Medewerkers</button>
     <button class="btn btn-secondary" onclick="showTabFromMeer('history')" style="justify-content:flex-start">📁 Geschiedenis</button>
+    <button class="btn btn-secondary" onclick="showTabFromMeer('sjablonen')" style="justify-content:flex-start">📋 Sjablonen</button>
     <button class="btn btn-secondary" onclick="showTabFromMeer('rooster')" style="justify-content:flex-start">📅 Rooster</button>
     <button class="btn btn-secondary" onclick="sluitMeerMenu();toonSamenvatting()" style="justify-content:flex-start">💬 Delen</button>
     <button class="btn btn-secondary" onclick="sluitMeerMenu();openZiekModal()" style="justify-content:flex-start">🤒 Ziek melden</button>
@@ -334,6 +389,7 @@ textarea{resize:vertical;min-height:60px}
   <button class="tab-btn" data-tab="karren" onclick="showTab('karren',this)">&#128717; Karren</button>
   <button class="tab-btn" data-tab="medewerkers" onclick="showTab('medewerkers',this)">&#128100; Medewerkers</button>
   <button class="tab-btn" data-tab="history" onclick="showTab('history',this)">&#128193; Geschiedenis</button>
+  <button class="tab-btn" data-tab="sjablonen" onclick="showTab('sjablonen',this)">&#128203; Sjablonen</button>
   <button class="tab-btn" data-tab="statistieken" onclick="showTab('statistieken',this)">&#127942; Statistieken</button>
   <button class="tab-btn" data-tab="rooster" onclick="showTab('rooster',this)">&#128197; Rooster</button>
 </div>
@@ -400,6 +456,7 @@ textarea{resize:vertical;min-height:60px}
 
 <div id="tab-history" class="tab-panel">
   <div class="section-header"><div><h2>Geschiedenis <span>avonden</span></h2><div class="sub">Alle opgeslagen vulavonden</div></div></div>
+  <div class="zoek-wrap"><span class="zoek-icon">🔍</span><input class="zoek-input" type="text" id="historyZoek" placeholder="Zoek op dag of datum..." oninput="renderHistory()"></div>
   <div class="card"><div id="historyContent"><div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div></div></div>
 </div>
 
@@ -428,7 +485,17 @@ textarea{resize:vertical;min-height:60px}
   </div>
 </div>
 
-<div id="tab-rooster" class="tab-panel">
+<div id="tab-sjablonen" class="tab-panel">
+  <div class="section-header">
+    <div><h2>Sjablonen <span>teams</span></h2><div class="sub">Sla een standaard team + tijden op per dag — laad in één klik</div></div>
+    <button class="btn btn-primary" onclick="slaHuidigAlsSjabloonOp()">&#128190; Huidig team opslaan</button>
+  </div>
+  <div id="sjablonenContent">
+    <div class="empty"><div class="empty-icon">&#128203;</div><div class="empty-text">Nog geen sjablonen opgeslagen.<br>Stel een team in op de Vulavond-tab en klik op "Huidig team opslaan".</div></div>
+  </div>
+</div>
+
+
   <div class="section-header">
     <div><h2>Rooster <span>Upload</span></h2><div class="sub">Upload een rooster — wordt gedeeld met alle vulploeg leiders die inloggen</div></div>
     <div class="flex gap-8">
@@ -788,7 +855,7 @@ function renderTeam(){
   });
 }
 
-function updateKarWerkelijk(li,ki,val){state.huidigAvond.team[li].karten[ki].werkelijk=parseInt(val)||null;}
+// updateKarWerkelijk defined below with pool sync
 function verwijderKar(li,ki){state.huidigAvond.team[li].karten.splice(ki,1);renderTeam();}
 function verwijderLid(idx){state.huidigAvond.team.splice(idx,1);renderTeam();}
 function bewerkNotitie(idx){
@@ -864,12 +931,7 @@ function renderOverzicht(){
   html+='</tbody></table></div>';c.innerHTML=html;
 }
 
-function renderHistory(){
-  const c=document.getElementById('historyContent');
-  if(state.avonden.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div>';return;}
-  const rows=[...state.avonden].reverse().map(av=>{const d=new Date(av.datum);const u=av.team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);const t=av.team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*av.norm),0);return'<tr><td><strong>'+av.dag.charAt(0).toUpperCase()+av.dag.slice(1)+'</strong></td><td class="mono">'+d.toLocaleDateString('nl-NL')+'</td><td class="mono">'+av.team.length+' pers.</td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+av.colli+'</td><td class="mono">'+t+'</td><td><button class="btn btn-secondary btn-sm" onclick="laadAvond('+av.id+')">Open</button> <button class="btn btn-danger btn-sm" onclick="verwijderAvond('+av.id+')">&#10005;</button></td></tr>';}).join('');
-  c.innerHTML='<table class="history-table"><thead><tr><th>Dag</th><th>Datum</th><th>Team</th><th>Uren</th><th>Colli</th><th>Target</th><th>Actie</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
+// renderHistory defined below with zoekfunctie
 
 function laadAvond(id){selectAvond(id);showTab('avond',null);showToast('Avond geladen');}
 function verwijderAvond(id){if(!confirm('Avond verwijderen?'))return;state.avonden=state.avonden.filter(a=>a.id!==id);localStorage.setItem(userKey('avonden'),JSON.stringify(state.avonden));if(state.huidigAvondId===id){state.huidigAvondId=null;state.huidigAvond=nieuwLeegAvond();syncFormFromAvond();renderTeam();}renderHistory();renderAvondSelector();showToast('Avond verwijderd');}
@@ -891,24 +953,7 @@ let roosterData = {}; // { 'YYYY-MM-DD': [{naam, start, eind, pauze}, ...] }
 let roosterRawRows = [];
 let roosterHeaders = [];
 
-function showTab(name, clickedBtn){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  // Activeer desktop tab via data-tab
-  const desktopBtn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
-  if(desktopBtn)desktopBtn.classList.add('active');
-  // Activeer mobiele bottom nav
-  const bnavBtn=document.getElementById('bnav-'+name);
-  if(bnavBtn)bnavBtn.classList.add('active');
-  if(name==='overzicht')renderOverzicht();
-  if(name==='history')renderHistory();
-  if(name==='medewerkers')renderMedewerkersBeheer();
-  if(name==='rooster')renderRoosterTab();
-  if(name==='karren')renderKarrenPool();
-  if(name==='statistieken')renderStatistieken();
-}
+// showTab defined below
 
 function showTabFromMeer(name){
   sluitMeerMenu();
@@ -1603,7 +1648,192 @@ function renderStatistieken(){
 
 document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
+// ===== DONKERE MODUS =====
+function toggleDarkMode(){
+  const dark=document.body.classList.toggle('dark-mode');
+  localStorage.setItem('kv_darkmode', dark?'1':'0');
+  document.getElementById('darkToggleBtn').textContent=dark?'☀️':'🌙';
+}
+function laadDarkMode(){
+  if(localStorage.getItem('kv_darkmode')==='1'){
+    document.body.classList.add('dark-mode');
+    const btn=document.getElementById('darkToggleBtn');
+    if(btn)btn.textContent='☀️';
+  }
+}
+
+// ===== SJABLONEN =====
+const SJABLONEN_KEY='kv_sjablonen';
+function getSjablonen(){return JSON.parse(localStorage.getItem(SJABLONEN_KEY)||'[]');}
+function saveSjablonen(s){localStorage.setItem(SJABLONEN_KEY,JSON.stringify(s));}
+
+function slaHuidigAlsSjabloonOp(){
+  const team=state.huidigAvond.team;
+  if(!team||team.length===0){alert('Voeg eerst medewerkers toe op de Vulavond-tab.');return;}
+  const naam=prompt('Naam voor dit sjabloon (bv. "Dinsdag vast team"):');
+  if(!naam)return;
+  const sjabloon={
+    id:Date.now(),naam:naam.trim(),
+    dag:state.huidigAvond.dag,
+    norm:state.huidigAvond.norm,
+    team:team.map(l=>({naam:l.naam,start:l.start,eind:l.eind,pauze:l.pauze,notitie:l.notitie||''}))
+  };
+  const lijst=getSjablonen();
+  lijst.push(sjabloon);
+  saveSjablonen(lijst);
+  renderSjablonen();
+  showToast('Sjabloon "'+naam+'" opgeslagen!');
+}
+
+function laadSjabloon(id){
+  const s=getSjablonen().find(s=>s.id===id);
+  if(!s)return;
+  if(!confirm('Team laden uit sjabloon "'+s.naam+'"? Huidig team wordt overschreven.'))return;
+  state.huidigAvond.team=s.team.map(l=>({...l,karten:[],ziek:false,vervanger:null}));
+  if(s.norm)state.huidigAvond.norm=s.norm;
+  document.getElementById('avondNorm').value=s.norm||80;
+  renderTeam();
+  showTab('avond',null);
+  showToast('Sjabloon "'+s.naam+'" geladen!');
+}
+
+function verwijderSjabloon(id){
+  if(!confirm('Sjabloon verwijderen?'))return;
+  saveSjablonen(getSjablonen().filter(s=>s.id!==id));
+  renderSjablonen();
+  showToast('Sjabloon verwijderd');
+}
+
+function renderSjablonen(){
+  const c=document.getElementById('sjablonenContent');
+  const lijst=getSjablonen();
+  if(lijst.length===0){
+    c.innerHTML='<div class="empty"><div class="empty-icon">&#128203;</div><div class="empty-text">Nog geen sjablonen opgeslagen.<br>Stel een team in op de Vulavond-tab en klik op "Huidig team opslaan".</div></div>';
+    return;
+  }
+  c.innerHTML='<div class="sjabloon-grid">'+lijst.map(s=>`
+    <div class="sjabloon-card">
+      <div class="sjabloon-naam">${s.naam}</div>
+      <div class="sjabloon-meta">${s.dag?s.dag.charAt(0).toUpperCase()+s.dag.slice(1)+' · ':''} ${s.team.length} medewerkers</div>
+      <div class="sjabloon-meta" style="margin-top:4px">${s.team.map(l=>l.naam).join(', ')}</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="laadSjabloon(${s.id})" style="flex:1">&#9654; Laden</button>
+        <button class="btn btn-danger btn-sm" onclick="verwijderSjabloon(${s.id})">&#10005;</button>
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+// ===== ZOEKEN IN GESCHIEDENIS =====
+function renderHistory(){
+  const c=document.getElementById('historyContent');
+  const zoek=(document.getElementById('historyZoek')?.value||'').toLowerCase().trim();
+  let avonden=[...state.avonden].reverse();
+  if(zoek) avonden=avonden.filter(av=>
+    av.dag.toLowerCase().includes(zoek)||
+    av.datum.includes(zoek)||
+    av.team.some(l=>l.naam.toLowerCase().includes(zoek))
+  );
+  if(avonden.length===0){
+    c.innerHTML='<div class="empty"><div class="empty-icon">&#128193;</div><div class="empty-text">'+(zoek?'Geen resultaten voor "'+zoek+'"':'Nog geen avonden opgeslagen.')+'</div></div>';
+    return;
+  }
+  const rows=avonden.map(av=>{
+    const d=new Date(av.datum);
+    const u=av.team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
+    const t=av.team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*av.norm),0);
+    const afg=av.afgesloten?'<span style="color:var(--green);font-weight:800">✓</span> ':'';
+    return'<tr><td><strong>'+afg+av.dag.charAt(0).toUpperCase()+av.dag.slice(1)+'</strong></td><td class="mono">'+d.toLocaleDateString('nl-NL')+'</td><td class="mono">'+av.team.length+' pers.</td><td class="mono">'+u.toFixed(1)+'u</td><td class="mono">'+(av.werkelijkColli||av.colli)+'</td><td class="mono">'+t+'</td><td><button class="btn btn-secondary btn-sm" onclick="laadAvond('+av.id+')">Open</button> <button class="btn btn-danger btn-sm" onclick="verwijderAvond('+av.id+')">&#10005;</button></td></tr>';
+  }).join('');
+  c.innerHTML='<table class="history-table"><thead><tr><th>Dag</th><th>Datum</th><th>Team</th><th>Uren</th><th>Colli</th><th>Target</th><th>Actie</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+// ===== SNELLE KAR-KLAAR + OVERSCHRIJDING MELDING =====
+function snelKarKlaar(poolIdx){
+  const kar=state.huidigAvond.karrenPool[poolIdx];
+  if(kar.werkelijk){
+    // Al klaar — toggle terug
+    kar.werkelijk=null;kar.timerStart=null;kar.timerStop=null;
+  }else{
+    // Markeer klaar: gebruik verwachte tijd of huidig tijdstip
+    kar.werkelijk=kar.verwacht||30;
+    kar.timerStop=Date.now();
+  }
+  syncEenPoolKarNaarTeam(poolIdx);
+  renderKarrenPool();renderTeam();
+}
+
+// Overschrijding check — roep aan vanuit timer loop
+function checkKarOverschrijding(kar){
+  if(!kar.timerStart||kar.timerStop)return null;
+  if(!kar.verwacht)return null;
+  const verstrekenMin=Math.floor((Date.now()-kar.timerStart)/60000);
+  const overPct=Math.round(((verstrekenMin-kar.verwacht)/kar.verwacht)*100);
+  if(overPct>=20) return overPct; // meld bij >20% overschrijding
+  return null;
+}
+
+// ===== MINI GRAFIEK IN OVERZICHT =====
+function renderBarChart(av){
+  const norm=av.norm||80;
+  const teamData=av.team.map(l=>{
+    const u=berekenUren(l.start,l.eind,l.pauze);
+    return{naam:l.naam.split(' ')[0],target:Math.round(u*norm),uren:u};
+  });
+  if(teamData.length===0)return'';
+  const maxVal=Math.max(...teamData.map(d=>d.target));
+  const bars=teamData.map(d=>{
+    const hPct=maxVal>0?Math.round((d.target/maxVal)*100):0;
+    return`<div class="bar-wrap">
+      <div class="bar-val">${d.target}</div>
+      <div class="bar" style="height:${hPct}%;background:var(--accent);opacity:0.75"></div>
+      <div class="bar-label">${d.naam}</div>
+    </div>`;
+  }).join('');
+  return`<div class="card" style="margin-bottom:20px">
+    <div class="card-title" style="margin-bottom:14px">&#128202; Target per medewerker (colli)</div>
+    <div class="bar-chart">${bars}</div>
+  </div>`;
+}
+
+// ===== SHOWtab UPDATE voor sjablonen =====
+const _origShowTab=showTab;
+function showTab(name,clickedBtn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  const panel=document.getElementById('tab-'+name);
+  if(panel)panel.classList.add('active');
+  const desktopBtn=document.querySelector('.tab-btn[data-tab="'+name+'"]');
+  if(desktopBtn)desktopBtn.classList.add('active');
+  const bnavBtn=document.getElementById('bnav-'+name);
+  if(bnavBtn)bnavBtn.classList.add('active');
+  if(name==='overzicht')renderOverzichtMet();
+  if(name==='history')renderHistory();
+  if(name==='medewerkers')renderMedewerkersBeheer();
+  if(name==='rooster')renderRoosterTab();
+  if(name==='karren')renderKarrenPool();
+  if(name==='statistieken')renderStatistieken();
+  if(name==='sjablonen')renderSjablonen();
+}
+
+function renderOverzichtMet(){
+  renderOverzicht();
+  // Inject bar chart after stats-grid
+  const av=state.huidigAvond;
+  if(!av.team||av.team.length===0)return;
+  const c=document.getElementById('overzichtContent');
+  const grafiek=renderBarChart(av);
+  // Insert grafiek before first .card
+  const firstCard=c.querySelector('.card');
+  if(firstCard&&grafiek){
+    const div=document.createElement('div');
+    div.innerHTML=grafiek;
+    c.insertBefore(div.firstChild,firstCard);
+  }
+}
+
 renderLoginAccounts();
+laadDarkMode();
 const savedUser=localStorage.getItem('kv_huidigUser');
 if(savedUser){
   huidigGebruiker=savedUser;
