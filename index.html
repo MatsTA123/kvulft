@@ -3,13 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Vulploeg">
-<meta name="theme-color" content="#E2001A">
-<link rel="apple-touch-icon" href="icon-192.png">
 <title>Vulploeg Manager — Kruidvat</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23E2001A'/%3E%3Ccircle cx='12' cy='12' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='52' cy='12' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='12' cy='52' r='5' fill='white' opacity='.35'/%3E%3Ccircle cx='52' cy='52' r='5' fill='white' opacity='.35'/%3E%3Ctext x='32' y='42' font-family='Arial Black,sans-serif' font-size='26' font-weight='900' text-anchor='middle' fill='white'%3EKV%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -353,7 +346,6 @@ body.dark-mode .record-badge{background:rgba(245,166,35,.2);color:#e09020}
       </svg>
     </div>
     <div class="login-title">Vulploeg Manager</div>
-    <div class="login-sub">Alleen voor vulploeg leiders</div>
     <div class="login-input-wrap">
       <input type="text" id="loginNaam" placeholder="Jouw voornaam..." maxlength="30"
         onkeydown="if(event.key==='Enter')document.getElementById('loginWachtwoord').focus()">
@@ -385,7 +377,7 @@ body.dark-mode .record-badge{background:rgba(245,166,35,.2);color:#e09020}
     </svg>
     <div class="logo-text">
       <span class="logo-title">Vulploeg Manager</span>
-      <span class="logo-sub-text">Kruidvat intern</span>
+      <span class="logo-sub-text">Kruidvat Ulft</span>
     </div>
   </div>
   <div class="header-user">
@@ -1877,8 +1869,8 @@ function updateEindtijd(){
   const doel=state.huidigAvond.colli||2000;
   const verwerkt=state.huidigAvond.colliVerwerkt||0;
   const resterend=Math.max(0,doel-verwerkt);
-  const now=new Date();
-  const nowMin=now.getHours()*60+now.getMinutes();
+const now=new Date();
+const nowMin=now.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Europe/Amsterdam'}).split(':').reduce((h,m,i)=>i===0?h+parseInt(m)*60:h+parseInt(m),0);
 
   // Bereken totaal beschikbare colli — gebruik MAX(start, nu) zodat
   // medewerkers die nog niet begonnen zijn NIET al meegeteld worden
@@ -2209,13 +2201,6 @@ if(savedUser){
   document.getElementById('loginScreen').style.display='none';
   syncFormFromAvond();renderAvondSelector();renderTeam();
 }else{document.getElementById('loginScreen').style.display='flex';}
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .catch(err => console.log('SW fout:', err));
-    });
-  }
 </script>
 </body>
 </html>
