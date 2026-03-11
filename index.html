@@ -1729,8 +1729,8 @@ window.renderLive = () => {
   if(pool.length){
     html += `<div class="live-panel"><div class="live-panel-title">🛒 Alle karren (${pool.length})</div><div class="kar-live-grid">`;
     pool.forEach((k,i) => {
-      const done = k.werkelijk && k.timerStop;
-      const bz   = k.timerStart && !k.timerStop;
+      const done = (k.werkelijk && k.werkelijk > 0); // Nu kijkt hij naar de ingevulde minuten
+      const bz   = k.timerStart && !k.timerStop && !done; // Alleen bezig als er GEEN werkelijke tijd is
       const secs = bz ? Math.floor((now - k.timerStart) / 1000) : 0;
       html += `<div class="kar-live-card ${done?'klaar':bz?'actief':''}">
         <div class="kar-live-naam">${k.naam}</div>
