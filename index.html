@@ -59,11 +59,8 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .auth-ok{color:var(--green);font-size:.82rem;font-weight:700;margin-bottom:10px;display:none;padding:10px 14px;background:var(--green-dim);border-radius:8px}
 .auth-hint{font-size:.75rem;color:var(--text2);margin-bottom:14px;background:var(--surface2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);line-height:1.5}
 .auth-hint strong{color:var(--text)}
-.quick-logins{border-top:1.5px solid var(--border);padding-top:14px;margin-top:4px}
-.quick-title{font-size:.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px}
-.quick-list{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
-.quick-chip{background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-weight:800;transition:all .15s;color:var(--text)}
-.quick-chip:hover{border-color:var(--red);color:var(--red)}
+.auth-link{font-size:.78rem;color:var(--text3);font-weight:700;text-align:center;cursor:pointer;margin-top:-6px;margin-bottom:14px;display:block}
+.auth-link:hover{color:var(--red)}
 
 /* HEADER */
 .app-header{position:sticky;top:0;z-index:200;height:var(--header-h);background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 12px rgba(226,0,26,.3)}
@@ -329,7 +326,9 @@ textarea{resize:vertical;min-height:58px}
   <div class="spinner"></div>
 </div>
 
-<!-- AUTH -->
+<!-- ══════════════════════════════════════════
+     AUTH SCREEN  —  Firebase Auth versie
+     ══════════════════════════════════════════ -->
 <div id="authScreen">
   <div class="auth-box">
     <div class="auth-logo">kruidvat</div>
@@ -338,28 +337,47 @@ textarea{resize:vertical;min-height:58px}
       <button class="auth-tab active" onclick="showAuthTab('login')">Inloggen</button>
       <button class="auth-tab" onclick="showAuthTab('register')">Registreren</button>
     </div>
-    <!-- LOGIN -->
+
+    <!-- ── LOGIN ── -->
     <div id="authLogin">
-      <div class="auth-hint"><strong>☁️ Cloud opslag:</strong> Data wordt opgeslagen in Firebase. Werkt op elk apparaat — alle leiders van hetzelfde filiaal gebruiken dezelfde inlog.</div>
-      <input class="auth-field" id="loginNaam" type="text" placeholder="Gebruikersnaam (bv. Ulft)" autocomplete="username" onkeydown="if(event.key==='Enter')getElementById('loginWW').focus()">
-      <input class="auth-field" id="loginWW" type="password" placeholder="Wachtwoord" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="auth-hint">
+        <strong>☁️ Cloud opslag:</strong> Log in met je e-mailadres en wachtwoord.
+        Alle leiders van hetzelfde filiaal gebruiken hetzelfde account.
+      </div>
+      <input class="auth-field" id="loginEmail" type="email"
+             placeholder="E-mailadres" autocomplete="email"
+             onkeydown="if(event.key==='Enter')getElementById('loginWW').focus()">
+      <input class="auth-field" id="loginWW" type="password"
+             placeholder="Wachtwoord" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()">
       <div class="auth-err" id="loginErr"></div>
       <button class="auth-btn" id="loginBtn" onclick="doLogin()">Inloggen →</button>
-      <div id="quickWrap" class="quick-logins hidden">
-        <div class="quick-title">Eerder ingelogd op dit apparaat</div>
-        <div class="quick-list" id="quickList"></div>
-      </div>
+      <span class="auth-link" onclick="doWachtwoordReset()">Wachtwoord vergeten?</span>
     </div>
-    <!-- REGISTER -->
+
+    <!-- ── REGISTER ── -->
     <div id="authRegister" class="hidden">
-      <div class="auth-hint"><strong>🏪 Nieuw filiaal?</strong> Eén account per filiaal. Alle leiders gebruiken dezelfde inloggegevens en zien dezelfde data.</div>
-      <input class="auth-field" id="regUser" type="text" placeholder="Gebruikersnaam (bv. Ulft)" onkeydown="if(event.key==='Enter')getElementById('regFiliaal').focus()">
-      <input class="auth-field" id="regFiliaal" type="text" placeholder="Filiaalnaam (bv. Kruidvat Ulft)" onkeydown="if(event.key==='Enter')getElementById('regLeider').focus()">
-      <input class="auth-field" id="regLeider" type="text" placeholder="Jouw naam (bv. Mats ter Avest)" onkeydown="if(event.key==='Enter')getElementById('regWW').focus()">
-      <input class="auth-field" id="regWW" type="password" placeholder="Wachtwoord (min. 6 tekens)" onkeydown="if(event.key==='Enter')getElementById('regWW2').focus()">
-      <input class="auth-field" id="regWW2" type="password" placeholder="Wachtwoord herhalen" onkeydown="if(event.key==='Enter')doRegister()">
+      <div class="auth-hint">
+        <strong>🏪 Nieuw filiaal?</strong> Maak één account per filiaal.
+        Alle leiders loggen in met hetzelfde e-mailadres en wachtwoord.
+      </div>
+      <input class="auth-field" id="regEmail"   type="email"
+             placeholder="E-mailadres (bv. ulft@kruidvat.nl)"
+             onkeydown="if(event.key==='Enter')getElementById('regFiliaal').focus()">
+      <input class="auth-field" id="regFiliaal" type="text"
+             placeholder="Filiaalnaam (bv. Kruidvat Ulft)"
+             onkeydown="if(event.key==='Enter')getElementById('regLeider').focus()">
+      <input class="auth-field" id="regLeider"  type="text"
+             placeholder="Jouw naam (bv. Mats ter Avest)"
+             onkeydown="if(event.key==='Enter')getElementById('regWW').focus()">
+      <input class="auth-field" id="regWW"      type="password"
+             placeholder="Wachtwoord (min. 6 tekens)"
+             onkeydown="if(event.key==='Enter')getElementById('regWW2').focus()">
+      <input class="auth-field" id="regWW2"     type="password"
+             placeholder="Wachtwoord herhalen"
+             onkeydown="if(event.key==='Enter')doRegister()">
       <div class="auth-err" id="regErr"></div>
-      <div class="auth-ok" id="regOk"></div>
+      <div class="auth-ok"  id="regOk"></div>
       <button class="auth-btn" id="regBtn" onclick="doRegister()">Account aanmaken →</button>
     </div>
   </div>
@@ -581,7 +599,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 </main>
 
-<!-- MODALS -->
+<!-- MODALS (ongewijzigd) -->
 <div class="modal-overlay" id="modalAddLid"><div class="modal">
   <div class="modal-title">👤 Medewerker toevoegen</div>
   <div class="form-group" style="margin-bottom:12px"><label>Naam</label><select id="addLidSel"></select></div>
@@ -679,17 +697,33 @@ textarea{resize:vertical;min-height:58px}
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE + APP LOGIC -->
+<!-- ══════════════════════════════════════════
+     FIREBASE + APP LOGIC
+     ══════════════════════════════════════════ -->
 <script type="module">
 // ─────────────────────────────────────────────
-//  FIREBASE  (CDN — geen npm nodig)
+//  FIREBASE IMPORTS  —  Firestore + Auth
 // ─────────────────────────────────────────────
-import { initializeApp }           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc,
   collection, getDocs, query, where, orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// ── NIEUW: Firebase Authentication ──────────
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// ─────────────────────────────────────────────
+//  FIREBASE CONFIG
+// ─────────────────────────────────────────────
 const FB_CFG = {
   apiKey:            "AIzaSyCchYdUkhYAo5KQnzzEtsYxjEBwi10eGN4",
   authDomain:        "vulploeg-manager.firebaseapp.com",
@@ -698,13 +732,15 @@ const FB_CFG = {
   messagingSenderId: "420606105547",
   appId:             "1:420606105547:web:b94ef67e65d7fe3174884e"
 };
+
 const fbApp = initializeApp(FB_CFG);
 const db    = getFirestore(fbApp);
+const auth  = getAuth(fbApp);         // ← nieuw
 
 // ─── Firestore helpers ───────────────────────
-// Accounts :  accounts/{username}
-// Sub-coll  :  accounts/{username}/medewerkers, /leiders, /sjablonen, /rooster
-// Avonden   :  avonden/{id}  (global — alle filialen)
+// Accounts  : accounts/{uid}          (uid = Firebase Auth UID)
+// Sub-colls : accounts/{uid}/medewerkers, /leiders, /sjablonen, /rooster
+// Avonden   : avonden/{id}            (globaal — alle filialen)
 
 async function fbGet(path){
   const d = await getDoc(doc(db, path));
@@ -723,16 +759,15 @@ async function fbAdd(path, data){
   return ref.id;
 }
 
-// ─── Simple hash ─────────────────────────────
-function hash(s){ let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h)^s.charCodeAt(i); return(h>>>0).toString(16); }
-
 // ─── localStorage helpers ────────────────────
 const lsGet = (k,d=null) => { try{ const v=localStorage.getItem(k); return v===null?d:JSON.parse(v); }catch(e){ return d; } };
 const lsSet = (k,v) => { try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} };
 
 // ─── Sync indicator ──────────────────────────
-function setSyncStatus(s){ // 'bezig' | 'ok' | 'fout'
-  const w=document.getElementById('syncWrap'), d=document.getElementById('syncDot'), t=document.getElementById('syncTxt');
+function setSyncStatus(s){
+  const w=document.getElementById('syncWrap'),
+        d=document.getElementById('syncDot'),
+        t=document.getElementById('syncTxt');
   w.style.display='inline-flex';
   d.className='sync-dot'+(s==='bezig'?' bezig':s==='fout'?' fout':'');
   t.textContent = s==='bezig'?'Opslaan…':s==='fout'?'Fout!':'Opgeslagen ✓';
@@ -742,7 +777,7 @@ function setSyncStatus(s){ // 'bezig' | 'ok' | 'fout'
 //  APP STATE
 // ─────────────────────────────────────────────
 const App = {
-  user:null, filiaal:null, leiderNaam:null,
+  uid:null, user:null, filiaal:null, leiderNaam:null,
   medewerkers:[], leiders:[], sjablonen:[],
   avonden:[], huidigAvond:null, huidigFbId:null,
   roosterData:{}, roosterRawRows:[], roosterHeaders:[],
@@ -753,14 +788,18 @@ const App = {
 };
 
 function nieuwAvond(){
-  return { datum:new Date().toISOString().split('T')[0], dag:'dinsdag', colli:2000, norm:80,
-    colliVerwerkt:0, leidinggevende:'', team:[], karrenPool:[], afgesloten:false,
-    werkelijkColli:null, eindnotitie:'', _account:App.user, _filiaal:App.filiaal,
-    _leider:App.leiderNaam, created:Date.now() };
+  return {
+    datum:new Date().toISOString().split('T')[0], dag:'dinsdag',
+    colli:2000, norm:80, colliVerwerkt:0, leidinggevende:'',
+    team:[], karrenPool:[], afgesloten:false,
+    werkelijkColli:null, eindnotitie:'',
+    _account:App.uid, _filiaal:App.filiaal,
+    _leider:App.leiderNaam, created:Date.now()
+  };
 }
 
 // ─────────────────────────────────────────────
-//  AUTH
+//  AUTH UI
 // ─────────────────────────────────────────────
 window.showAuthTab = t => {
   document.getElementById('authLogin').classList.toggle('hidden', t!=='login');
@@ -769,98 +808,217 @@ window.showAuthTab = t => {
     b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
 };
 
+function authErr(id, msg){
+  const e = document.getElementById(id);
+  e.textContent = msg;
+  e.style.display = 'block';
+}
+
+// ── Foutmeldingen Firebase Auth vertalen naar NL ──
+function vertaalAuthFout(code){
+  const map = {
+    'auth/invalid-email':            'Ongeldig e-mailadres.',
+    'auth/user-not-found':           'Geen account gevonden met dit e-mailadres.',
+    'auth/wrong-password':           'Onjuist wachtwoord.',
+    'auth/invalid-credential':       'E-mailadres of wachtwoord klopt niet.',
+    'auth/email-already-in-use':     'Dit e-mailadres is al in gebruik.',
+    'auth/weak-password':            'Wachtwoord is te zwak (min. 6 tekens).',
+    'auth/too-many-requests':        'Te veel pogingen. Probeer later opnieuw.',
+    'auth/network-request-failed':   'Geen internetverbinding.',
+    'auth/user-disabled':            'Dit account is uitgeschakeld.',
+  };
+  return map[code] || 'Fout: ' + code;
+}
+
+// ── REGISTREREN ──────────────────────────────
 window.doRegister = async () => {
-  const g = id => document.getElementById(id).value.trim();
-  const user=g('regUser'), filiaal=g('regFiliaal'), leider=g('regLeider');
-  const ww1=document.getElementById('regWW').value, ww2=document.getElementById('regWW2').value;
-  const err = document.getElementById('regErr'), ok = document.getElementById('regOk');
-  const btn = document.getElementById('regBtn');
-  err.style.display='none'; ok.style.display='none';
-  if(!user)   return authErr('regErr','Vul een gebruikersnaam in.');
-  if(!filiaal)return authErr('regErr','Vul de filiaalnaam in.');
-  if(!leider) return authErr('regErr','Vul jouw naam in.');
-  if(ww1.length<6) return authErr('regErr','Wachtwoord minimaal 6 tekens.');
-  if(ww1!==ww2)    return authErr('regErr','Wachtwoorden komen niet overeen.');
-  btn.disabled=true; btn.textContent='Account aanmaken…';
+  const email   = document.getElementById('regEmail').value.trim();
+  const filiaal = document.getElementById('regFiliaal').value.trim();
+  const leider  = document.getElementById('regLeider').value.trim();
+  const ww1     = document.getElementById('regWW').value;
+  const ww2     = document.getElementById('regWW2').value;
+  const err     = document.getElementById('regErr');
+  const ok      = document.getElementById('regOk');
+  const btn     = document.getElementById('regBtn');
+
+  err.style.display = 'none';
+  ok.style.display  = 'none';
+
+  if(!email)   return authErr('regErr', 'Vul een e-mailadres in.');
+  if(!filiaal) return authErr('regErr', 'Vul de filiaalnaam in.');
+  if(!leider)  return authErr('regErr', 'Vul jouw naam in.');
+  if(ww1.length < 6) return authErr('regErr', 'Wachtwoord minimaal 6 tekens.');
+  if(ww1 !== ww2)    return authErr('regErr', 'Wachtwoorden komen niet overeen.');
+
+  btn.disabled    = true;
+  btn.textContent = 'Account aanmaken…';
+
   try {
-    const existing = await fbGet('accounts/'+user);
-    if(existing){ authErr('regErr','Gebruikersnaam bestaat al.'); btn.disabled=false; btn.textContent='Account aanmaken →'; return; }
-    await fbSet('accounts/'+user, { filiaal, leiderNaam:leider, hash:hash(ww1), created:new Date().toISOString() });
-    await fbAdd('accounts/'+user+'/leiders', { naam:leider, functie:'Vulploegleider', created:Date.now() });
-    ok.textContent='✓ Account aangemaakt! Je wordt ingelogd…'; ok.style.display='block';
-    document.getElementById('loginNaam').value=user;
-    setTimeout(()=>showAuthTab('login'), 1400);
-  } catch(e){ authErr('regErr','Fout: '+e.message); }
-  btn.disabled=false; btn.textContent='Account aanmaken →';
+    // 1. Firebase Auth account aanmaken
+    const cred = await createUserWithEmailAndPassword(auth, email, ww1);
+    const uid  = cred.user.uid;
+
+    // 2. Profiel opslaan in Firestore onder accounts/{uid}
+    await fbSet('accounts/' + uid, {
+      filiaal,
+      leiderNaam: leider,
+      email,
+      created: new Date().toISOString()
+    });
+
+    // 3. Zichzelf direct als leider toevoegen
+    await fbAdd('accounts/' + uid + '/leiders', {
+      naam: leider, functie: 'Vulploegleider', created: Date.now()
+    });
+
+    ok.textContent  = '✓ Account aangemaakt! Je wordt ingelogd…';
+    ok.style.display = 'block';
+    // onAuthStateChanged handelt de login automatisch af
+  } catch(e) {
+    authErr('regErr', vertaalAuthFout(e.code));
+  }
+
+  btn.disabled    = false;
+  btn.textContent = 'Account aanmaken →';
 };
 
+// ── INLOGGEN ─────────────────────────────────
 window.doLogin = async () => {
-  const naam = document.getElementById('loginNaam').value.trim();
-  const ww   = document.getElementById('loginWW').value;
-  const btn  = document.getElementById('loginBtn');
-  document.getElementById('loginErr').style.display='none';
-  if(!naam){ document.getElementById('loginNaam').focus(); return; }
-  btn.disabled=true;
-  btn.innerHTML='<div class="spinner" style="width:20px;height:20px;border-width:2px"></div> Inloggen…';
+  const email = document.getElementById('loginEmail').value.trim();
+  const ww    = document.getElementById('loginWW').value;
+  const btn   = document.getElementById('loginBtn');
+
+  document.getElementById('loginErr').style.display = 'none';
+  if(!email){ document.getElementById('loginEmail').focus(); return; }
+
+  btn.disabled  = true;
+  btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px"></div> Inloggen…';
+
   try {
-    const acc = await fbGet('accounts/'+naam);
-    if(!acc){ authErr('loginErr','Gebruikersnaam niet gevonden.'); btn.disabled=false; btn.textContent='Inloggen →'; return; }
-    if(acc.hash !== hash(ww)){ authErr('loginErr','Onjuist wachtwoord.'); document.getElementById('loginWW').value=''; btn.disabled=false; btn.textContent='Inloggen →'; return; }
-    const quick = lsGet('kvm_quick', []);
-    if(!quick.includes(naam)){ quick.unshift(naam); lsSet('kvm_quick', quick.slice(0,5)); }
-    lsSet('kvm_session', { username:naam });
-    await initSession(naam, acc);
-  } catch(e){ authErr('loginErr','Verbindingsfout: '+e.message); btn.disabled=false; btn.textContent='Inloggen →'; }
+    await signInWithEmailAndPassword(auth, email, ww);
+    // onAuthStateChanged handelt de rest af
+  } catch(e) {
+    authErr('loginErr', vertaalAuthFout(e.code));
+    document.getElementById('loginWW').value = '';
+    btn.disabled    = false;
+    btn.textContent = 'Inloggen →';
+  }
 };
 
-window.doLogout = () => {
+// ── UITLOGGEN ────────────────────────────────
+window.doLogout = async () => {
   if(App._dirty && !confirm('Niet-opgeslagen wijzigingen gaan verloren. Toch uitloggen?')) return;
-  if(App._timerInterval){ clearInterval(App._timerInterval); App._timerInterval=null; }
-  if(App._pauzeInterval){ clearInterval(App._pauzeInterval); App._pauzeInterval=null; }
-  lsSet('kvm_session', null);
-  App.user=null; App.pauzeTimers={}; App.alarmGegeven=new Set(); App._dirty=false;
-  document.getElementById('authScreen').style.display='flex';
-  document.getElementById('syncWrap').style.display='none';
+  if(App._timerInterval){ clearInterval(App._timerInterval); App._timerInterval = null; }
+  if(App._pauzeInterval){ clearInterval(App._pauzeInterval); App._pauzeInterval = null; }
+  App.pauzeTimers = {}; App.alarmGegeven = new Set(); App._dirty = false;
+  document.getElementById('syncWrap').style.display = 'none';
+  await signOut(auth);
+  // onAuthStateChanged toont automatisch het auth-scherm
 };
 
-function authErr(id,msg){ const e=document.getElementById(id); e.textContent=msg; e.style.display='block'; }
+// ── WACHTWOORD VERGETEN ──────────────────────
+window.doWachtwoordReset = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email){
+    authErr('loginErr', 'Vul eerst je e-mailadres in.');
+    document.getElementById('loginEmail').focus();
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    const ok = document.createElement('div');
+    ok.className = 'auth-ok';
+    ok.textContent = '✉️ Reset-link verstuurd naar ' + email;
+    ok.style.display = 'block';
+    document.getElementById('loginErr').after(ok);
+    setTimeout(() => ok.remove(), 5000);
+  } catch(e) {
+    authErr('loginErr', vertaalAuthFout(e.code));
+  }
+};
 
-async function initSession(username, acc){
-  App.user=username; App.filiaal=acc.filiaal; App.leiderNaam=acc.leiderNaam;
+// ─────────────────────────────────────────────
+//  AUTH STATE OBSERVER  —  vervangt localStorage-sessie
+// ─────────────────────────────────────────────
+onAuthStateChanged(auth, async (fbUser) => {
+  if(fbUser) {
+    // Gebruiker is ingelogd
+    try {
+      const acc = await fbGet('accounts/' + fbUser.uid);
+      if(!acc){
+        // Profiel nog niet aangemaakt (race condition) — kort wachten en opnieuw
+        await new Promise(r => setTimeout(r, 800));
+        const acc2 = await fbGet('accounts/' + fbUser.uid);
+        if(acc2) await initSession(fbUser.uid, acc2);
+        else {
+          // Nieuw profiel aanmaken met e-mail als fallback
+          const profiel = {
+            filiaal: fbUser.email,
+            leiderNaam: fbUser.email.split('@')[0],
+            email: fbUser.email,
+            created: new Date().toISOString()
+          };
+          await fbSet('accounts/' + fbUser.uid, profiel);
+          await initSession(fbUser.uid, profiel);
+        }
+        return;
+      }
+      await initSession(fbUser.uid, acc);
+    } catch(e) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('authScreen').style.display   = 'flex';
+      authErr('loginErr', 'Verbindingsfout: ' + e.message);
+    }
+  } else {
+    // Niet ingelogd — toon auth scherm
+    App.uid = null; App.user = null;
+    document.getElementById('loadingScreen').style.display = 'none';
+    document.getElementById('authScreen').style.display   = 'flex';
+  }
+});
 
-  // Laad alles parallel
+// ─────────────────────────────────────────────
+//  SESSION INIT  —  data laden na succesvolle login
+// ─────────────────────────────────────────────
+async function initSession(uid, acc){
+  App.uid        = uid;
+  App.user       = uid;   // uid als identifier voor Firestore-paden
+  App.filiaal    = acc.filiaal;
+  App.leiderNaam = acc.leiderNaam;
+
+  // Alles parallel laden
   const [medewerkers, leiders, sjablonen, roosterDoc, avondenSnap] = await Promise.all([
-    fbCol('accounts/'+username+'/medewerkers'),
-    fbCol('accounts/'+username+'/leiders'),
-    fbCol('accounts/'+username+'/sjablonen'),
-    fbGet('accounts/'+username+'/rooster/data'),
-    getDocs(query(collection(db,'avonden'), where('_account','==',username), orderBy('created','desc'))),
+    fbCol('accounts/' + uid + '/medewerkers'),
+    fbCol('accounts/' + uid + '/leiders'),
+    fbCol('accounts/' + uid + '/sjablonen'),
+    fbGet('accounts/'  + uid + '/rooster/data'),
+    getDocs(query(collection(db,'avonden'), where('_account','==', uid), orderBy('created','desc'))),
   ]);
 
-  App.medewerkers = medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
+  App.medewerkers = medewerkers.sort((a,b) => a.naam.localeCompare(b.naam));
   App.leiders     = leiders;
   App.sjablonen   = sjablonen;
   App.roosterData = roosterDoc?.data ?? {};
-  App.avonden     = avondenSnap.docs.map(d=>({ ...d.data(), fbId:d.id }));
-  App.huidigAvond  = nieuwAvond();
-  App.huidigFbId   = null;
-  App._dirty       = false;
+  App.avonden     = avondenSnap.docs.map(d => ({ ...d.data(), fbId: d.id }));
+  App.huidigAvond = nieuwAvond();
+  App.huidigFbId  = null;
+  App._dirty      = false;
 
-  document.getElementById('userName').textContent     = (acc.leiderNaam||username).split(' ')[0];
-  document.getElementById('userAv').textContent       = (acc.leiderNaam||username).charAt(0).toUpperCase();
-  document.getElementById('headerFiliaal').textContent= acc.filiaal||username;
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('loadingScreen').style.display='none';
+  // UI bijwerken
+  const displayNaam = acc.leiderNaam || acc.email || uid;
+  document.getElementById('userName').textContent      = displayNaam.split(' ')[0];
+  document.getElementById('userAv').textContent        = displayNaam.charAt(0).toUpperCase();
+  document.getElementById('headerFiliaal').textContent = acc.filiaal || acc.email || uid;
+  document.getElementById('authScreen').style.display  = 'none';
+  document.getElementById('loadingScreen').style.display = 'none';
 
-  syncFormFromAvond(); renderAvondSelector(); renderTeam(); vulLeiderSelect(); renderQuickLogins();
+  // Login-formulier resetten voor volgende keer
+  document.getElementById('loginWW').value = '';
+  document.getElementById('loginBtn').disabled    = false;
+  document.getElementById('loginBtn').textContent = 'Inloggen →';
+
+  syncFormFromAvond(); renderAvondSelector(); renderTeam(); vulLeiderSelect();
   setSyncStatus('ok');
-}
-
-function renderQuickLogins(){
-  const q=lsGet('kvm_quick',[]), wrap=document.getElementById('quickWrap'), list=document.getElementById('quickList');
-  if(!q.length){ wrap.classList.add('hidden'); return; }
-  wrap.classList.remove('hidden');
-  list.innerHTML=q.map(u=>`<div class="quick-chip" onclick="document.getElementById('loginNaam').value='${u}';document.getElementById('loginWW').focus()">${u}</div>`).join('');
 }
 
 // ─────────────────────────────────────────────
@@ -868,175 +1026,204 @@ function renderQuickLogins(){
 // ─────────────────────────────────────────────
 window.slaOp = async () => {
   syncAvondFromForm();
-  App.huidigAvond._account = App.user;
+  App.huidigAvond._account = App.uid;
   App.huidigAvond._filiaal = App.filiaal;
-  App.huidigAvond._leider  = App.huidigAvond.leidinggevende||App.leiderNaam;
+  App.huidigAvond._leider  = App.huidigAvond.leidinggevende || App.leiderNaam;
   App.huidigAvond.updated  = Date.now();
   if(!App.huidigAvond.created) App.huidigAvond.created = Date.now();
   setSyncStatus('bezig');
   try {
     const { fbId, ...data } = App.huidigAvond;
     if(App.huidigFbId){
-      await setDoc(doc(db,'avonden',App.huidigFbId), data);
+      await setDoc(doc(db,'avonden', App.huidigFbId), data);
     } else {
       const ref = await addDoc(collection(db,'avonden'), data);
       App.huidigFbId = ref.id;
       App.huidigAvond.fbId = ref.id;
     }
-    const li = App.avonden.findIndex(a=>a.fbId===App.huidigFbId);
-    const copy = { ...deepCopy(App.huidigAvond), fbId:App.huidigFbId };
-    if(li>=0) App.avonden[li]=copy; else App.avonden.unshift(copy);
-    App._dirty=false; setSyncStatus('ok'); renderAvondSelector();
-    const d=new Date(App.huidigAvond.datum);
-    document.getElementById('avondTitle').textContent=cap(App.huidigAvond.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+    const li = App.avonden.findIndex(a => a.fbId === App.huidigFbId);
+    const copy = { ...deepCopy(App.huidigAvond), fbId: App.huidigFbId };
+    if(li >= 0) App.avonden[li] = copy; else App.avonden.unshift(copy);
+    App._dirty = false; setSyncStatus('ok'); renderAvondSelector();
+    const d = new Date(App.huidigAvond.datum);
+    document.getElementById('avondTitle').textContent =
+      cap(App.huidigAvond.dag) + ' ' + d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
     showToast('✓ Opgeslagen in de cloud!');
-  } catch(e){ setSyncStatus('fout'); showToast('⚠ Fout: '+e.message); }
+  } catch(e){ setSyncStatus('fout'); showToast('⚠ Fout: ' + e.message); }
 };
 
 window.openNieuweAvond = () => {
   if(App._dirty && !confirm('Wijzigingen gaan verloren. Doorgaan?')) return;
-  App.huidigFbId=null; App.huidigAvond=nieuwAvond(); App._dirty=false;
-  document.getElementById('avondTitle').textContent='instellen';
+  App.huidigFbId = null; App.huidigAvond = nieuwAvond(); App._dirty = false;
+  document.getElementById('avondTitle').textContent = 'instellen';
   document.getElementById('afgeslotenBanner').classList.add('hidden');
   syncFormFromAvond(); renderTeam(); renderAvondSelector();
 };
 
 window.selectAvond = fbId => {
   if(App._dirty && !confirm('Wijzigingen gaan verloren. Doorgaan?')) return;
-  const av = App.avonden.find(a=>a.fbId===fbId); if(!av) return;
-  App.huidigFbId=fbId; App.huidigAvond=deepCopy(av); App._dirty=false;
-  if(!App.huidigAvond.karrenPool) App.huidigAvond.karrenPool=[];
-  const d=new Date(av.datum);
-  document.getElementById('avondTitle').textContent=cap(av.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
-  const banner=document.getElementById('afgeslotenBanner');
+  const av = App.avonden.find(a => a.fbId === fbId); if(!av) return;
+  App.huidigFbId = fbId; App.huidigAvond = deepCopy(av); App._dirty = false;
+  if(!App.huidigAvond.karrenPool) App.huidigAvond.karrenPool = [];
+  const d = new Date(av.datum);
+  document.getElementById('avondTitle').textContent =
+    cap(av.dag) + ' ' + d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  const banner = document.getElementById('afgeslotenBanner');
   if(av.afgesloten){
-    document.getElementById('afgeslotenTxt').textContent=(av.werkelijkColli?av.werkelijkColli+' colli verwerkt':'Afgerond')+(av.eindnotitie?' — '+av.eindnotitie:'');
+    document.getElementById('afgeslotenTxt').textContent =
+      (av.werkelijkColli ? av.werkelijkColli + ' colli verwerkt' : 'Afgerond') +
+      (av.eindnotitie ? ' — ' + av.eindnotitie : '');
     banner.classList.remove('hidden');
   } else banner.classList.add('hidden');
   syncFormFromAvond(); renderTeam(); renderAvondSelector();
 };
 
 window.verwijderAvond = async fbId => {
-  const av=App.avonden.find(a=>a.fbId===fbId);
-  if(av && av._account!==App.user){ showToast('⚠ Kan avond van ander filiaal niet verwijderen'); return; }
+  const av = App.avonden.find(a => a.fbId === fbId);
+  if(av && av._account !== App.uid){ showToast('⚠ Kan avond van ander filiaal niet verwijderen'); return; }
   if(!confirm('Avond verwijderen uit de cloud?')) return;
   try {
-    await fbDel('avonden/'+fbId);
-    App.avonden=App.avonden.filter(a=>a.fbId!==fbId);
-    if(App.huidigFbId===fbId){ App.huidigFbId=null; App.huidigAvond=nieuwAvond(); syncFormFromAvond(); renderTeam(); }
+    await fbDel('avonden/' + fbId);
+    App.avonden = App.avonden.filter(a => a.fbId !== fbId);
+    if(App.huidigFbId === fbId){
+      App.huidigFbId = null; App.huidigAvond = nieuwAvond();
+      syncFormFromAvond(); renderTeam();
+    }
     renderHistory(); renderAvondSelector(); showToast('Avond verwijderd');
-  } catch(e){ showToast('Fout: '+e.message); }
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
 
 window.laadAvond = async fbId => {
   try {
-    const snap = await getDoc(doc(db,'avonden',fbId));
+    const snap = await getDoc(doc(db,'avonden', fbId));
     if(!snap.exists()) return;
-    const av = { ...snap.data(), fbId:snap.id };
-    if(av._account!==App.user){
-      // Alleen-lezen
-      App.huidigAvond=deepCopy(av); App.huidigFbId=null; App._dirty=false;
+    const av = { ...snap.data(), fbId: snap.id };
+    if(av._account !== App.uid){
+      App.huidigAvond = deepCopy(av); App.huidigFbId = null; App._dirty = false;
       syncFormFromAvond(); renderTeam(); goTab('avond');
       showToast('📖 Avond geladen (alleen-lezen)');
       return;
     }
-    const li=App.avonden.findIndex(a=>a.fbId===fbId);
-    if(li<0) App.avonden.unshift(av);
+    const li = App.avonden.findIndex(a => a.fbId === fbId);
+    if(li < 0) App.avonden.unshift(av);
     selectAvond(fbId); goTab('avond');
-  } catch(e){ showToast('Fout: '+e.message); }
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
 
 function renderAvondSelector(){
-  const c=document.getElementById('avondSelector');
-  let html=`<div class="avond-card ${!App.huidigFbId?'active':''}" onclick="openNieuweAvond()"><div class="avond-dag">+ Nieuwe</div><div class="avond-datum">avond</div></div>`;
-  App.avonden.slice(0,7).forEach(av=>{
-    const d=new Date(av.datum), sel=App.huidigFbId===av.fbId;
-    html+=`<div class="avond-card ${sel?'active':''}" onclick="selectAvond('${av.fbId}')">
+  const c = document.getElementById('avondSelector');
+  let html = `<div class="avond-card ${!App.huidigFbId?'active':''}" onclick="openNieuweAvond()">
+    <div class="avond-dag">+ Nieuwe</div><div class="avond-datum">avond</div></div>`;
+  App.avonden.slice(0,7).forEach(av => {
+    const d = new Date(av.datum), sel = App.huidigFbId === av.fbId;
+    html += `<div class="avond-card ${sel?'active':''}" onclick="selectAvond('${av.fbId}')">
       <div class="avond-dag">${cap(av.dag)}${av.afgesloten?' ✓':''}</div>
       <div class="avond-datum">${d.toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'2-digit'})}</div>
       <div class="avond-colli">${av.werkelijkColli||av.colli} colli</div>
     </div>`;
   });
-  c.innerHTML=html;
+  c.innerHTML = html;
 }
 
 function syncFormFromAvond(){
-  const a=App.huidigAvond;
-  document.getElementById('fDatum').value=a.datum;
-  document.getElementById('fDag').value=a.dag;
-  document.getElementById('fColli').value=a.colli;
-  document.getElementById('fNorm').value=a.norm;
+  const a = App.huidigAvond;
+  document.getElementById('fDatum').value = a.datum;
+  document.getElementById('fDag').value   = a.dag;
+  document.getElementById('fColli').value = a.colli;
+  document.getElementById('fNorm').value  = a.norm;
   vulLeiderSelect();
-  if(a.leidinggevende) document.getElementById('fLeider').value=a.leidinggevende;
+  if(a.leidinggevende) document.getElementById('fLeider').value = a.leidinggevende;
   updateColliTeller();
 }
+
 function syncAvondFromForm(){
-  App.huidigAvond.datum=document.getElementById('fDatum').value;
-  App.huidigAvond.dag=document.getElementById('fDag').value;
-  App.huidigAvond.colli=+document.getElementById('fColli').value||2000;
-  App.huidigAvond.norm=+document.getElementById('fNorm').value||80;
-  App.huidigAvond.leidinggevende=document.getElementById('fLeider').value;
+  App.huidigAvond.datum          = document.getElementById('fDatum').value;
+  App.huidigAvond.dag            = document.getElementById('fDag').value;
+  App.huidigAvond.colli          = +document.getElementById('fColli').value || 2000;
+  App.huidigAvond.norm           = +document.getElementById('fNorm').value  || 80;
+  App.huidigAvond.leidinggevende = document.getElementById('fLeider').value;
 }
 
 function vulLeiderSelect(){
-  const sel=document.getElementById('fLeider'), cur=sel.value||App.huidigAvond.leidinggevende||'';
-  sel.innerHTML='<option value="">— Kies leidinggevende —</option>'
-    +App.leiders.map(l=>`<option value="${l.naam}">${l.naam} — ${l.functie||''}</option>`).join('')
-    +App.medewerkers.filter(m=>!App.leiders.find(l=>l.naam===m.naam)).map(m=>`<option value="${m.naam}">${m.naam}</option>`).join('');
-  if(cur) sel.value=cur;
+  const sel = document.getElementById('fLeider');
+  const cur = sel.value || App.huidigAvond.leidinggevende || '';
+  sel.innerHTML = '<option value="">— Kies leidinggevende —</option>'
+    + App.leiders.map(l => `<option value="${l.naam}">${l.naam} — ${l.functie||''}</option>`).join('')
+    + App.medewerkers
+        .filter(m => !App.leiders.find(l => l.naam === m.naam))
+        .map(m => `<option value="${m.naam}">${m.naam}</option>`).join('');
+  if(cur) sel.value = cur;
 }
 
 // ─────────────────────────────────────────────
 //  TEAM RENDERING
 // ─────────────────────────────────────────────
 function renderTeam(){
-  const c=document.getElementById('teamList'), team=App.huidigAvond.team||[], norm=App.huidigAvond.norm||80;
+  const c    = document.getElementById('teamList');
+  const team = App.huidigAvond.team || [];
+  const norm = App.huidigAvond.norm || 80;
+
   if(!team.length){
-    c.innerHTML='<div class="empty"><div class="empty-icon">🧑</div><div class="empty-text">Nog geen medewerkers.<br>Klik "+ Voeg toe" om te beginnen.</div></div>';
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🧑</div><div class="empty-text">Nog geen medewerkers.<br>Klik "+ Voeg toe" om te beginnen.</div></div>';
     updateColliTeller(); return;
   }
-  c.innerHTML=team.map((lid,i)=>{
-    const u=berekenUren(lid.start,lid.eind,lid.pauze), t=Math.round(u*norm);
-    const ka=lid.karten||[], gedaan=ka.filter(k=>k.werkelijk>0).length;
-    const vgPct=ka.length>0?Math.min(100,Math.round(gedaan/ka.length*100)):0;
-    const vgCls=vgPct>=100?'fill-green':vgPct>=50?'fill-orange':'fill-red';
-    const pk=App.pauzeTimers[lid.naam];
-    const pauzeHtml=pk?
-      `<span class="pauze-chip actief" id="pauze_${safeId(lid.naam)}" onclick="stopPauze('${lid.naam}')">⏸ …</span>`:
-      `<button class="btn btn-ghost btn-xs" onclick="openPauzeModal('${lid.naam}')">⏸ Pauze</button>`;
 
-    const naamHtml=lid.naam
-      +(lid.ziek?'<span class="ziek-badge">🤒 Ziek</span>':'')
-      +(lid.vervanger?'<span class="vervang-badge">→ '+lid.vervanger+'</span>':'');
+  c.innerHTML = team.map((lid,i) => {
+    const u  = berekenUren(lid.start, lid.eind, lid.pauze);
+    const t  = Math.round(u * norm);
+    const ka = lid.karten || [];
+    const gedaan  = ka.filter(k => k.werkelijk > 0).length;
+    const vgPct   = ka.length > 0 ? Math.min(100, Math.round(gedaan/ka.length*100)) : 0;
+    const vgCls   = vgPct >= 100 ? 'fill-green' : vgPct >= 50 ? 'fill-orange' : 'fill-red';
+    const pk      = App.pauzeTimers[lid.naam];
+    const pauzeHtml = pk
+      ? `<span class="pauze-chip actief" id="pauze_${safeId(lid.naam)}" onclick="stopPauze('${lid.naam}')">⏸ …</span>`
+      : `<button class="btn btn-ghost btn-xs" onclick="openPauzeModal('${lid.naam}')">⏸ Pauze</button>`;
 
-    const karHtml=ka.length===0
-      ?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar" of koppel via Karren-tab</div>'
-      :ka.map((kar,ki)=>{
-        const st=karStatus(kar);
-        return `<div class="kar-row">
-          <div class="kar-row-top">
-            <div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div>
-            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div>
-          </div>
-          <div class="kar-row-bottom">
-            <div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div>
-            <div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div>
-          </div>
-        </div>`;
-      }).join('');
+    const naamHtml = lid.naam
+      + (lid.ziek ? '<span class="ziek-badge">🤒 Ziek</span>' : '')
+      + (lid.vervanger ? '<span class="vervang-badge">→ ' + lid.vervanger + '</span>' : '');
+
+    const karHtml = ka.length === 0
+      ? '<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar" of koppel via Karren-tab</div>'
+      : ka.map((kar,ki) => {
+          const st = karStatus(kar);
+          return `<div class="kar-row">
+            <div class="kar-row-top">
+              <div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                <span class="badge ${st.cls}">${st.label}</span>
+                <button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button>
+              </div>
+            </div>
+            <div class="kar-row-bottom">
+              <div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div>
+              <div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div>
+              <input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px"
+                onchange="updateKarWerkelijk(${i},${ki},this.value)"></div>
+            </div>
+          </div>`;
+        }).join('');
 
     return `<div class="member-card${lid.ziek?' ziek':''}">
       <div class="member-main">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
-          <div style="flex:1"><div class="member-name">${naamHtml}</div>
-            <div class="member-meta"><span class="tag">${lid.start}–${lid.eind}</span>${lid.pauze?`<span class="tag">☕ ${lid.pauze}min`+`</span>`:''}</div>
+          <div style="flex:1">
+            <div class="member-name">${naamHtml}</div>
+            <div class="member-meta">
+              <span class="tag">${lid.start}–${lid.eind}</span>
+              ${lid.pauze?`<span class="tag">☕ ${lid.pauze}min</span>`:''}
+            </div>
           </div>
         </div>
         ${lid.notitie?`<div class="member-note">📝 ${lid.notitie}</div>`:''}
         <div class="member-stats">
           <div><div class="stat-mini-label">Uren</div><div class="stat-mini-val">${u.toFixed(1)}u</div></div>
           <div><div class="stat-mini-label">Target</div><div class="stat-mini-val">${t}</div></div>
-          <div><div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div><div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div></div>
+          <div>
+            <div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div>
+            <div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div>
+          </div>
         </div>
         <div class="member-actions-row">
           <button class="btn btn-secondary btn-xs" onclick="openKarModalVoor(${i})">+ Kar</button>
@@ -1052,6 +1239,7 @@ function renderTeam(){
       </div>
     </div>`;
   }).join('');
+
   updateColliTeller();
 }
 
@@ -1059,66 +1247,116 @@ function renderTeam(){
 //  TEAM MUTATIONS
 // ─────────────────────────────────────────────
 window.openAddLidModal = () => {
-  const alle=[...App.medewerkers,...App.leiders.filter(l=>!App.medewerkers.find(m=>m.naam===l.naam))];
-  document.getElementById('addLidSel').innerHTML=
+  const alle = [...App.medewerkers, ...App.leiders.filter(l => !App.medewerkers.find(m => m.naam === l.naam))];
+  document.getElementById('addLidSel').innerHTML =
     '<option value="">— Kies medewerker —</option>'
-    +alle.map(m=>`<option value="${m.naam}">${m.naam}${m.functie?' ('+m.functie+')':''}</option>`).join('')
-    +'<option value="__nieuw__">+ Handmatig invoeren…</option>';
-  document.getElementById('addLidNotitie').value='';
+    + alle.map(m => `<option value="${m.naam}">${m.naam}${m.functie?' ('+m.functie+')':''}</option>`).join('')
+    + '<option value="__nieuw__">+ Handmatig invoeren…</option>';
+  document.getElementById('addLidNotitie').value = '';
   openModal('modalAddLid');
 };
-window.voegLidToe = () => {
-  let naam=document.getElementById('addLidSel').value;
-  if(!naam){ alert('Kies een medewerker.'); return; }
-  if(naam==='__nieuw__'){ naam=prompt('Naam:'); if(!naam) return; }
-  App.huidigAvond.team.push({ naam, start:document.getElementById('addLidStart').value, eind:document.getElementById('addLidEind').value, pauze:+document.getElementById('addLidPauze').value||0, notitie:document.getElementById('addLidNotitie').value.trim(), karten:[], ziek:false, vervanger:null });
-  App._dirty=true; closeModal('modalAddLid'); renderTeam(); showToast(naam+' toegevoegd');
-};
-window.verwijderLid = i => { if(!confirm('Medewerker verwijderen?')) return; App.huidigAvond.team.splice(i,1); App._dirty=true; renderTeam(); };
-window.openBewerkNotitie = i => { const n=prompt('Notitie:',App.huidigAvond.team[i].notitie||''); if(n===null) return; App.huidigAvond.team[i].notitie=n.trim(); App._dirty=true; renderTeam(); };
 
-// Kar direct aan medewerker
-window.openKarModalVoor = i => { App._karMedewIdx=i; document.getElementById('addKarNaam').value=''; document.getElementById('addKarVerwacht').value=''; document.getElementById('addKarWerkelijk').value=''; openModal('modalAddKar'); };
-window.voegKarToe = () => {
-  const naam=document.getElementById('addKarNaam').value.trim(), v=+document.getElementById('addKarVerwacht').value||null, w=+document.getElementById('addKarWerkelijk').value||null;
-  if(!naam){ alert('Naam vereist.'); return; }
-  const i=App._karMedewIdx; if(!App.huidigAvond.team[i].karten) App.huidigAvond.team[i].karten=[];
-  App.huidigAvond.team[i].karten.push({ naam, verwacht:v, werkelijk:w, _personen:[App.huidigAvond.team[i].naam] });
-  App._dirty=true; closeModal('modalAddKar'); renderTeam(); showToast('Kar toegevoegd');
+window.voegLidToe = () => {
+  let naam = document.getElementById('addLidSel').value;
+  if(!naam){ alert('Kies een medewerker.'); return; }
+  if(naam === '__nieuw__'){ naam = prompt('Naam:'); if(!naam) return; }
+  App.huidigAvond.team.push({
+    naam,
+    start:   document.getElementById('addLidStart').value,
+    eind:    document.getElementById('addLidEind').value,
+    pauze:   +document.getElementById('addLidPauze').value || 0,
+    notitie: document.getElementById('addLidNotitie').value.trim(),
+    karten:[], ziek:false, vervanger:null
+  });
+  App._dirty = true; closeModal('modalAddLid'); renderTeam(); showToast(naam + ' toegevoegd');
 };
-window.verwijderKar = (li,ki) => { App.huidigAvond.team[li].karten.splice(ki,1); App._dirty=true; renderTeam(); };
-window.updateKarWerkelijk = (li,ki,val) => { const v=+val||null; App.huidigAvond.team[li].karten[ki].werkelijk=v; const pid=App.huidigAvond.team[li].karten[ki]._poolId; if(pid){ const pk=(App.huidigAvond.karrenPool||[]).find(k=>k.id===pid); if(pk) pk.werkelijk=v; } App._dirty=true; renderTeam(); };
+
+window.verwijderLid = i => {
+  if(!confirm('Medewerker verwijderen?')) return;
+  App.huidigAvond.team.splice(i,1); App._dirty = true; renderTeam();
+};
+
+window.openBewerkNotitie = i => {
+  const n = prompt('Notitie:', App.huidigAvond.team[i].notitie || '');
+  if(n === null) return;
+  App.huidigAvond.team[i].notitie = n.trim(); App._dirty = true; renderTeam();
+};
+
+window.openKarModalVoor = i => {
+  App._karMedewIdx = i;
+  document.getElementById('addKarNaam').value      = '';
+  document.getElementById('addKarVerwacht').value  = '';
+  document.getElementById('addKarWerkelijk').value = '';
+  openModal('modalAddKar');
+};
+
+window.voegKarToe = () => {
+  const naam = document.getElementById('addKarNaam').value.trim();
+  const v    = +document.getElementById('addKarVerwacht').value  || null;
+  const w    = +document.getElementById('addKarWerkelijk').value || null;
+  if(!naam){ alert('Naam vereist.'); return; }
+  const i = App._karMedewIdx;
+  if(!App.huidigAvond.team[i].karten) App.huidigAvond.team[i].karten = [];
+  App.huidigAvond.team[i].karten.push({ naam, verwacht:v, werkelijk:w, _personen:[App.huidigAvond.team[i].naam] });
+  App._dirty = true; closeModal('modalAddKar'); renderTeam(); showToast('Kar toegevoegd');
+};
+
+window.verwijderKar       = (li,ki) => { App.huidigAvond.team[li].karten.splice(ki,1); App._dirty = true; renderTeam(); };
+window.updateKarWerkelijk = (li,ki,val) => {
+  const v = +val || null;
+  App.huidigAvond.team[li].karten[ki].werkelijk = v;
+  const pid = App.huidigAvond.team[li].karten[ki]._poolId;
+  if(pid){ const pk = (App.huidigAvond.karrenPool||[]).find(k => k.id === pid); if(pk) pk.werkelijk = v; }
+  App._dirty = true; renderTeam();
+};
 
 // ─────────────────────────────────────────────
 //  KARREN POOL
 // ─────────────────────────────────────────────
 function renderKarrenPool(){
-  const pool=App.huidigAvond.karrenPool||[], c=document.getElementById('karrenList');
-  document.getElementById('karrenSamenvatting').textContent=pool.length+' karren · '+pool.filter(k=>k.personen&&k.personen.length>0).length+' gekoppeld · '+pool.filter(k=>k.werkelijk>0).length+' klaar';
-  if(!pool.length){ c.innerHTML='<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Nog geen karren.</div></div>'; return; }
-  c.innerHTML=pool.map((kar,i)=>{
-    const st=karStatus(kar), bezig=kar.timerStart&&!kar.timerStop;
-    const elapsed=kar.timerStart?Math.floor((Date.now()-kar.timerStart)/1000):0;
-    const persStr=kar.personen&&kar.personen.length?kar.personen.join(', '):'Niet gekoppeld';
-    let timerHtml='';
+  const pool = App.huidigAvond.karrenPool || [];
+  const c    = document.getElementById('karrenList');
+  document.getElementById('karrenSamenvatting').textContent =
+    pool.length + ' karren · ' +
+    pool.filter(k => k.personen && k.personen.length > 0).length + ' gekoppeld · ' +
+    pool.filter(k => k.werkelijk > 0).length + ' klaar';
+
+  if(!pool.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Nog geen karren.</div></div>';
+    return;
+  }
+
+  c.innerHTML = pool.map((kar,i) => {
+    const st   = karStatus(kar);
+    const bezig = kar.timerStart && !kar.timerStop;
+    const elapsed = kar.timerStart ? Math.floor((Date.now() - kar.timerStart) / 1000) : 0;
+    const persStr = kar.personen && kar.personen.length ? kar.personen.join(', ') : 'Niet gekoppeld';
+
+    let timerHtml = '';
     if(!kar.timerStart){
-      timerHtml=`<button class="timer-start" onclick="startTimer(${i})">▶ Start</button>
-        <div style="margin-top:6px"><label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label>
-        <input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarWerkelijk(${i},this.value)"></div>`;
+      timerHtml = `<button class="timer-start" onclick="startTimer(${i})">▶ Start</button>
+        <div style="margin-top:6px">
+          <label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label>
+          <input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px"
+            onchange="updatePoolKarWerkelijk(${i},this.value)">
+        </div>`;
     } else if(bezig){
-      const ov=kar.verwacht?Math.round(((elapsed/60-kar.verwacht)/kar.verwacht)*100):null;
-      timerHtml=`<button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button>
+      const ov = kar.verwacht ? Math.round(((elapsed/60 - kar.verwacht) / kar.verwacht) * 100) : null;
+      timerHtml = `<button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button>
         <div class="timer-display${ov>=20?' over':''}" id="timerDisp_${i}">${fmtSecs(elapsed)}</div>
         <span id="over_${i}" ${ov>=20?'':'style="display:none"'} class="overschrijding">⚠ +${ov}% over</span>`;
     } else {
-      timerHtml=`<div style="font-weight:800;color:var(--green)">✓ ${kar.werkelijk} min</div>
+      timerHtml = `<div style="font-weight:800;color:var(--green)">✓ ${kar.werkelijk} min</div>
         <button class="btn btn-ghost btn-xs" style="margin-top:4px" onclick="resetTimer(${i})">↺ Reset</button>`;
     }
+
     return `<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}">
       <div class="pool-row-top">
         <div style="flex:1">
           <div class="pool-naam">${kar.naam}</div>
-          <div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div>
+          <div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">
+            ${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}
+          </div>
           <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel personen</button>
             <button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button>
@@ -1127,227 +1365,441 @@ function renderKarrenPool(){
         <span class="badge ${st.cls}">${st.label}</span>
       </div>
       <div class="pool-row-bottom">
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div>
-        <input type="number" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div>
+        <div>
+          <div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div>
+          <input type="number" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px"
+            onchange="updatePoolKarVerwacht(${i},this.value)">
+        </div>
         <div>${timerHtml}</div>
       </div>
     </div>`;
   }).join('');
-  if(pool.some(k=>k.timerStart&&!k.timerStop)) startTimerInterval();
+
+  if(pool.some(k => k.timerStart && !k.timerStop)) startTimerInterval();
 }
 
 window.openNieuweKarModal = () => {
-  document.getElementById('poolKarNaam').value=''; document.getElementById('calcColli').value='';
-  document.getElementById('calcMin').value=''; document.getElementById('calcTip').textContent='';
-  document.getElementById('calcNormTip').textContent='(norm: '+(App.huidigAvond.norm||80)+' colli/uur)';
+  document.getElementById('poolKarNaam').value = '';
+  document.getElementById('calcColli').value   = '';
+  document.getElementById('calcMin').value     = '';
+  document.getElementById('calcTip').textContent = '';
+  document.getElementById('calcNormTip').textContent = '(norm: ' + (App.huidigAvond.norm||80) + ' colli/uur)';
   openModal('modalPoolKar');
 };
+
 window.voegPoolKarToe = () => {
-  const naam=document.getElementById('poolKarNaam').value.trim(), v=+document.getElementById('calcMin').value||null, col=+document.getElementById('calcColli').value||null;
+  const naam = document.getElementById('poolKarNaam').value.trim();
+  const v    = +document.getElementById('calcMin').value   || null;
+  const col  = +document.getElementById('calcColli').value || null;
   if(!naam){ alert('Naam vereist.'); return; }
-  if(!App.huidigAvond.karrenPool) App.huidigAvond.karrenPool=[];
+  if(!App.huidigAvond.karrenPool) App.huidigAvond.karrenPool = [];
   App.huidigAvond.karrenPool.push({ id:Date.now(), naam, verwacht:v, werkelijk:null, colli:col, personen:[] });
-  App._dirty=true; closeModal('modalPoolKar'); renderKarrenPool(); showToast('Kar "'+naam+'" toegevoegd');
+  App._dirty = true; closeModal('modalPoolKar'); renderKarrenPool(); showToast('Kar "'+naam+'" toegevoegd');
 };
-window.updatePoolKarVerwacht = (idx,val) => { App.huidigAvond.karrenPool[idx].verwacht=+val||null; syncPoolNaarTeam(idx); renderTeam(); };
+
+window.updatePoolKarVerwacht  = (idx,val) => { App.huidigAvond.karrenPool[idx].verwacht = +val||null; syncPoolNaarTeam(idx); renderTeam(); };
 window.updatePoolKarWerkelijk = (idx,val) => { const v=+val||null; App.huidigAvond.karrenPool[idx].werkelijk=v; syncPoolNaarTeam(idx); renderTeam(); };
+
 window.verwijderPoolKar = idx => {
-  const kar=App.huidigAvond.karrenPool[idx];
-  (kar.personen||[]).forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n); if(l) l.karten=l.karten.filter(k=>k._poolId!==kar.id);});
-  App.huidigAvond.karrenPool.splice(idx,1); App._dirty=true; renderKarrenPool(); renderTeam();
+  const kar = App.huidigAvond.karrenPool[idx];
+  (kar.personen||[]).forEach(n => {
+    const l = App.huidigAvond.team.find(x => x.naam === n);
+    if(l) l.karten = l.karten.filter(k => k._poolId !== kar.id);
+  });
+  App.huidigAvond.karrenPool.splice(idx,1); App._dirty = true; renderKarrenPool(); renderTeam();
 };
 
 window.openKoppelKarModal = idx => {
-  App._poolKarIdx=idx; const kar=App.huidigAvond.karrenPool[idx], hd=kar.personen||[];
-  document.getElementById('koppelKarInfo').textContent='Kar: '+kar.naam+(kar.verwacht?' — '+kar.verwacht+' min verwacht':'');
-  document.getElementById('koppelPersonenList').innerHTML=(App.huidigAvond.team||[]).map(m=>`
-    <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1.5px solid ${hd.includes(m.naam)?'var(--red)':'var(--border)'};border-radius:8px;cursor:pointer">
-      <input type="checkbox" value="${m.naam}" ${hd.includes(m.naam)?'checked':''} style="width:18px;height:18px;accent-color:var(--red);flex-shrink:0">
-      <div><div style="font-weight:800;font-size:.88rem">${m.naam}</div><div style="font-size:.72rem;color:var(--text3)">${m.start}–${m.eind}</div></div>
-    </label>`).join('')||'<div style="color:var(--text3);padding:12px;font-size:.82rem">Voeg eerst medewerkers toe.</div>';
+  App._poolKarIdx = idx;
+  const kar = App.huidigAvond.karrenPool[idx];
+  const hd  = kar.personen || [];
+  document.getElementById('koppelKarInfo').textContent =
+    'Kar: ' + kar.naam + (kar.verwacht ? ' — ' + kar.verwacht + ' min verwacht' : '');
+  document.getElementById('koppelPersonenList').innerHTML =
+    (App.huidigAvond.team || []).map(m => `
+      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1.5px solid ${hd.includes(m.naam)?'var(--red)':'var(--border)'};border-radius:8px;cursor:pointer">
+        <input type="checkbox" value="${m.naam}" ${hd.includes(m.naam)?'checked':''} style="width:18px;height:18px;accent-color:var(--red);flex-shrink:0">
+        <div><div style="font-weight:800;font-size:.88rem">${m.naam}</div><div style="font-size:.72rem;color:var(--text3)">${m.start}–${m.eind}</div></div>
+      </label>`).join('') ||
+    '<div style="color:var(--text3);padding:12px;font-size:.82rem">Voeg eerst medewerkers toe.</div>';
   openModal('modalKoppelKar');
 };
+
 window.slaKoppelOp = () => {
-  const idx=App._poolKarIdx, kar=App.huidigAvond.karrenPool[idx];
-  (kar.personen||[]).forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n); if(l) l.karten=l.karten.filter(k=>k._poolId!==kar.id);});
-  const gekozen=[...document.querySelectorAll('#koppelPersonenList input[type=checkbox]:checked')].map(cb=>cb.value);
-  kar.personen=gekozen;
-  gekozen.forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n); if(l){if(!l.karten) l.karten=[]; if(!l.karten.find(k=>k._poolId===kar.id)) l.karten.push({naam:kar.naam,verwacht:kar.verwacht,werkelijk:kar.werkelijk,_poolId:kar.id,_personen:gekozen});}});
-  App._dirty=true; closeModal('modalKoppelKar'); syncAllePool(); renderKarrenPool(); renderTeam();
-  showToast(gekozen.length?'Gekoppeld aan '+gekozen.length+' persoon/personen':'Koppeling verwijderd');
+  const idx     = App._poolKarIdx;
+  const kar     = App.huidigAvond.karrenPool[idx];
+  (kar.personen||[]).forEach(n => {
+    const l = App.huidigAvond.team.find(x => x.naam === n);
+    if(l) l.karten = l.karten.filter(k => k._poolId !== kar.id);
+  });
+  const gekozen = [...document.querySelectorAll('#koppelPersonenList input[type=checkbox]:checked')].map(cb => cb.value);
+  kar.personen  = gekozen;
+  gekozen.forEach(n => {
+    const l = App.huidigAvond.team.find(x => x.naam === n);
+    if(l){
+      if(!l.karten) l.karten = [];
+      if(!l.karten.find(k => k._poolId === kar.id))
+        l.karten.push({ naam:kar.naam, verwacht:kar.verwacht, werkelijk:kar.werkelijk, _poolId:kar.id, _personen:gekozen });
+    }
+  });
+  App._dirty = true; closeModal('modalKoppelKar'); syncAllePool(); renderKarrenPool(); renderTeam();
+  showToast(gekozen.length ? 'Gekoppeld aan ' + gekozen.length + ' persoon/personen' : 'Koppeling verwijderd');
 };
-function syncPoolNaarTeam(pi){ const k=App.huidigAvond.karrenPool[pi]; (k.personen||[]).forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n); if(!l) return; const tk=l.karten.find(k2=>k2._poolId===k.id); if(tk){tk.werkelijk=k.werkelijk;tk.verwacht=k.verwacht;tk.naam=k.naam;tk._personen=k.personen;}}); }
-function syncAllePool(){ (App.huidigAvond.karrenPool||[]).forEach((_,i)=>syncPoolNaarTeam(i)); }
+
+function syncPoolNaarTeam(pi){
+  const k = App.huidigAvond.karrenPool[pi];
+  (k.personen||[]).forEach(n => {
+    const l  = App.huidigAvond.team.find(x => x.naam === n); if(!l) return;
+    const tk = l.karten.find(k2 => k2._poolId === k.id);
+    if(tk){ tk.werkelijk = k.werkelijk; tk.verwacht = k.verwacht; tk.naam = k.naam; tk._personen = k.personen; }
+  });
+}
+function syncAllePool(){ (App.huidigAvond.karrenPool||[]).forEach((_,i) => syncPoolNaarTeam(i)); }
 
 // ─────────────────────────────────────────────
 //  TIMER
 // ─────────────────────────────────────────────
-window.startTimer = idx => { const k=App.huidigAvond.karrenPool[idx]; k.timerStart=Date.now(); k.timerStop=null; k.werkelijk=null; syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam(); startTimerInterval(); };
-window.stopTimer  = idx => {
-  const k=App.huidigAvond.karrenPool[idx]; k.timerStop=Date.now(); k.werkelijk=Math.max(1,Math.round((k.timerStop-k.timerStart)/60000));
-  [...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));
-  syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam(); showToast(k.naam+': ✓ '+k.werkelijk+' min');
+window.startTimer = idx => {
+  const k = App.huidigAvond.karrenPool[idx];
+  k.timerStart = Date.now(); k.timerStop = null; k.werkelijk = null;
+  syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam(); startTimerInterval();
 };
+
+window.stopTimer = idx => {
+  const k = App.huidigAvond.karrenPool[idx];
+  k.timerStop  = Date.now();
+  k.werkelijk  = Math.max(1, Math.round((k.timerStop - k.timerStart) / 60000));
+  [...App.alarmGegeven].filter(x => x.startsWith(k.id+'_')).forEach(x => App.alarmGegeven.delete(x));
+  syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam(); showToast(k.naam + ': ✓ ' + k.werkelijk + ' min');
+};
+
 window.resetTimer = idx => {
-  const k=App.huidigAvond.karrenPool[idx];
-  [...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));
-  k.timerStart=null; k.timerStop=null; k.werkelijk=null; syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam();
+  const k = App.huidigAvond.karrenPool[idx];
+  [...App.alarmGegeven].filter(x => x.startsWith(k.id+'_')).forEach(x => App.alarmGegeven.delete(x));
+  k.timerStart = null; k.timerStop = null; k.werkelijk = null;
+  syncPoolNaarTeam(idx); renderKarrenPool(); renderTeam();
 };
+
 function startTimerInterval(){
   if(App._timerInterval) return;
-  App._timerInterval=setInterval(()=>{
-    const pool=App.huidigAvond.karrenPool||[];
-    if(!pool.some(k=>k.timerStart&&!k.timerStop)){ clearInterval(App._timerInterval); App._timerInterval=null; return; }
-    pool.forEach((k,i)=>{
-      if(!k.timerStart||k.timerStop) return;
-      const secs=Math.floor((Date.now()-k.timerStart)/1000);
-      const el=document.getElementById('timerDisp_'+i); if(el){ el.textContent=fmtSecs(secs); if(k.verwacht&&secs/60>k.verwacht) el.className='timer-display over'; }
-      if(k.verwacht){ const ov=Math.round(((secs/60-k.verwacht)/k.verwacht)*100); const key=k.id+'_'+Math.floor(ov/20); if(ov>=20&&!App.alarmGegeven.has(key)){ App.alarmGegeven.add(key); speelAlarm(); const b=document.getElementById('over_'+i); if(b){ b.style.display='inline-flex'; b.textContent='⚠ +'+ov+'% over'; } } }
+  App._timerInterval = setInterval(() => {
+    const pool = App.huidigAvond.karrenPool || [];
+    if(!pool.some(k => k.timerStart && !k.timerStop)){
+      clearInterval(App._timerInterval); App._timerInterval = null; return;
+    }
+    pool.forEach((k,i) => {
+      if(!k.timerStart || k.timerStop) return;
+      const secs = Math.floor((Date.now() - k.timerStart) / 1000);
+      const el   = document.getElementById('timerDisp_'+i);
+      if(el){ el.textContent = fmtSecs(secs); if(k.verwacht && secs/60 > k.verwacht) el.className = 'timer-display over'; }
+      if(k.verwacht){
+        const ov  = Math.round(((secs/60 - k.verwacht) / k.verwacht) * 100);
+        const key = k.id + '_' + Math.floor(ov/20);
+        if(ov >= 20 && !App.alarmGegeven.has(key)){
+          App.alarmGegeven.add(key); speelAlarm();
+          const b = document.getElementById('over_'+i);
+          if(b){ b.style.display = 'inline-flex'; b.textContent = '⚠ +'+ov+'% over'; }
+        }
+      }
     });
     if(document.getElementById('tab-live').classList.contains('active')) renderLive();
-  },1000);
+  }, 1000);
 }
-function fmtSecs(s){ return Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s'; }
-function speelAlarm(){ try{ if(!App._audioCtx) App._audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const ctx=App._audioCtx; [0,.25,.5].forEach(off=>{ const o=ctx.createOscillator(),g=ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.type='sine'; o.frequency.setValueAtTime(880,ctx.currentTime+off); o.frequency.setValueAtTime(1100,ctx.currentTime+off+.08); g.gain.setValueAtTime(.4,ctx.currentTime+off); g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+off+.18); o.start(ctx.currentTime+off); o.stop(ctx.currentTime+off+.2); }); }catch(e){} }
+
+function fmtSecs(s){ return Math.floor(s/60) + 'm ' + String(s%60).padStart(2,'0') + 's'; }
+
+function speelAlarm(){
+  try {
+    if(!App._audioCtx) App._audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+    const ctx = App._audioCtx;
+    [0,.25,.5].forEach(off => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='sine';
+      o.frequency.setValueAtTime(880, ctx.currentTime+off);
+      o.frequency.setValueAtTime(1100, ctx.currentTime+off+.08);
+      g.gain.setValueAtTime(.4, ctx.currentTime+off);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime+off+.18);
+      o.start(ctx.currentTime+off); o.stop(ctx.currentTime+off+.2);
+    });
+  } catch(e){}
+}
 
 // ─────────────────────────────────────────────
 //  PAUZE
 // ─────────────────────────────────────────────
-window.openPauzeModal = naam => { const d=prompt('Pauze voor '+naam+' — hoeveel minuten?','30'); if(!d) return; App.pauzeTimers[naam]={start:Date.now(),duur:+d||30}; startPauzeInterval(); renderTeam(); showToast(naam+' op pauze'); };
+window.openPauzeModal = naam => {
+  const d = prompt('Pauze voor ' + naam + ' — hoeveel minuten?', '30');
+  if(!d) return;
+  App.pauzeTimers[naam] = { start:Date.now(), duur:+d||30 };
+  startPauzeInterval(); renderTeam(); showToast(naam + ' op pauze');
+};
+
 window.stopPauze = naam => { delete App.pauzeTimers[naam]; renderTeam(); };
+
 function startPauzeInterval(){
   if(App._pauzeInterval) return;
-  App._pauzeInterval=setInterval(()=>{
-    if(!Object.keys(App.pauzeTimers).length){ clearInterval(App._pauzeInterval); App._pauzeInterval=null; return; }
-    Object.entries(App.pauzeTimers).forEach(([naam,p])=>{
-      const rs=Math.max(0,Math.round((p.duur-(Date.now()-p.start)/60000)*60));
-      const el=document.getElementById('pauze_'+safeId(naam)); if(!el) return;
-      if(rs<=0){ el.className='pauze-chip laat'; el.textContent='⚠ '+naam.split(' ')[0]+' terug!'; if(!p.ag){ p.ag=true; speelAlarm(); } }
-      else { el.className='pauze-chip actief'; el.textContent='⏸ '+Math.floor(rs/60)+'m'+String(rs%60).padStart(2,'0')+'s'; }
+  App._pauzeInterval = setInterval(() => {
+    if(!Object.keys(App.pauzeTimers).length){
+      clearInterval(App._pauzeInterval); App._pauzeInterval = null; return;
+    }
+    Object.entries(App.pauzeTimers).forEach(([naam,p]) => {
+      const rs = Math.max(0, Math.round((p.duur - (Date.now()-p.start)/60000) * 60));
+      const el = document.getElementById('pauze_' + safeId(naam)); if(!el) return;
+      if(rs <= 0){
+        el.className  = 'pauze-chip laat';
+        el.textContent = '⚠ ' + naam.split(' ')[0] + ' terug!';
+        if(!p.ag){ p.ag = true; speelAlarm(); }
+      } else {
+        el.className  = 'pauze-chip actief';
+        el.textContent = '⏸ ' + Math.floor(rs/60) + 'm' + String(rs%60).padStart(2,'0') + 's';
+      }
     });
-  },1000);
+  }, 1000);
 }
 
 // ─────────────────────────────────────────────
 //  ZIEK
 // ─────────────────────────────────────────────
 window.openZiekModal = pre => {
-  document.getElementById('ziekSel').innerHTML='<option value="">— Kies —</option>'+(App.huidigAvond.team||[]).map((m,i)=>`<option value="${i}" ${i===pre?'selected':''}>${m.naam}</option>`).join('');
-  document.getElementById('ziekVervanger').innerHTML='<option value="">— Geen —</option>'+App.medewerkers.filter(m=>!(App.huidigAvond.team||[]).find(l=>l.naam===m.naam)).map(m=>`<option value="${m.naam}">${m.naam}</option>`).join('');
+  document.getElementById('ziekSel').innerHTML =
+    '<option value="">— Kies —</option>' +
+    (App.huidigAvond.team||[]).map((m,i) =>
+      `<option value="${i}" ${i===pre?'selected':''}>${m.naam}</option>`).join('');
+  document.getElementById('ziekVervanger').innerHTML =
+    '<option value="">— Geen —</option>' +
+    App.medewerkers
+      .filter(m => !(App.huidigAvond.team||[]).find(l => l.naam === m.naam))
+      .map(m => `<option value="${m.naam}">${m.naam}</option>`).join('');
   openModal('modalZiek');
 };
+
 window.slaZiekOp = () => {
-  const idx=parseInt(document.getElementById('ziekSel').value); if(isNaN(idx)||idx<0){ alert('Kies een medewerker.'); return; }
-  const v=document.getElementById('ziekVervanger').value, vs=document.getElementById('ziekStart').value, ve=document.getElementById('ziekEind').value;
-  App.huidigAvond.team[idx].ziek=true; App.huidigAvond.team[idx].vervanger=v||null;
-  if(v) App.huidigAvond.team.push({naam:v,start:vs,eind:ve,pauze:0,notitie:'Vervanger voor '+App.huidigAvond.team[idx].naam,karten:[],ziek:false,vervanger:null});
-  App._dirty=true; closeModal('modalZiek'); renderTeam(); showToast('Ziekmelding opgeslagen');
+  const idx = parseInt(document.getElementById('ziekSel').value);
+  if(isNaN(idx)||idx<0){ alert('Kies een medewerker.'); return; }
+  const v  = document.getElementById('ziekVervanger').value;
+  const vs = document.getElementById('ziekStart').value;
+  const ve = document.getElementById('ziekEind').value;
+  App.huidigAvond.team[idx].ziek      = true;
+  App.huidigAvond.team[idx].vervanger = v || null;
+  if(v) App.huidigAvond.team.push({ naam:v, start:vs, eind:ve, pauze:0,
+    notitie:'Vervanger voor '+App.huidigAvond.team[idx].naam, karten:[], ziek:false, vervanger:null });
+  App._dirty = true; closeModal('modalZiek'); renderTeam(); showToast('Ziekmelding opgeslagen');
 };
 
 // ─────────────────────────────────────────────
 //  MEDEWERKERS CLOUD
 // ─────────────────────────────────────────────
-window.openNieuwMedewModal = () => { document.getElementById('nieuwMedewNaam').value=''; document.getElementById('nieuwMedewFunctie').value=''; openModal('modalNieuwMedew'); };
+window.openNieuwMedewModal = () => {
+  document.getElementById('nieuwMedewNaam').value    = '';
+  document.getElementById('nieuwMedewFunctie').value = '';
+  openModal('modalNieuwMedew');
+};
+
 window.slaaNieuwMedewOp = async () => {
-  const naam=document.getElementById('nieuwMedewNaam').value.trim(), functie=document.getElementById('nieuwMedewFunctie').value.trim();
+  const naam    = document.getElementById('nieuwMedewNaam').value.trim();
+  const functie = document.getElementById('nieuwMedewFunctie').value.trim();
   if(!naam){ alert('Naam vereist.'); return; }
   setSyncStatus('bezig');
   try {
-    const fbId=await fbAdd('accounts/'+App.user+'/medewerkers',{naam,functie,created:Date.now()});
-    App.medewerkers.push({id:fbId,fbId,naam,functie}); App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
-    setSyncStatus('ok'); closeModal('modalNieuwMedew'); renderMedewBeheer(); vulLeiderSelect(); showToast('Medewerker opgeslagen');
-  } catch(e){ setSyncStatus('fout'); showToast('Fout: '+e.message); }
+    const fbId = await fbAdd('accounts/' + App.uid + '/medewerkers', { naam, functie, created:Date.now() });
+    App.medewerkers.push({ id:fbId, fbId, naam, functie });
+    App.medewerkers.sort((a,b) => a.naam.localeCompare(b.naam));
+    setSyncStatus('ok'); closeModal('modalNieuwMedew'); renderMedewBeheer(); vulLeiderSelect();
+    showToast('Medewerker opgeslagen');
+  } catch(e){ setSyncStatus('fout'); showToast('Fout: ' + e.message); }
 };
+
 window.verwijderMedew = async fbId => {
   if(!confirm('Medewerker verwijderen?')) return;
-  try { await fbDel('accounts/'+App.user+'/medewerkers/'+fbId); App.medewerkers=App.medewerkers.filter(m=>m.fbId!==fbId); renderMedewBeheer(); showToast('Verwijderd'); }
-  catch(e){ showToast('Fout: '+e.message); }
+  try {
+    await fbDel('accounts/' + App.uid + '/medewerkers/' + fbId);
+    App.medewerkers = App.medewerkers.filter(m => m.fbId !== fbId);
+    renderMedewBeheer(); showToast('Verwijderd');
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
+
 function renderMedewBeheer(){
-  const c=document.getElementById('medewContent');
-  if(!App.medewerkers.length){ c.innerHTML='<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>'; return; }
-  c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Actie</th></tr></thead><tbody>'
-    +App.medewerkers.map(m=>`<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td><td><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`).join('')
-    +'</tbody></table></div>';
+  const c = document.getElementById('medewContent');
+  if(!App.medewerkers.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>';
+    return;
+  }
+  c.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Actie</th></tr></thead><tbody>'
+    + App.medewerkers.map(m =>
+        `<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td>
+         <td><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`
+      ).join('')
+    + '</tbody></table></div>';
 }
 
 // ─────────────────────────────────────────────
 //  LEIDERS CLOUD
 // ─────────────────────────────────────────────
-window.openNieuwLeiderModal = () => { document.getElementById('nieuwLeiderNaam').value=''; openModal('modalNieuwLeider'); };
+window.openNieuwLeiderModal = () => { document.getElementById('nieuwLeiderNaam').value = ''; openModal('modalNieuwLeider'); };
+
 window.slaaNieuwLeiderOp = async () => {
-  const naam=document.getElementById('nieuwLeiderNaam').value.trim(), functie=document.getElementById('nieuwLeiderFunctie').value;
+  const naam    = document.getElementById('nieuwLeiderNaam').value.trim();
+  const functie = document.getElementById('nieuwLeiderFunctie').value;
   if(!naam){ alert('Naam vereist.'); return; }
   setSyncStatus('bezig');
   try {
-    const fbId=await fbAdd('accounts/'+App.user+'/leiders',{naam,functie,created:Date.now()});
-    App.leiders.push({fbId,naam,functie}); setSyncStatus('ok');
-    closeModal('modalNieuwLeider'); renderLeidersBeheer(); vulLeiderSelect(); showToast('Leider opgeslagen');
-  } catch(e){ setSyncStatus('fout'); showToast('Fout: '+e.message); }
+    const fbId = await fbAdd('accounts/' + App.uid + '/leiders', { naam, functie, created:Date.now() });
+    App.leiders.push({ fbId, naam, functie });
+    setSyncStatus('ok'); closeModal('modalNieuwLeider'); renderLeidersBeheer(); vulLeiderSelect();
+    showToast('Leider opgeslagen');
+  } catch(e){ setSyncStatus('fout'); showToast('Fout: ' + e.message); }
 };
+
 window.verwijderLeider = async fbId => {
   if(!confirm('Leider verwijderen?')) return;
-  try { await fbDel('accounts/'+App.user+'/leiders/'+fbId); App.leiders=App.leiders.filter(l=>l.fbId!==fbId); renderLeidersBeheer(); vulLeiderSelect(); showToast('Verwijderd'); }
-  catch(e){ showToast('Fout: '+e.message); }
+  try {
+    await fbDel('accounts/' + App.uid + '/leiders/' + fbId);
+    App.leiders = App.leiders.filter(l => l.fbId !== fbId);
+    renderLeidersBeheer(); vulLeiderSelect(); showToast('Verwijderd');
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
+
 function renderLeidersBeheer(){
-  const c=document.getElementById('leidersContent');
-  if(!App.leiders.length){ c.innerHTML='<div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Nog geen leiders.</div></div>'; return; }
-  c.innerHTML='<div class="card">'+App.leiders.map(l=>`<div class="leider-card"><div><div style="font-weight:900;font-size:.95rem">${l.naam}</div><span class="tag">${l.functie||'—'}</span></div><button class="btn btn-danger btn-sm" onclick="verwijderLeider('${l.fbId}')">Verwijder</button></div>`).join('')+'</div>';
+  const c = document.getElementById('leidersContent');
+  if(!App.leiders.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Nog geen leiders.</div></div>';
+    return;
+  }
+  c.innerHTML = '<div class="card">'
+    + App.leiders.map(l =>
+        `<div class="leider-card">
+          <div><div style="font-weight:900;font-size:.95rem">${l.naam}</div><span class="tag">${l.functie||'—'}</span></div>
+          <button class="btn btn-danger btn-sm" onclick="verwijderLeider('${l.fbId}')">Verwijder</button>
+        </div>`
+      ).join('')
+    + '</div>';
 }
 
 // ─────────────────────────────────────────────
 //  LIVE TAB
 // ─────────────────────────────────────────────
 window.renderLive = () => {
-  const c=document.getElementById('liveContent'), av=App.huidigAvond, pool=av.karrenPool||[], team=av.team||[], now=Date.now();
-  if(!team.length&&!pool.length){ c.innerHTML='<div class="empty"><div class="empty-icon">🔴</div><div class="empty-text">Geen actieve avond met medewerkers of karren.</div></div>'; return; }
-  let html='';
-  const actief=pool.filter(k=>k.timerStart&&!k.timerStop);
+  const c    = document.getElementById('liveContent');
+  const av   = App.huidigAvond;
+  const pool = av.karrenPool || [];
+  const team = av.team || [];
+  const now  = Date.now();
+
+  if(!team.length && !pool.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🔴</div><div class="empty-text">Geen actieve avond met medewerkers of karren.</div></div>';
+    return;
+  }
+
+  let html = '';
+  const actief = pool.filter(k => k.timerStart && !k.timerStop);
   if(actief.length){
-    html+=`<div class="live-panel"><div class="live-panel-title"><div class="live-dot"></div> Actieve karren (${actief.length})</div><div class="kar-live-grid">`;
-    actief.forEach(kar=>{ const pi=pool.indexOf(kar), secs=Math.floor((now-kar.timerStart)/1000), ov=kar.verwacht?Math.round(((secs/60-kar.verwacht)/kar.verwacht)*100):null;
-      html+=`<div class="kar-live-card actief"><div class="kar-live-naam">${kar.naam}</div><div class="kar-live-personen">${kar.personen&&kar.personen.length?'👥 '+kar.personen.join(', '):'—'}</div><div class="kar-live-timer actief" id="live_${pi}">${fmtSecs(secs)}</div>${kar.verwacht?`<div style="font-size:.72rem;color:var(--text3);margin-top:3px">Verwacht: ${kar.verwacht} min</div>`:''} ${ov>=20?`<div class="overschrijding" style="margin-top:5px">⚠ +${ov}% over!</div>`:''}<button class="timer-stop" style="margin-top:8px;width:100%;justify-content:center" onclick="stopTimer(${pi});renderLive()">⏹ Stop</button></div>`;
+    html += `<div class="live-panel"><div class="live-panel-title"><div class="live-dot"></div> Actieve karren (${actief.length})</div><div class="kar-live-grid">`;
+    actief.forEach(kar => {
+      const pi   = pool.indexOf(kar);
+      const secs = Math.floor((now - kar.timerStart) / 1000);
+      const ov   = kar.verwacht ? Math.round(((secs/60 - kar.verwacht) / kar.verwacht) * 100) : null;
+      html += `<div class="kar-live-card actief">
+        <div class="kar-live-naam">${kar.naam}</div>
+        <div class="kar-live-personen">${kar.personen&&kar.personen.length?'👥 '+kar.personen.join(', '):'—'}</div>
+        <div class="kar-live-timer actief" id="live_${pi}">${fmtSecs(secs)}</div>
+        ${kar.verwacht?`<div style="font-size:.72rem;color:var(--text3);margin-top:3px">Verwacht: ${kar.verwacht} min</div>`:''}
+        ${ov>=20?`<div class="overschrijding" style="margin-top:5px">⚠ +${ov}% over!</div>`:''}
+        <button class="timer-stop" style="margin-top:8px;width:100%;justify-content:center" onclick="stopTimer(${pi});renderLive()">⏹ Stop</button>
+      </div>`;
     });
-    html+='</div></div>';
+    html += '</div></div>';
   }
-  const pauzes=Object.entries(App.pauzeTimers);
+
+  const pauzes = Object.entries(App.pauzeTimers);
   if(pauzes.length){
-    html+=`<div class="live-panel"><div class="live-panel-title">☕ Pauzes (${pauzes.length})</div><div class="kar-live-grid">`;
-    pauzes.forEach(([naam,p])=>{ const rs=Math.max(0,Math.round((p.duur-(now-p.start)/60000)*60)), isL=rs<=0;
-      html+=`<div class="kar-live-card ${isL?'':'actief'}"><div class="kar-live-naam">${naam.split(' ')[0]}</div><div class="kar-live-personen">${naam}</div><div class="kar-live-timer ${isL?'over':''}">${isL?'⚠ TERUG!':Math.floor(rs/60)+'m'+String(rs%60).padStart(2,'0')+'s rest'}</div><button class="btn btn-ghost btn-xs" style="margin-top:6px" onclick="stopPauze('${naam}');renderLive()">✓ Terug</button></div>`;
+    html += `<div class="live-panel"><div class="live-panel-title">☕ Pauzes (${pauzes.length})</div><div class="kar-live-grid">`;
+    pauzes.forEach(([naam,p]) => {
+      const rs = Math.max(0, Math.round((p.duur - (now-p.start)/60000) * 60));
+      const isL = rs <= 0;
+      html += `<div class="kar-live-card ${isL?'':'actief'}">
+        <div class="kar-live-naam">${naam.split(' ')[0]}</div>
+        <div class="kar-live-personen">${naam}</div>
+        <div class="kar-live-timer ${isL?'over':''}">${isL?'⚠ TERUG!':Math.floor(rs/60)+'m'+String(rs%60).padStart(2,'0')+'s rest'}</div>
+        <button class="btn btn-ghost btn-xs" style="margin-top:6px" onclick="stopPauze('${naam}');renderLive()">✓ Terug</button>
+      </div>`;
     });
-    html+='</div></div>';
+    html += '</div></div>';
   }
+
   if(pool.length){
-    html+=`<div class="live-panel"><div class="live-panel-title">🛒 Alle karren (${pool.length})</div><div class="kar-live-grid">`;
-    pool.forEach((k,i)=>{ const done=k.werkelijk&&k.timerStop, bz=k.timerStart&&!k.timerStop, secs=bz?Math.floor((now-k.timerStart)/1000):0;
-      html+=`<div class="kar-live-card ${done?'klaar':bz?'actief':''}"><div class="kar-live-naam">${k.naam}</div><div class="kar-live-personen">${k.personen&&k.personen.length?'👥 '+k.personen.join(', '):'—'}</div>${done?`<div class="kar-live-timer" style="color:var(--green)">✓ ${k.werkelijk} min</div>`:bz?`<div class="kar-live-timer actief" id="live_${i}">${fmtSecs(secs)}</div>`:`<div class="kar-live-timer" style="color:var(--text3)">Verwacht: ${k.verwacht||'—'} min</div>`}${done?'':bz?`<button class="timer-stop btn-xs" style="margin-top:6px" onclick="stopTimer(${i});renderLive()">⏹ Stop</button>`:`<button class="timer-start" style="margin-top:6px" onclick="startTimer(${i});renderLive()">▶ Start</button>`}</div>`;
+    html += `<div class="live-panel"><div class="live-panel-title">🛒 Alle karren (${pool.length})</div><div class="kar-live-grid">`;
+    pool.forEach((k,i) => {
+      const done = k.werkelijk && k.timerStop;
+      const bz   = k.timerStart && !k.timerStop;
+      const secs = bz ? Math.floor((now - k.timerStart) / 1000) : 0;
+      html += `<div class="kar-live-card ${done?'klaar':bz?'actief':''}">
+        <div class="kar-live-naam">${k.naam}</div>
+        <div class="kar-live-personen">${k.personen&&k.personen.length?'👥 '+k.personen.join(', '):'—'}</div>
+        ${done?`<div class="kar-live-timer" style="color:var(--green)">✓ ${k.werkelijk} min</div>`
+              :bz?`<div class="kar-live-timer actief" id="live_${i}">${fmtSecs(secs)}</div>`
+                 :`<div class="kar-live-timer" style="color:var(--text3)">Verwacht: ${k.verwacht||'—'} min</div>`}
+        ${done?'':bz
+          ?`<button class="timer-stop btn-xs" style="margin-top:6px" onclick="stopTimer(${i});renderLive()">⏹ Stop</button>`
+          :`<button class="timer-start" style="margin-top:6px" onclick="startTimer(${i});renderLive()">▶ Start</button>`}
+      </div>`;
     });
-    html+='</div></div>';
+    html += '</div></div>';
   }
+
   if(team.length){
-    html+=`<div class="live-panel"><div class="live-panel-title">👥 Team (${team.length})</div><div class="kar-live-grid">`;
-    team.forEach(lid=>{ const ka=lid.karten||[], gd=ka.filter(k=>k.werkelijk>0).length;
-      html+=`<div class="kar-live-card"><div class="kar-live-naam">${lid.naam}</div><div class="kar-live-personen">${lid.start}–${lid.eind}${lid.pauze?' · ☕'+lid.pauze+'min':''}</div><div style="font-size:.78rem;margin-top:5px;color:var(--text3)">Karren: ${gd}/${ka.length} klaar</div>${App.pauzeTimers[lid.naam]?`<div style="margin-top:5px"><span class="pauze-chip actief" id="pauze_${safeId(lid.naam)}">⏸ pauze</span></div>`:''}</div>`;
+    html += `<div class="live-panel"><div class="live-panel-title">👥 Team (${team.length})</div><div class="kar-live-grid">`;
+    team.forEach(lid => {
+      const ka = lid.karten || [];
+      const gd = ka.filter(k => k.werkelijk > 0).length;
+      html += `<div class="kar-live-card">
+        <div class="kar-live-naam">${lid.naam}</div>
+        <div class="kar-live-personen">${lid.start}–${lid.eind}${lid.pauze?' · ☕'+lid.pauze+'min':''}</div>
+        <div style="font-size:.78rem;margin-top:5px;color:var(--text3)">Karren: ${gd}/${ka.length} klaar</div>
+        ${App.pauzeTimers[lid.naam]?`<div style="margin-top:5px"><span class="pauze-chip actief" id="pauze_${safeId(lid.naam)}">⏸ pauze</span></div>`:''}
+      </div>`;
     });
-    html+='</div></div>';
+    html += '</div></div>';
   }
-  c.innerHTML=html;
+
+  c.innerHTML = html;
 };
 
 // ─────────────────────────────────────────────
 //  OVERZICHT
 // ─────────────────────────────────────────────
 function renderOverzicht(){
-  const c=document.getElementById('overzichtContent'), av=App.huidigAvond, norm=av.norm||80;
-  if(!av.team||!av.team.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Voeg eerst medewerkers toe.</div></div>'; document.getElementById('overzichtTitel').textContent=''; return; }
-  const d=new Date(av.datum); document.getElementById('overzichtTitel').textContent=cap(av.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
-  let totU=0,totT=0; av.team.forEach(l=>{ const u=berekenUren(l.start,l.eind,l.pauze); totU+=u; totT+=Math.round(u*norm); });
-  const bU=(av.colli/norm).toFixed(1), vU=(totU-parseFloat(bU)).toFixed(1), pct=Math.min(100,Math.round(totT/av.colli*100));
-  const maxT=Math.max(...av.team.map(l=>Math.round(berekenUren(l.start,l.eind,l.pauze)*norm)));
-  const bars=av.team.map(l=>{ const t=Math.round(berekenUren(l.start,l.eind,l.pauze)*norm), h=maxT>0?Math.round(t/maxT*100):0; return `<div class="bar-wrap"><div class="bar-val">${t}</div><div class="bar" style="height:${h}%"></div><div class="bar-label">${l.naam.split(' ')[0]}</div></div>`; }).join('');
-  c.innerHTML=`${av.leidinggevende?`<div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px"><span>🔑</span><div><div style="font-size:.7rem;color:var(--text3);font-weight:800;text-transform:uppercase">Leidinggevende</div><div style="font-weight:900">${av.leidinggevende}</div></div></div>`:''}
+  const c    = document.getElementById('overzichtContent');
+  const av   = App.huidigAvond;
+  const norm = av.norm || 80;
+
+  if(!av.team || !av.team.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Voeg eerst medewerkers toe.</div></div>';
+    document.getElementById('overzichtTitel').textContent = '';
+    return;
+  }
+
+  const d = new Date(av.datum);
+  document.getElementById('overzichtTitel').textContent =
+    cap(av.dag) + ' ' + d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+
+  let totU=0, totT=0;
+  av.team.forEach(l => { const u=berekenUren(l.start,l.eind,l.pauze); totU+=u; totT+=Math.round(u*norm); });
+
+  const bU  = (av.colli/norm).toFixed(1);
+  const vU  = (totU - parseFloat(bU)).toFixed(1);
+  const pct = Math.min(100, Math.round(totT/av.colli*100));
+  const maxT= Math.max(...av.team.map(l => Math.round(berekenUren(l.start,l.eind,l.pauze)*norm)));
+
+  const bars = av.team.map(l => {
+    const t = Math.round(berekenUren(l.start,l.eind,l.pauze)*norm);
+    const h = maxT > 0 ? Math.round(t/maxT*100) : 0;
+    return `<div class="bar-wrap"><div class="bar-val">${t}</div><div class="bar" style="height:${h}%"></div><div class="bar-label">${l.naam.split(' ')[0]}</div></div>`;
+  }).join('');
+
+  c.innerHTML = `
+    ${av.leidinggevende?`<div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <span>🔑</span><div><div style="font-size:.7rem;color:var(--text3);font-weight:800;text-transform:uppercase">Leidinggevende</div>
+      <div style="font-weight:900">${av.leidinggevende}</div></div></div>`:''}
     <div class="stats-grid">
       <div class="stat-card"><div class="stat-val" style="color:var(--red)">${av.team.length}</div><div class="stat-label">Medewerkers</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--orange)">${totU.toFixed(1)}u</div><div class="stat-label">Vuluren</div></div>
@@ -1359,56 +1811,87 @@ function renderOverzicht(){
     <div class="card" style="margin-bottom:14px"><div class="card-title">Target per medewerker</div><div class="bar-chart">${bars}</div></div>
     <div class="card" style="margin-bottom:14px">
       <div class="card-title" style="margin-bottom:10px">📦 Vracht afgedekt</div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:7px;flex-wrap:wrap;gap:4px"><span style="font-size:.82rem;color:var(--text3)">Team target vs vracht</span><span>${totT}/${av.colli} (${pct}%)</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:7px;flex-wrap:wrap;gap:4px">
+        <span style="font-size:.82rem;color:var(--text3)">Team target vs vracht</span><span>${totT}/${av.colli} (${pct}%)</span>
+      </div>
       <div class="progress-bg"><div class="progress-fill ${pct>=100?'fill-green':pct>=70?'fill-orange':'fill-red'}" style="width:${pct}%"></div></div>
-      <div style="margin-top:8px;font-size:.78rem;${pct>=100?'color:var(--green)':'color:var(--red)'}">${pct>=100?'✓ Afgedekt.':'⚠ '+(av.colli-totT)+' colli tekort.'}</div>
+      <div style="margin-top:8px;font-size:.78rem;${pct>=100?'color:var(--green)':'color:var(--red)'}">
+        ${pct>=100?'✓ Afgedekt.':'⚠ '+(av.colli-totT)+' colli tekort.'}
+      </div>
     </div>
     <div class="card">
       <div class="card-title" style="margin-bottom:14px">👥 Prestaties</div>
       <div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Uren</th><th>Target</th><th>Karren</th><th>Status</th></tr></thead><tbody>
-      ${av.team.map(lid=>{ const u=berekenUren(lid.start,lid.eind,lid.pauze),t=Math.round(u*norm),ka=lid.karten||[],tV=ka.reduce((s,k)=>s+(k.verwacht||0),0),tW=ka.reduce((s,k)=>s+(k.werkelijk||0),0),p=tV>0&&tW>0?tW/tV:null; let st='<span class="badge badge-bezig">⏳ Bezig</span>'; if(p!==null){ if(p<=.9)st='<span class="badge badge-snel">⚡ Snel</span>'; else if(p<=1.1)st='<span class="badge badge-ok">✓ Op tijd</span>'; else st='<span class="badge badge-langzaam">⚠ Langzaam</span>'; } return `<tr><td><strong>${lid.naam}</strong><br><span class="tag">${lid.start}–${lid.eind}</span></td><td class="mono">${u.toFixed(1)}u</td><td class="mono">${t}</td><td class="mono">${ka.length}</td><td>${st}</td></tr>`; }).join('')}
+      ${av.team.map(lid => {
+        const u=berekenUren(lid.start,lid.eind,lid.pauze), t=Math.round(u*norm),
+              ka=lid.karten||[], tV=ka.reduce((s,k)=>s+(k.verwacht||0),0),
+              tW=ka.reduce((s,k)=>s+(k.werkelijk||0),0), p=tV>0&&tW>0?tW/tV:null;
+        let st = '<span class="badge badge-bezig">⏳ Bezig</span>';
+        if(p!==null){ if(p<=.9)st='<span class="badge badge-snel">⚡ Snel</span>'; else if(p<=1.1)st='<span class="badge badge-ok">✓ Op tijd</span>'; else st='<span class="badge badge-langzaam">⚠ Langzaam</span>'; }
+        return `<tr><td><strong>${lid.naam}</strong><br><span class="tag">${lid.start}–${lid.eind}</span></td><td class="mono">${u.toFixed(1)}u</td><td class="mono">${t}</td><td class="mono">${ka.length}</td><td>${st}</td></tr>`;
+      }).join('')}
       </tbody></table></div>
     </div>`;
 }
 
 // ─────────────────────────────────────────────
-//  GESCHIEDENIS  (Firestore — alle filials)
+//  GESCHIEDENIS  (Firestore — alle filialen)
 // ─────────────────────────────────────────────
 window.setHistFilter = f => {
-  App.histFilter=f;
-  ['Alle','Afgesloten','Mijn'].forEach(v=>{ const b=document.getElementById('hf'+v); if(b){ b.style.background=v.toLowerCase()===f?'var(--red)':''; b.style.color=v.toLowerCase()===f?'#fff':''; } });
+  App.histFilter = f;
+  ['Alle','Afgesloten','Mijn'].forEach(v => {
+    const b = document.getElementById('hf'+v);
+    if(b){ b.style.background = v.toLowerCase()===f ? 'var(--red)' : ''; b.style.color = v.toLowerCase()===f ? '#fff' : ''; }
+  });
   renderHistory();
 };
+
 window.renderHistory = async () => {
-  const c=document.getElementById('histContent');
-  c.innerHTML='<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Laden uit cloud…</div></div>';
+  const c = document.getElementById('histContent');
+  c.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Laden uit cloud…</div></div>';
   try {
-    const zoek=(document.getElementById('histZoek')?.value||'').toLowerCase().trim();
+    const zoek = (document.getElementById('histZoek')?.value || '').toLowerCase().trim();
     let q;
-    if(App.histFilter==='mijn')        q=query(collection(db,'avonden'),where('_account','==',App.user),orderBy('created','desc'));
-    else if(App.histFilter==='afgesloten') q=query(collection(db,'avonden'),where('afgesloten','==',true),orderBy('created','desc'));
-    else                               q=query(collection(db,'avonden'),orderBy('created','desc'));
-    const snap=await getDocs(q);
-    let lijst=snap.docs.map(d=>({...d.data(),fbId:d.id}));
-    if(zoek) lijst=lijst.filter(av=>
-      (av.dag||'').toLowerCase().includes(zoek)||
-      (av.datum||'').includes(zoek)||
-      (av._filiaal||'').toLowerCase().includes(zoek)||
-      (av.leidinggevende||'').toLowerCase().includes(zoek)||
-      (av._leider||'').toLowerCase().includes(zoek)||
-      (av.team||[]).some(l=>l.naam.toLowerCase().includes(zoek))
+    if(App.histFilter === 'mijn')
+      q = query(collection(db,'avonden'), where('_account','==', App.uid), orderBy('created','desc'));
+    else if(App.histFilter === 'afgesloten')
+      q = query(collection(db,'avonden'), where('afgesloten','==',true), orderBy('created','desc'));
+    else
+      q = query(collection(db,'avonden'), orderBy('created','desc'));
+
+    const snap  = await getDocs(q);
+    let lijst   = snap.docs.map(d => ({ ...d.data(), fbId:d.id }));
+    if(zoek) lijst = lijst.filter(av =>
+      (av.dag||'').toLowerCase().includes(zoek) ||
+      (av.datum||'').includes(zoek) ||
+      (av._filiaal||'').toLowerCase().includes(zoek) ||
+      (av.leidinggevende||'').toLowerCase().includes(zoek) ||
+      (av._leider||'').toLowerCase().includes(zoek) ||
+      (av.team||[]).some(l => l.naam.toLowerCase().includes(zoek))
     );
-    if(!lijst.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">'+(zoek?'Geen resultaten.':'Nog geen avonden.')+'</div></div>'; return; }
-    c.innerHTML=lijst.map(av=>{
-      const d=new Date(av.datum), eigen=av._account===App.user;
-      const u=(av.team||[]).reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
-      const filTag=av._filiaal&&av._filiaal!==App.filiaal?`<span class="tag">🏪 ${av._filiaal}</span>`:'';
-      const lTag=(av.leidinggevende||av._leider)?`<span class="tag">🔑 ${av.leidinggevende||av._leider}</span>`:'';
+
+    if(!lijst.length){
+      c.innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">' + (zoek?'Geen resultaten.':'Nog geen avonden.') + '</div></div>';
+      return;
+    }
+
+    c.innerHTML = lijst.map(av => {
+      const d    = new Date(av.datum);
+      const eigen = av._account === App.uid;
+      const u    = (av.team||[]).reduce((s,l) => s + berekenUren(l.start,l.eind,l.pauze), 0);
+      const filTag = av._filiaal && av._filiaal !== App.filiaal ? `<span class="tag">🏪 ${av._filiaal}</span>` : '';
+      const lTag   = (av.leidinggevende||av._leider) ? `<span class="tag">🔑 ${av.leidinggevende||av._leider}</span>` : '';
       return `<div class="hist-avond ${av.afgesloten?'afgesloten':''}">
         <div class="hist-top">
           <div>
             <div style="font-weight:900;font-size:1rem">${av.afgesloten?'✓ ':''}<strong>${cap(av.dag||'')}</strong></div>
-            <div class="hist-info"><span class="tag">${d.toLocaleDateString('nl-NL')}</span>${filTag}${lTag}<span class="tag">${(av.team||[]).length} pers.</span><span class="tag">${u.toFixed(1)}u</span><span class="tag">${av.werkelijkColli||av.colli} colli</span>${av.afgesloten?'<span class="badge badge-ok">✓ Afgesloten</span>':''}</div>
+            <div class="hist-info">
+              <span class="tag">${d.toLocaleDateString('nl-NL')}</span>${filTag}${lTag}
+              <span class="tag">${(av.team||[]).length} pers.</span>
+              <span class="tag">${u.toFixed(1)}u</span>
+              <span class="tag">${av.werkelijkColli||av.colli} colli</span>
+              ${av.afgesloten?'<span class="badge badge-ok">✓ Afgesloten</span>':''}
+            </div>
             ${av.eindnotitie?`<div style="font-size:.78rem;color:var(--text3);margin-top:5px;font-style:italic">📝 ${av.eindnotitie}</div>`:''}
           </div>
           <div class="hist-actions">
@@ -1418,118 +1901,244 @@ window.renderHistory = async () => {
         </div>
       </div>`;
     }).join('');
-  } catch(e){ c.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Fout: '+e.message+'</div></div>'; }
+  } catch(e){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Fout: ' + e.message + '</div></div>';
+  }
 };
 
 // ─────────────────────────────────────────────
 //  STATISTIEKEN
 // ─────────────────────────────────────────────
 function renderStatistieken(){
-  const c=document.getElementById('statsContent'), alle=App.avonden.filter(av=>av.team&&av.team.length>0);
-  if(!alle.length){ c.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div>'; return; }
-  const stats={};
-  alle.forEach(av=>{ const norm=av.norm||80; av.team.forEach(lid=>{
-    if(!stats[lid.naam]) stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totKarren:0,opTijd:0,snel:0,langzaam:0,record:null,recordNaam:'',recordMin:0,recordVerwacht:0};
-    const s=stats[lid.naam], u=berekenUren(lid.start,lid.eind,lid.pauze), ka=lid.karten||[], tV=ka.reduce((x,k)=>x+(k.verwacht||0),0), tW=ka.reduce((x,k)=>x+(k.werkelijk||0),0);
-    s.avonden++; s.totUren+=u; s.totKarren+=ka.length;
-    if(tV>0&&tW>0){ const p=tW/tV; if(p<=.9)s.snel++; else if(p<=1.1)s.opTijd++; else s.langzaam++; }
-    ka.forEach(k=>{ if(k.werkelijk>0&&k.verwacht>0){ const r=k.werkelijk/k.verwacht; if(s.record===null||r<s.record){s.record=r;s.recordNaam=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;} } });
-  });});
-  c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Record</th></tr></thead><tbody>'
-    +Object.values(stats).sort((a,b)=>b.avonden-a.avonden).map(s=>{
-      const pg=s.opTijd+s.snel, pt=pg+s.langzaam, pct=pt>0?Math.round(pg/pt*100):null;
-      const bk=pct>=80?'background:var(--green)':pct>=50?'background:var(--orange)':'background:var(--red)';
-      return `<tr><td><strong>${s.naam}</strong></td><td class="mono">${s.avonden}</td><td class="mono">${s.totUren.toFixed(1)}u</td><td class="mono">${s.totKarren}</td><td>${pct!==null?`<div style="font-size:.78rem;font-weight:700">${pct}%</div><div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${pct}%;${bk}"></div></div>`:'—'}</td><td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--orange)">${s.snel}⚡</span> <span style="color:var(--red)">${s.langzaam}⚠</span></td><td>${s.record!==null?`<span style="font-size:.7rem;background:var(--orange-dim);border:1px solid var(--orange);color:#b45309;border-radius:6px;padding:2px 7px">🏆 ${s.recordNaam} ${s.recordMin}/${s.recordVerwacht}min</span>`:'—'}</td></tr>`;
-    }).join('')+'</tbody></table></div>';
+  const c    = document.getElementById('statsContent');
+  const alle = App.avonden.filter(av => av.team && av.team.length > 0);
+  if(!alle.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div>';
+    return;
+  }
+
+  const stats = {};
+  alle.forEach(av => {
+    const norm = av.norm || 80;
+    av.team.forEach(lid => {
+      if(!stats[lid.naam]) stats[lid.naam] = { naam:lid.naam, avonden:0, totUren:0, totKarren:0, opTijd:0, snel:0, langzaam:0, record:null, recordNaam:'', recordMin:0, recordVerwacht:0 };
+      const s  = stats[lid.naam];
+      const u  = berekenUren(lid.start,lid.eind,lid.pauze);
+      const ka = lid.karten || [];
+      const tV = ka.reduce((x,k) => x+(k.verwacht||0),0);
+      const tW = ka.reduce((x,k) => x+(k.werkelijk||0),0);
+      s.avonden++; s.totUren+=u; s.totKarren+=ka.length;
+      if(tV>0&&tW>0){ const p=tW/tV; if(p<=.9)s.snel++; else if(p<=1.1)s.opTijd++; else s.langzaam++; }
+      ka.forEach(k => {
+        if(k.werkelijk>0&&k.verwacht>0){
+          const r=k.werkelijk/k.verwacht;
+          if(s.record===null||r<s.record){ s.record=r; s.recordNaam=k.naam; s.recordMin=k.werkelijk; s.recordVerwacht=k.verwacht; }
+        }
+      });
+    });
+  });
+
+  c.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Record</th></tr></thead><tbody>'
+    + Object.values(stats).sort((a,b) => b.avonden-a.avonden).map(s => {
+        const pg  = s.opTijd + s.snel;
+        const pt  = pg + s.langzaam;
+        const pct = pt > 0 ? Math.round(pg/pt*100) : null;
+        const bk  = pct>=80?'background:var(--green)':pct>=50?'background:var(--orange)':'background:var(--red)';
+        return `<tr>
+          <td><strong>${s.naam}</strong></td>
+          <td class="mono">${s.avonden}</td>
+          <td class="mono">${s.totUren.toFixed(1)}u</td>
+          <td class="mono">${s.totKarren}</td>
+          <td>${pct!==null?`<div style="font-size:.78rem;font-weight:700">${pct}%</div><div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${pct}%;${bk}"></div></div>`:'—'}</td>
+          <td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--orange)">${s.snel}⚡</span> <span style="color:var(--red)">${s.langzaam}⚠</span></td>
+          <td>${s.record!==null?`<span style="font-size:.7rem;background:var(--orange-dim);border:1px solid var(--orange);color:#b45309;border-radius:6px;padding:2px 7px">🏆 ${s.recordNaam} ${s.recordMin}/${s.recordVerwacht}min</span>`:'—'}</td>
+        </tr>`;
+      }).join('')
+    + '</tbody></table></div>';
 }
 
 // ─────────────────────────────────────────────
 //  SJABLONEN CLOUD
 // ─────────────────────────────────────────────
 window.slaAlsSjabloon = async () => {
-  if(!App.huidigAvond.team||!App.huidigAvond.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
-  const naam=prompt('Naam voor sjabloon:'); if(!naam) return;
+  if(!App.huidigAvond.team || !App.huidigAvond.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
+  const naam = prompt('Naam voor sjabloon:'); if(!naam) return;
   setSyncStatus('bezig');
   try {
-    const fbId=await fbAdd('accounts/'+App.user+'/sjablonen',{naam:naam.trim(),dag:App.huidigAvond.dag,norm:App.huidigAvond.norm,team:App.huidigAvond.team.map(l=>({naam:l.naam,start:l.start,eind:l.eind,pauze:l.pauze,notitie:l.notitie||''})),created:Date.now()});
-    App.sjablonen.push({fbId,naam:naam.trim()}); setSyncStatus('ok'); renderSjablonen(); showToast('Sjabloon opgeslagen!');
-  } catch(e){ setSyncStatus('fout'); showToast('Fout: '+e.message); }
+    const fbId = await fbAdd('accounts/' + App.uid + '/sjablonen', {
+      naam: naam.trim(), dag:App.huidigAvond.dag, norm:App.huidigAvond.norm,
+      team: App.huidigAvond.team.map(l => ({ naam:l.naam, start:l.start, eind:l.eind, pauze:l.pauze, notitie:l.notitie||'' })),
+      created: Date.now()
+    });
+    App.sjablonen.push({ fbId, naam:naam.trim() });
+    setSyncStatus('ok'); renderSjablonen(); showToast('Sjabloon opgeslagen!');
+  } catch(e){ setSyncStatus('fout'); showToast('Fout: ' + e.message); }
 };
+
 window.laadSjabloon = async fbId => {
   try {
-    const s=await fbGet('accounts/'+App.user+'/sjablonen/'+fbId); if(!s) return;
+    const s = await fbGet('accounts/' + App.uid + '/sjablonen/' + fbId); if(!s) return;
     if(!confirm('Team laden uit "'+s.naam+'"? Huidig team wordt overschreven.')) return;
-    App.huidigAvond.team=s.team.map(l=>({...l,karten:[],ziek:false,vervanger:null}));
+    App.huidigAvond.team = s.team.map(l => ({ ...l, karten:[], ziek:false, vervanger:null }));
     if(s.norm){ App.huidigAvond.norm=s.norm; document.getElementById('fNorm').value=s.norm; }
-    App._dirty=true; renderTeam(); goTab('avond'); showToast('Sjabloon "'+s.naam+'" geladen!');
-  } catch(e){ showToast('Fout: '+e.message); }
+    App._dirty = true; renderTeam(); goTab('avond'); showToast('Sjabloon "'+s.naam+'" geladen!');
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
+
 window.verwijderSjabloon = async fbId => {
   if(!confirm('Sjabloon verwijderen?')) return;
-  try { await fbDel('accounts/'+App.user+'/sjablonen/'+fbId); App.sjablonen=App.sjablonen.filter(s=>s.fbId!==fbId); renderSjablonen(); }
-  catch(e){ showToast('Fout: '+e.message); }
+  try {
+    await fbDel('accounts/' + App.uid + '/sjablonen/' + fbId);
+    App.sjablonen = App.sjablonen.filter(s => s.fbId !== fbId);
+    renderSjablonen();
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
+
 function renderSjablonen(){
-  const c=document.getElementById('sjablonenContent');
-  if(!App.sjablonen.length){ c.innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nog geen sjablonen.</div></div>'; return; }
-  c.innerHTML='<div class="sjabloon-grid">'+App.sjablonen.map(s=>`<div class="sjabloon-card"><div style="font-weight:900;font-size:.92rem;margin-bottom:3px">${s.naam}</div><div class="flex gap-6" style="margin-top:10px"><button class="btn btn-primary btn-sm" onclick="laadSjabloon('${s.fbId}')" style="flex:1">▶ Laden</button><button class="btn btn-danger btn-sm" onclick="verwijderSjabloon('${s.fbId}')">✕</button></div></div>`).join('')+'</div>';
+  const c = document.getElementById('sjablonenContent');
+  if(!App.sjablonen.length){
+    c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nog geen sjablonen.</div></div>';
+    return;
+  }
+  c.innerHTML = '<div class="sjabloon-grid">'
+    + App.sjablonen.map(s =>
+        `<div class="sjabloon-card">
+          <div style="font-weight:900;font-size:.92rem;margin-bottom:3px">${s.naam}</div>
+          <div class="flex gap-6" style="margin-top:10px">
+            <button class="btn btn-primary btn-sm" onclick="laadSjabloon('${s.fbId}')" style="flex:1">▶ Laden</button>
+            <button class="btn btn-danger btn-sm"  onclick="verwijderSjabloon('${s.fbId}')">✕</button>
+          </div>
+        </div>`
+      ).join('')
+    + '</div>';
 }
 
 // ─────────────────────────────────────────────
 //  AFSLUITEN & SAMENVATTING
 // ─────────────────────────────────────────────
-window.sluitAvondAf = () => { document.getElementById('afsluitGepland').value=App.huidigAvond.colli||0; document.getElementById('afsluitWerkelijk').value=''; document.getElementById('afsluitNotitie').value=''; openModal('modalAfsluiten'); };
+window.sluitAvondAf = () => {
+  document.getElementById('afsluitGepland').value   = App.huidigAvond.colli || 0;
+  document.getElementById('afsluitWerkelijk').value = '';
+  document.getElementById('afsluitNotitie').value   = '';
+  openModal('modalAfsluiten');
+};
+
 window.bevestigAfsluiten = async () => {
-  App.huidigAvond.afgesloten=true;
-  App.huidigAvond.werkelijkColli=+document.getElementById('afsluitWerkelijk').value||null;
-  App.huidigAvond.eindnotitie=document.getElementById('afsluitNotitie').value.trim();
-  App.huidigAvond.leidinggevende=document.getElementById('fLeider').value;
-  closeModal('modalAfsluiten'); await slaOp();
-  document.getElementById('afgeslotenTxt').textContent=(App.huidigAvond.werkelijkColli?App.huidigAvond.werkelijkColli+' colli verwerkt':'Avond afgerond')+(App.huidigAvond.eindnotitie?' — '+App.huidigAvond.eindnotitie:'');
+  App.huidigAvond.afgesloten    = true;
+  App.huidigAvond.werkelijkColli = +document.getElementById('afsluitWerkelijk').value || null;
+  App.huidigAvond.eindnotitie   = document.getElementById('afsluitNotitie').value.trim();
+  App.huidigAvond.leidinggevende = document.getElementById('fLeider').value;
+  closeModal('modalAfsluiten');
+  await slaOp();
+  document.getElementById('afgeslotenTxt').textContent =
+    (App.huidigAvond.werkelijkColli ? App.huidigAvond.werkelijkColli + ' colli verwerkt' : 'Avond afgerond') +
+    (App.huidigAvond.eindnotitie ? ' — ' + App.huidigAvond.eindnotitie : '');
   document.getElementById('afgeslotenBanner').classList.remove('hidden');
 };
 
 window.openSamenvatting = () => {
-  const av=App.huidigAvond, norm=av.norm||80; if(!av.team||!av.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
-  const d=new Date(av.datum); let totU=0,totT=0; av.team.forEach(l=>{ const u=berekenUren(l.start,l.eind,l.pauze); totU+=u; totT+=Math.round(u*norm); });
-  let txt='📦 VULPLOEG OVERZICHT — '+d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).toUpperCase()+'\n'+'━'.repeat(32)+'\n🏪 Filiaal:  '+App.filiaal+'\n'+(av.leidinggevende?'🔑 Leiding:  '+av.leidinggevende+'\n':'')+'🏷️  Vracht:   '+av.colli+' colli\n⏱️  Norm:     '+norm+' colli/uur\n👥  Team:     '+totU.toFixed(1)+' uur\n'+(parseFloat((totU-av.colli/norm).toFixed(1))>=0?'✅':'⚠️')+'  Dekking:  '+Math.min(100,Math.round(totT/av.colli*100))+'% ('+totT+'/'+av.colli+')\n\n👥 TEAM\n';
-  av.team.forEach(l=>{ const u=berekenUren(l.start,l.eind,l.pauze); txt+=(l.ziek?'🤒 ':'')+'• '+l.naam+' ('+l.start+'–'+l.eind+', '+Math.round(u*norm)+' colli)'+(l.notitie?' — '+l.notitie:'')+(l.ziek&&l.vervanger?' → '+l.vervanger:'')+'\n'; });
-  const k=av.karrenPool||[]; if(k.length){ txt+='\n📦 KARREN\n'; k.forEach(x=>{ txt+='• '+x.naam+(x.personen&&x.personen.length?' → '+x.personen.join(', '):'')+(x.werkelijk?' ('+x.werkelijk+' min)':'')+'\n'; }); }
-  if(av.afgesloten&&av.werkelijkColli) txt+='\n✅ RESULTAAT: '+av.werkelijkColli+' colli'+(av.eindnotitie?'\n📝 '+av.eindnotitie:'');
-  txt+='\n\n🏪 Kruidvat Vulploeg Manager';
-  document.getElementById('samenvattingTxt').textContent=txt; openModal('modalSamenvatting');
+  const av   = App.huidigAvond;
+  const norm = av.norm || 80;
+  if(!av.team || !av.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
+  const d = new Date(av.datum);
+  let totU=0, totT=0;
+  av.team.forEach(l => { const u=berekenUren(l.start,l.eind,l.pauze); totU+=u; totT+=Math.round(u*norm); });
+
+  let txt = '📦 VULPLOEG OVERZICHT — ' +
+    d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).toUpperCase() + '\n' +
+    '━'.repeat(32) + '\n' +
+    '🏪 Filiaal:  ' + App.filiaal + '\n' +
+    (av.leidinggevende ? '🔑 Leiding:  ' + av.leidinggevende + '\n' : '') +
+    '🏷️  Vracht:   ' + av.colli + ' colli\n' +
+    '⏱️  Norm:     ' + norm + ' colli/uur\n' +
+    '👥  Team:     ' + totU.toFixed(1) + ' uur\n' +
+    (parseFloat((totU - av.colli/norm).toFixed(1)) >= 0 ? '✅' : '⚠️') +
+    '  Dekking:  ' + Math.min(100,Math.round(totT/av.colli*100)) + '% (' + totT + '/' + av.colli + ')\n\n' +
+    '👥 TEAM\n';
+
+  av.team.forEach(l => {
+    const u = berekenUren(l.start,l.eind,l.pauze);
+    txt += (l.ziek?'🤒 ':'') + '• ' + l.naam + ' (' + l.start + '–' + l.eind + ', ' + Math.round(u*norm) + ' colli)' +
+      (l.notitie?' — '+l.notitie:'') + (l.ziek&&l.vervanger?' → '+l.vervanger:'') + '\n';
+  });
+
+  const k = av.karrenPool || [];
+  if(k.length){
+    txt += '\n📦 KARREN\n';
+    k.forEach(x => { txt += '• ' + x.naam + (x.personen&&x.personen.length?' → '+x.personen.join(', '):'') + (x.werkelijk?' ('+x.werkelijk+' min)':'') + '\n'; });
+  }
+  if(av.afgesloten && av.werkelijkColli)
+    txt += '\n✅ RESULTAAT: ' + av.werkelijkColli + ' colli' + (av.eindnotitie ? '\n📝 ' + av.eindnotitie : '');
+
+  txt += '\n\n🏪 Kruidvat Vulploeg Manager';
+  document.getElementById('samenvattingTxt').textContent = txt;
+  openModal('modalSamenvatting');
 };
-window.kopieer = () => { const t=document.getElementById('samenvattingTxt').textContent; navigator.clipboard.writeText(t).then(()=>showToast('Gekopieerd!')).catch(()=>{ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); showToast('Gekopieerd!'); }); };
-window.deelWA = () => window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('samenvattingTxt').textContent),'_blank');
+
+window.kopieer = () => {
+  const t = document.getElementById('samenvattingTxt').textContent;
+  navigator.clipboard.writeText(t)
+    .then(() => showToast('Gekopieerd!'))
+    .catch(() => {
+      const ta = document.createElement('textarea'); ta.value = t;
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      ta.remove(); showToast('Gekopieerd!');
+    });
+};
+window.deelWA = () => window.open('https://wa.me/?text=' + encodeURIComponent(document.getElementById('samenvattingTxt').textContent), '_blank');
 
 // ─────────────────────────────────────────────
 //  COLLI & EINDTIJD
 // ─────────────────────────────────────────────
-window.colliAanpassen = d => { App.huidigAvond.colliVerwerkt=Math.max(0,Math.min(App.huidigAvond.colli||2000,(App.huidigAvond.colliVerwerkt||0)+d)); App._dirty=true; updateColliTeller(); };
+window.colliAanpassen = d => {
+  App.huidigAvond.colliVerwerkt = Math.max(0, Math.min(App.huidigAvond.colli||2000, (App.huidigAvond.colliVerwerkt||0) + d));
+  App._dirty = true; updateColliTeller();
+};
+
 function updateColliTeller(){
-  const h=App.huidigAvond.colliVerwerkt||0, d=App.huidigAvond.colli||2000, pct=d>0?Math.min(100,Math.round(h/d*100)):0;
-  const n=document.getElementById('colliNum'); if(n) n.textContent=h;
-  const doel=document.getElementById('colliDoel'); if(doel) doel.textContent=d;
-  const p=document.getElementById('colliPct'); if(p) p.textContent=pct+'% klaar'+(pct>=100?' 🎉':'');
-  const f=document.getElementById('colliFill'); if(f) f.style.width=pct+'%';
+  const h   = App.huidigAvond.colliVerwerkt || 0;
+  const d   = App.huidigAvond.colli || 2000;
+  const pct = d > 0 ? Math.min(100, Math.round(h/d*100)) : 0;
+  const n   = document.getElementById('colliNum');    if(n) n.textContent = h;
+  const dl  = document.getElementById('colliDoel');   if(dl) dl.textContent = d;
+  const p   = document.getElementById('colliPct');    if(p) p.textContent = pct + '% klaar' + (pct>=100?' 🎉':'');
+  const f   = document.getElementById('colliFill');   if(f) f.style.width = pct + '%';
   updateEindtijd();
 }
+
 function updateEindtijd(){
-  const banner=document.getElementById('eindtijdBanner'); if(!banner) return;
-  const team=App.huidigAvond.team||[]; if(!team.length){ banner.classList.add('hidden'); return; }
-  const norm=App.huidigAvond.norm||80, doel=App.huidigAvond.colli||2000, rest=Math.max(0,doel-(App.huidigAvond.colliVerwerkt||0));
-  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
-  let em=nm;
-  for(let t=nm;t<=nm+720;t++){
-    let cpm=0;
-    team.forEach(l=>{ if(!l.start||!l.eind) return; const[sh,sm]=l.start.split(':').map(Number),[eh,ee]=l.eind.split(':').map(Number); if(t>=sh*60+sm&&t<eh*60+ee) cpm+=norm/60; });
-    if(cpm===0&&t>nm+5) break;
-    em=t; if(rest-=cpm, rest<=0) break;
+  const banner = document.getElementById('eindtijdBanner'); if(!banner) return;
+  const team   = App.huidigAvond.team || [];
+  if(!team.length){ banner.classList.add('hidden'); return; }
+  const norm = App.huidigAvond.norm || 80;
+  const doel = App.huidigAvond.colli || 2000;
+  const rest = Math.max(0, doel - (App.huidigAvond.colliVerwerkt||0));
+  const now  = new Date();
+  const nm   = now.getHours()*60 + now.getMinutes();
+  let em     = nm;
+  let restR  = rest;
+  for(let t=nm; t<=nm+720; t++){
+    let cpm = 0;
+    team.forEach(l => {
+      if(!l.start||!l.eind) return;
+      const [sh,sm]=l.start.split(':').map(Number), [eh,ee]=l.eind.split(':').map(Number);
+      if(t>=sh*60+sm && t<eh*60+ee) cpm += norm/60;
+    });
+    if(cpm===0 && t>nm+5) break;
+    em = t; restR -= cpm; if(restR <= 0) break;
   }
-  document.getElementById('eindtijdTime').textContent=String(Math.floor(em/60)%24).padStart(2,'0')+':'+String(Math.round(em%60)).padStart(2,'0');
-  const totM=team.reduce((s,l)=>{ if(!l.start||!l.eind) return s; const[sh,sm]=l.start.split(':').map(Number),[eh,ee]=l.eind.split(':').map(Number); return s+Math.max(0,(eh*60+ee)-Math.max(sh*60+sm,nm)-(l.pauze||0)); },0);
-  const kan=(totM/60)*norm>=(rest>0?rest:0);
-  document.getElementById('eindtijdDetail').innerHTML=(rest>0?rest:0)+' colli resterend · '+(kan?'<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>':'<span style="color:var(--red);font-weight:800">⚠ tekort</span>');
+  document.getElementById('eindtijdTime').textContent =
+    String(Math.floor(em/60)%24).padStart(2,'0') + ':' + String(Math.round(em%60)).padStart(2,'0');
+  const totM = team.reduce((s,l) => {
+    if(!l.start||!l.eind) return s;
+    const [sh,sm]=l.start.split(':').map(Number), [eh,ee]=l.eind.split(':').map(Number);
+    return s + Math.max(0,(eh*60+ee) - Math.max(sh*60+sm,nm) - (l.pauze||0));
+  }, 0);
+  const kan = (totM/60)*norm >= (rest>0?rest:0);
+  document.getElementById('eindtijdDetail').innerHTML =
+    (rest>0?rest:0) + ' colli resterend · ' +
+    (kan ? '<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>'
+         : '<span style="color:var(--red);font-weight:800">⚠ tekort</span>');
   banner.classList.remove('hidden');
 }
 
@@ -1537,10 +2146,40 @@ function updateEindtijd(){
 //  PRINT
 // ─────────────────────────────────────────────
 window.printRooster = () => {
-  const av=App.huidigAvond, norm=av.norm||80; if(!av.team||!av.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
-  const d=new Date(av.datum), ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const rows=av.team.map(lid=>{ const u=berekenUren(lid.start,lid.eind,lid.pauze), t=Math.round(u*norm); const kr=Array(6).fill(0).map((_,i)=>`<tr><td style="width:24px;text-align:center;color:#aaa;font-size:9px">${i+1}</td><td style="border-bottom:1px solid #eee;height:30px;min-width:140px"></td><td style="border-bottom:1px solid #eee;min-width:75px"></td><td style="border-bottom:1px solid #eee;min-width:75px"></td><td style="border-bottom:1px solid #eee;min-width:65px"></td></tr>`).join(''); return `<div style="margin-bottom:18px;border:1px solid #ddd;border-radius:6px;overflow:hidden;break-inside:avoid"><div style="display:flex;justify-content:space-between;background:#111;color:#fff;padding:7px 12px"><div><strong>${lid.naam}</strong> <span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 6px;font-size:9px;margin-left:6px">${lid.start}–${lid.eind}</span></div><div style="text-align:right;font-size:10px;color:#ccc">Werktijd: <strong style="color:#fff">${u.toFixed(1)}u</strong><br>Target: <strong style="color:#fff">${t} colli</strong></div></div><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#f5f5f5"><th style="padding:5px 8px;font-size:9px">#</th><th style="padding:5px 8px;font-size:9px">Karnaam</th><th style="padding:5px 8px;font-size:9px">Verwacht</th><th style="padding:5px 8px;font-size:9px">Werkelijk</th><th style="padding:5px 8px;font-size:9px">Paraf.</th></tr></thead><tbody>${kr}</tbody></table></div>`; }).join('');
-  const w=window.open('','_blank'); w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rooster</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;padding:18px;font-size:12px}@media print{@page{margin:.8cm}}</style></head><body><div style="display:flex;justify-content:space-between;border-bottom:3px solid #E2001A;padding-bottom:10px;margin-bottom:16px"><div><div style="font-size:17px;font-weight:800;color:#E2001A">Vulploeg Rooster — ${App.filiaal||'Kruidvat'}</div><div style="font-size:10px;color:#666;margin-top:2px">${ds}${av.leidinggevende?' · Leiding: '+av.leidinggevende:''}</div></div><div style="text-align:right;font-size:10px">Norm: <strong>${norm} colli/uur</strong><br>Vracht: <strong>${av.colli} colli</strong></div></div>${rows}</body></html>`); w.document.close(); w.focus(); setTimeout(()=>w.print(),500);
+  const av   = App.huidigAvond;
+  const norm = av.norm || 80;
+  if(!av.team || !av.team.length){ alert('Voeg eerst medewerkers toe.'); return; }
+  const d  = new Date(av.datum);
+  const ds = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const rows = av.team.map(lid => {
+    const u  = berekenUren(lid.start,lid.eind,lid.pauze);
+    const t  = Math.round(u*norm);
+    const kr = Array(6).fill(0).map((_,i) =>
+      `<tr><td style="width:24px;text-align:center;color:#aaa;font-size:9px">${i+1}</td>
+       <td style="border-bottom:1px solid #eee;height:30px;min-width:140px"></td>
+       <td style="border-bottom:1px solid #eee;min-width:75px"></td>
+       <td style="border-bottom:1px solid #eee;min-width:75px"></td>
+       <td style="border-bottom:1px solid #eee;min-width:65px"></td></tr>`).join('');
+    return `<div style="margin-bottom:18px;border:1px solid #ddd;border-radius:6px;overflow:hidden;break-inside:avoid">
+      <div style="display:flex;justify-content:space-between;background:#111;color:#fff;padding:7px 12px">
+        <div><strong>${lid.naam}</strong> <span style="background:rgba(255,255,255,.15);border-radius:4px;padding:2px 6px;font-size:9px;margin-left:6px">${lid.start}–${lid.eind}</span></div>
+        <div style="text-align:right;font-size:10px;color:#ccc">Werktijd: <strong style="color:#fff">${u.toFixed(1)}u</strong><br>Target: <strong style="color:#fff">${t} colli</strong></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse"><thead>
+        <tr style="background:#f5f5f5"><th style="padding:5px 8px;font-size:9px">#</th><th style="padding:5px 8px;font-size:9px">Karnaam</th><th style="padding:5px 8px;font-size:9px">Verwacht</th><th style="padding:5px 8px;font-size:9px">Werkelijk</th><th style="padding:5px 8px;font-size:9px">Paraf.</th></tr>
+      </thead><tbody>${kr}</tbody></table>
+    </div>`;
+  }).join('');
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rooster</title>
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;padding:18px;font-size:12px}@media print{@page{margin:.8cm}}</style>
+    </head><body>
+    <div style="display:flex;justify-content:space-between;border-bottom:3px solid #E2001A;padding-bottom:10px;margin-bottom:16px">
+      <div><div style="font-size:17px;font-weight:800;color:#E2001A">Vulploeg Rooster — ${App.filiaal||'Kruidvat'}</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">${ds}${av.leidinggevende?' · Leiding: '+av.leidinggevende:''}</div></div>
+      <div style="text-align:right;font-size:10px">Norm: <strong>${norm} colli/uur</strong><br>Vracht: <strong>${av.colli} colli</strong></div>
+    </div>${rows}</body></html>`);
+  w.document.close(); w.focus(); setTimeout(() => w.print(), 500);
 };
 
 // ─────────────────────────────────────────────
@@ -1548,146 +2187,309 @@ window.printRooster = () => {
 // ─────────────────────────────────────────────
 window.renderRoosterTab = async () => {
   try {
-    const saved=await fbGet('accounts/'+App.user+'/rooster/data');
-    if(saved&&saved.data&&Object.keys(saved.data).length){
-      App.roosterData=saved.data; document.getElementById('btnRoosterWissen').classList.remove('hidden');
-      renderRoosterPreview(); document.getElementById('uploadCard').classList.add('hidden');
-    } else { document.getElementById('roosterPreview').classList.add('hidden'); document.getElementById('uploadCard').classList.remove('hidden'); }
+    const saved = await fbGet('accounts/' + App.uid + '/rooster/data');
+    if(saved && saved.data && Object.keys(saved.data).length){
+      App.roosterData = saved.data;
+      document.getElementById('btnRoosterWissen').classList.remove('hidden');
+      renderRoosterPreview();
+      document.getElementById('uploadCard').classList.add('hidden');
+    } else {
+      document.getElementById('roosterPreview').classList.add('hidden');
+      document.getElementById('uploadCard').classList.remove('hidden');
+    }
   } catch(e){}
 };
+
 window.verwijderRooster = async () => {
   if(!confirm('Rooster wissen? Dit geldt voor het hele filiaal.')) return;
-  try { await fbDel('accounts/'+App.user+'/rooster/data'); App.roosterData={}; document.getElementById('roosterPreview').classList.add('hidden'); document.getElementById('uploadCard').classList.remove('hidden'); document.getElementById('kolomCard').classList.add('hidden'); document.getElementById('btnRoosterWissen').classList.add('hidden'); showToast('Rooster gewist'); }
-  catch(e){ showToast('Fout: '+e.message); }
+  try {
+    await fbDel('accounts/' + App.uid + '/rooster/data');
+    App.roosterData = {};
+    document.getElementById('roosterPreview').classList.add('hidden');
+    document.getElementById('uploadCard').classList.remove('hidden');
+    document.getElementById('kolomCard').classList.add('hidden');
+    document.getElementById('btnRoosterWissen').classList.add('hidden');
+    showToast('Rooster gewist');
+  } catch(e){ showToast('Fout: ' + e.message); }
 };
-window.handleUpload = input => { const f=input.files[0]; if(f) parseRoosterFile(f); };
-function parseRoosterFile(file){ const n=file.name.toLowerCase(); if(n.endsWith('.csv')){ const r=new FileReader(); r.onload=e=>parseCsv(e.target.result); r.readAsText(file,'UTF-8'); } else if(n.endsWith('.xlsx')||n.endsWith('.xls')){ const r=new FileReader(); r.onload=e=>parseXlsx(e.target.result); r.readAsArrayBuffer(file); } else alert('Alleen CSV of Excel.'); }
-function parseCsv(text){ const del=text.split('\n')[0].includes(';')?';':',', lines=text.split('\n').filter(l=>l.trim()); App.roosterHeaders=lines[0].split(del).map(h=>h.trim().replace(/^"|"$/g,'')); App.roosterRawRows=lines.slice(1).map(l=>{ const c=l.split(del).map(c=>c.trim().replace(/^"|"$/g,'')); const o={}; App.roosterHeaders.forEach((h,i)=>o[h]=c[i]||''); return o; }).filter(r=>Object.values(r).some(v=>v)); toonKolombinding(); }
-function parseXlsx(buf){ const load=()=>{ const wb=XLSX.read(new Uint8Array(buf),{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; const json=XLSX.utils.sheet_to_json(ws,{defval:''}); if(!json.length){alert('Geen data.');return;} App.roosterHeaders=Object.keys(json[0]); App.roosterRawRows=json; toonKolombinding(); }; if(typeof XLSX==='undefined'){ const s=document.createElement('script'); s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload=load; document.head.appendChild(s); } else load(); }
+
+window.handleUpload = input => { const f = input.files[0]; if(f) parseRoosterFile(f); };
+
+function parseRoosterFile(file){
+  const n = file.name.toLowerCase();
+  if(n.endsWith('.csv')){ const r=new FileReader(); r.onload=e=>parseCsv(e.target.result); r.readAsText(file,'UTF-8'); }
+  else if(n.endsWith('.xlsx')||n.endsWith('.xls')){ const r=new FileReader(); r.onload=e=>parseXlsx(e.target.result); r.readAsArrayBuffer(file); }
+  else alert('Alleen CSV of Excel.');
+}
+
+function parseCsv(text){
+  const del   = text.split('\n')[0].includes(';') ? ';' : ',';
+  const lines = text.split('\n').filter(l => l.trim());
+  App.roosterHeaders   = lines[0].split(del).map(h => h.trim().replace(/^"|"$/g,''));
+  App.roosterRawRows   = lines.slice(1).map(l => {
+    const c = l.split(del).map(c => c.trim().replace(/^"|"$/g,''));
+    const o = {}; App.roosterHeaders.forEach((h,i) => o[h] = c[i]||''); return o;
+  }).filter(r => Object.values(r).some(v => v));
+  toonKolombinding();
+}
+
+function parseXlsx(buf){
+  const load = () => {
+    const wb = XLSX.read(new Uint8Array(buf),{type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(ws,{defval:''});
+    if(!json.length){alert('Geen data.');return;}
+    App.roosterHeaders = Object.keys(json[0]); App.roosterRawRows = json; toonKolombinding();
+  };
+  if(typeof XLSX === 'undefined'){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = load; document.head.appendChild(s);
+  } else load();
+}
+
 function toonKolombinding(){
   if(!App.roosterRawRows.length){alert('Geen rijen.');return;}
   const velden=[{key:'datum',label:'Datum',req:true},{key:'naam',label:'Naam',req:true},{key:'start',label:'Starttijd',req:true},{key:'eind',label:'Eindtijd',req:true},{key:'pauze',label:'Pauze (min)',req:false}];
   const rx={datum:/datum|date|dag/i,naam:/naam|name|medewerker/i,start:/start|begin|van/i,eind:/eind|end|tot/i,pauze:/pauze|pause|break/i};
-  const am={}; App.roosterHeaders.forEach(h=>{ Object.keys(rx).forEach(k=>{ if(!am[k]&&rx[k].test(h)) am[k]=h; }); });
-  const opts=App.roosterHeaders.map(h=>`<option value="${h}">${h}</option>`).join('');
-  document.getElementById('kolomInhoud').innerHTML=velden.map(v=>`<div class="col-map-row"><div><div style="font-size:.82rem;font-weight:800">${v.req?'<span style="color:var(--red)">*</span> ':''}${v.label}</div></div><select id="col_${v.key}" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.83rem">${v.req?'':'<option value="">— Niet gebruiken —</option>'}${opts}</select></div>`).join('');
-  velden.forEach(v=>{ if(am[v.key]) document.getElementById('col_'+v.key).value=am[v.key]; });
-  document.getElementById('kolomCard').classList.remove('hidden'); document.getElementById('uploadCard').classList.add('hidden');
+  const am={};
+  App.roosterHeaders.forEach(h => { Object.keys(rx).forEach(k => { if(!am[k]&&rx[k].test(h)) am[k]=h; }); });
+  const opts = App.roosterHeaders.map(h => `<option value="${h}">${h}</option>`).join('');
+  document.getElementById('kolomInhoud').innerHTML = velden.map(v =>
+    `<div class="col-map-row">
+      <div><div style="font-size:.82rem;font-weight:800">${v.req?'<span style="color:var(--red)">*</span> ':''}${v.label}</div></div>
+      <select id="col_${v.key}" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.83rem">
+        ${v.req?'':'<option value="">— Niet gebruiken —</option>'}${opts}
+      </select>
+    </div>`).join('');
+  velden.forEach(v => { if(am[v.key]) document.getElementById('col_'+v.key).value = am[v.key]; });
+  document.getElementById('kolomCard').classList.remove('hidden');
+  document.getElementById('uploadCard').classList.add('hidden');
 }
-function normDatum(r){ if(!r) return null; const s=String(r).trim(); if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; const m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/); if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; if(/^\d{5}$/.test(s)){const d=new Date(Math.round((+s-25569)*86400*1000));return d.toISOString().split('T')[0];} const d=new Date(s); if(!isNaN(d)) return d.toISOString().split('T')[0]; return null; }
-function normTijd(r){ if(!r) return '18:00'; const s=String(r).trim(); if(/^\d{2}:\d{2}$/.test(s)) return s; if(/^\d{1,2}:\d{2}$/.test(s)) return s.padStart(5,'0'); const n=parseFloat(s); if(!isNaN(n)&&n>=0&&n<1){const m=Math.round(n*24*60);return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');} return s; }
+
+function normDatum(r){
+  if(!r) return null;
+  const s=String(r).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/);
+  if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  if(/^\d{5}$/.test(s)){ const d=new Date(Math.round((+s-25569)*86400*1000)); return d.toISOString().split('T')[0]; }
+  const d=new Date(s); if(!isNaN(d)) return d.toISOString().split('T')[0];
+  return null;
+}
+
+function normTijd(r){
+  if(!r) return '18:00';
+  const s=String(r).trim();
+  if(/^\d{2}:\d{2}$/.test(s)) return s;
+  if(/^\d{1,2}:\d{2}$/.test(s)) return s.padStart(5,'0');
+  const n=parseFloat(s);
+  if(!isNaN(n)&&n>=0&&n<1){ const m=Math.round(n*24*60); return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+  return s;
+}
+
 window.verwerkRooster = async () => {
-  const g=id=>document.getElementById(id).value, [cD,cN,cS,cE,cP]=['col_datum','col_naam','col_start','col_eind','col_pauze'].map(g);
-  if(!cD||!cN||!cS||!cE){alert('Koppel Datum, Naam, Start en Eind.');return;}
-  const nieuw={}; let fo=0;
-  App.roosterRawRows.forEach(row=>{ const dt=normDatum(row[cD]),naam=String(row[cN]||'').trim(); if(!dt||!naam){fo++;return;} if(!nieuw[dt]) nieuw[dt]=[]; nieuw[dt].push({naam,start:normTijd(row[cS]),eind:normTijd(row[cE]),pauze:+row[cP]||0}); });
-  const tot=Object.values(nieuw).reduce((s,a)=>s+a.length,0); if(!tot){alert('Geen geldige rijen.');return;}
+  const g  = id => document.getElementById(id).value;
+  const [cD,cN,cS,cE,cP] = ['col_datum','col_naam','col_start','col_eind','col_pauze'].map(g);
+  if(!cD||!cN||!cS||!cE){ alert('Koppel Datum, Naam, Start en Eind.'); return; }
+  const nieuw = {}; let fo = 0;
+  App.roosterRawRows.forEach(row => {
+    const dt   = normDatum(row[cD]);
+    const naam = String(row[cN]||'').trim();
+    if(!dt||!naam){fo++;return;}
+    if(!nieuw[dt]) nieuw[dt]=[];
+    nieuw[dt].push({ naam, start:normTijd(row[cS]), eind:normTijd(row[cE]), pauze:+row[cP]||0 });
+  });
+  const tot = Object.values(nieuw).reduce((s,a) => s+a.length, 0);
+  if(!tot){ alert('Geen geldige rijen.'); return; }
   setSyncStatus('bezig');
   try {
-    await fbSet('accounts/'+App.user+'/rooster/data',{data:nieuw,updated:Date.now()});
-    App.roosterData=nieuw; setSyncStatus('ok'); document.getElementById('kolomCard').classList.add('hidden'); document.getElementById('btnRoosterWissen').classList.remove('hidden'); renderRoosterPreview();
+    await fbSet('accounts/' + App.uid + '/rooster/data', { data:nieuw, updated:Date.now() });
+    App.roosterData = nieuw; setSyncStatus('ok');
+    document.getElementById('kolomCard').classList.add('hidden');
+    document.getElementById('btnRoosterWissen').classList.remove('hidden');
+    renderRoosterPreview();
     showToast(`Rooster opgeslagen: ${tot} medewerkers${fo?' ('+fo+' overgeslagen)':''}`);
-  } catch(e){ setSyncStatus('fout'); showToast('Fout: '+e.message); }
+  } catch(e){ setSyncStatus('fout'); showToast('Fout: ' + e.message); }
 };
+
 function renderRoosterPreview(){
-  const datums=Object.keys(App.roosterData).sort(); if(!datums.length){document.getElementById('roosterPreview').classList.add('hidden');return;}
-  document.getElementById('roosterSamenvatting').textContent=datums.length+' dag(en), '+Object.values(App.roosterData).reduce((s,a)=>s+a.length,0)+' medewerkers';
-  document.getElementById('roosterPreviewInhoud').innerHTML=datums.map(datum=>{ const leden=App.roosterData[datum], d=new Date(datum+'T00:00:00'), label=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); return `<div class="rooster-datum-group"><div class="rooster-datum-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'"><span style="font-weight:800;font-size:.88rem">${label}</span><span style="font-size:.76rem;color:var(--text3);font-weight:700">${leden.length} medewerker(s)</span></div><div><table class="data-table"><thead><tr><th>Naam</th><th>Start</th><th>Eind</th><th>Pauze</th><th>Actie</th></tr></thead><tbody>${leden.map(l=>`<tr><td><strong>${l.naam}</strong></td><td class="mono">${l.start}</td><td class="mono">${l.eind}</td><td class="mono">${l.pauze?l.pauze+' min':'—'}</td><td><button class="btn btn-primary btn-sm" onclick="laadRoosterDatum('${datum}')">📦 Laden</button></td></tr>`).join('')}</tbody></table></div></div>`; }).join('');
+  const datums = Object.keys(App.roosterData).sort();
+  if(!datums.length){ document.getElementById('roosterPreview').classList.add('hidden'); return; }
+  document.getElementById('roosterSamenvatting').textContent =
+    datums.length + ' dag(en), ' + Object.values(App.roosterData).reduce((s,a) => s+a.length, 0) + ' medewerkers';
+  document.getElementById('roosterPreviewInhoud').innerHTML = datums.map(datum => {
+    const leden = App.roosterData[datum];
+    const d     = new Date(datum + 'T00:00:00');
+    const label = d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    return `<div class="rooster-datum-group">
+      <div class="rooster-datum-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <span style="font-weight:800;font-size:.88rem">${label}</span>
+        <span style="font-size:.76rem;color:var(--text3);font-weight:700">${leden.length} medewerker(s)</span>
+      </div>
+      <div><table class="data-table"><thead><tr><th>Naam</th><th>Start</th><th>Eind</th><th>Pauze</th><th>Actie</th></tr></thead><tbody>
+        ${leden.map(l => `<tr><td><strong>${l.naam}</strong></td><td class="mono">${l.start}</td><td class="mono">${l.eind}</td><td class="mono">${l.pauze?l.pauze+' min':'—'}</td>
+          <td><button class="btn btn-primary btn-sm" onclick="laadRoosterDatum('${datum}')">📦 Laden</button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
+  }).join('');
   document.getElementById('roosterPreview').classList.remove('hidden');
 }
+
 window.laadRoosterDatum = datum => {
-  const leden=App.roosterData[datum]; if(!leden||!leden.length){showToast('Geen medewerkers voor deze datum.');return;}
-  App.huidigAvond.datum=datum; const dn=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag']; App.huidigAvond.dag=dn[new Date(datum+'T00:00:00').getDay()];
-  App.huidigAvond.team=leden.map(l=>({naam:l.naam,start:l.start,eind:l.eind,pauze:l.pauze||0,notitie:'',karten:[],ziek:false,vervanger:null}));
-  App._dirty=true; goTab('avond'); syncFormFromAvond(); renderTeam(); renderAvondSelector();
-  const d=new Date(datum+'T00:00:00'); showToast(leden.length+' medewerkers geladen voor '+d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}));
+  const leden = App.roosterData[datum];
+  if(!leden||!leden.length){ showToast('Geen medewerkers voor deze datum.'); return; }
+  App.huidigAvond.datum = datum;
+  const dn = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  App.huidigAvond.dag  = dn[new Date(datum + 'T00:00:00').getDay()];
+  App.huidigAvond.team = leden.map(l => ({
+    naam:l.naam, start:l.start, eind:l.eind, pauze:l.pauze||0,
+    notitie:'', karten:[], ziek:false, vervanger:null
+  }));
+  App._dirty = true; goTab('avond'); syncFormFromAvond(); renderTeam(); renderAvondSelector();
+  const d = new Date(datum + 'T00:00:00');
+  showToast(leden.length + ' medewerkers geladen voor ' + d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}));
 };
-window.downloadTemplate = () => { const csv='Datum;Naam;Starttijd;Eindtijd;Pauze\n2025-06-03;Sanne Moreno;18:00;22:00;30\n2025-06-03;Justin Beijer;18:30;22:00;30\n'; const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),download:'rooster_template.csv'}); a.click(); URL.revokeObjectURL(a.href); };
+
+window.downloadTemplate = () => {
+  const csv = 'Datum;Naam;Starttijd;Eindtijd;Pauze\n2025-06-03;Sanne Moreno;18:00;22:00;30\n2025-06-03;Justin Beijer;18:30;22:00;30\n';
+  const a = Object.assign(document.createElement('a'),{
+    href: URL.createObjectURL(new Blob([csv],{type:'text/csv'})),
+    download: 'rooster_template.csv'
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+};
 
 // ─────────────────────────────────────────────
 //  CALC
 // ─────────────────────────────────────────────
-window.calcColliToTijd = () => { const c=+document.getElementById('calcColli').value||0, n=App.huidigAvond.norm||80; if(c>0){const m=Math.round((c/n)*60);document.getElementById('calcMin').value=m;document.getElementById('calcTip').textContent=c+' colli ÷ '+n+' × 60 = '+m+' min';}else{document.getElementById('calcMin').value='';document.getElementById('calcTip').textContent='';} };
-window.calcTijdToColli = () => { const m=+document.getElementById('calcMin').value||0, n=App.huidigAvond.norm||80; if(m>0){const c=Math.round((m/60)*n);document.getElementById('calcColli').value=c;document.getElementById('calcTip').textContent=m+' min × '+n+' ÷ 60 = '+c+' colli';}else{document.getElementById('calcColli').value='';document.getElementById('calcTip').textContent='';} };
+window.calcColliToTijd = () => {
+  const c=+document.getElementById('calcColli').value||0, n=App.huidigAvond.norm||80;
+  if(c>0){ const m=Math.round((c/n)*60); document.getElementById('calcMin').value=m; document.getElementById('calcTip').textContent=c+' colli ÷ '+n+' × 60 = '+m+' min'; }
+  else { document.getElementById('calcMin').value=''; document.getElementById('calcTip').textContent=''; }
+};
+window.calcTijdToColli = () => {
+  const m=+document.getElementById('calcMin').value||0, n=App.huidigAvond.norm||80;
+  if(m>0){ const c=Math.round((m/60)*n); document.getElementById('calcColli').value=c; document.getElementById('calcTip').textContent=m+' min × '+n+' ÷ 60 = '+c+' colli'; }
+  else { document.getElementById('calcColli').value=''; document.getElementById('calcTip').textContent=''; }
+};
 
 // ─────────────────────────────────────────────
 //  DARK MODE
 // ─────────────────────────────────────────────
-window.toggleDark = () => { const d=document.body.classList.toggle('dark'); localStorage.setItem('kv_dark',d?'1':'0'); };
-function laadDark(){ if(localStorage.getItem('kv_dark')==='1') document.body.classList.add('dark'); }
+window.toggleDark = () => {
+  const d = document.body.classList.toggle('dark');
+  localStorage.setItem('kv_dark', d ? '1' : '0');
+};
+function laadDark(){ if(localStorage.getItem('kv_dark') === '1') document.body.classList.add('dark'); }
 
 // ─────────────────────────────────────────────
 //  NAVIGATION
 // ─────────────────────────────────────────────
-window.goTab = (name,btn) => {
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-  const panel=document.getElementById('tab-'+name); if(panel) panel.classList.add('active');
-  const db2=document.querySelector(`.tab-btn[data-tab="${name}"]`); if(db2) db2.classList.add('active');
-  const mb=document.getElementById('bnav-'+name); if(mb) mb.classList.add('active');
-  ({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,rooster:renderRoosterTab,karren:renderKarrenPool,statistieken:renderStatistieken,sjablonen:renderSjablonen,live:renderLive}[name]||function(){})();
+window.goTab = (name, btn) => {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-'+name); if(panel) panel.classList.add('active');
+  const db2   = document.querySelector(`.tab-btn[data-tab="${name}"]`); if(db2) db2.classList.add('active');
+  const mb    = document.getElementById('bnav-'+name); if(mb) mb.classList.add('active');
+  ({
+    overzicht:  renderOverzicht,
+    history:    renderHistory,
+    medewerkers:renderMedewBeheer,
+    leiders:    renderLeidersBeheer,
+    rooster:    renderRoosterTab,
+    karren:     renderKarrenPool,
+    statistieken:renderStatistieken,
+    sjablonen:  renderSjablonen,
+    live:       renderLive
+  }[name] || function(){})();
 };
-window.toggleMeer = () => { const m=document.getElementById('meerPanel'), o=document.getElementById('meerOverlay'), open=m.style.display!=='block'; m.style.display=open?'block':'none'; o.style.display=open?'block':'none'; };
-window.closeMeer  = () => { document.getElementById('meerPanel').style.display='none'; document.getElementById('meerOverlay').style.display='none'; };
+
+window.toggleMeer = () => {
+  const m = document.getElementById('meerPanel');
+  const o = document.getElementById('meerOverlay');
+  const open = m.style.display !== 'block';
+  m.style.display = open ? 'block' : 'none';
+  o.style.display = open ? 'block' : 'none';
+};
+window.closeMeer = () => {
+  document.getElementById('meerPanel').style.display   = 'none';
+  document.getElementById('meerOverlay').style.display = 'none';
+};
 
 // ─────────────────────────────────────────────
 //  MODALS & TOAST
 // ─────────────────────────────────────────────
 window.openModal  = id => document.getElementById(id).classList.add('open');
 window.closeModal = id => document.getElementById(id).classList.remove('open');
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+document.querySelectorAll('.modal-overlay').forEach(o =>
+  o.addEventListener('click', e => { if(e.target === o) o.classList.remove('open'); })
+);
+
 let _tt;
-window.showToast = msg => { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2800); };
+window.showToast = msg => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2800);
+};
 
 // ─────────────────────────────────────────────
 //  UTILS
 // ─────────────────────────────────────────────
-function berekenUren(s,e,p){ if(!s||!e) return 0; const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number); let m=(eh*60+em)-(sh*60+sm); if(m<0) m+=1440; return Math.max(0,(m-(p||0))/60); }
-function karStatus(kar){ if(!kar.werkelijk||!kar.verwacht) return{cls:'badge-bezig',label:'⏳ Bezig'}; const p=kar.werkelijk/kar.verwacht; if(p<=.9) return{cls:'badge-snel',label:'⚡ Snel'}; if(p<=1.1) return{cls:'badge-ok',label:'✓ Op tijd'}; return{cls:'badge-langzaam',label:'⚠ Langzaam'}; }
+function berekenUren(s,e,p){
+  if(!s||!e) return 0;
+  const [sh,sm]=s.split(':').map(Number), [eh,em]=e.split(':').map(Number);
+  let m = (eh*60+em) - (sh*60+sm); if(m<0) m+=1440;
+  return Math.max(0, (m-(p||0))/60);
+}
+function karStatus(kar){
+  if(!kar.werkelijk || !kar.verwacht) return { cls:'badge-bezig', label:'⏳ Bezig' };
+  const p = kar.werkelijk / kar.verwacht;
+  if(p<=.9) return { cls:'badge-snel',     label:'⚡ Snel' };
+  if(p<=1.1)return { cls:'badge-ok',       label:'✓ Op tijd' };
+  return            { cls:'badge-langzaam', label:'⚠ Langzaam' };
+}
 function deepCopy(o){ return JSON.parse(JSON.stringify(o)); }
-function cap(s){ return s?s.charAt(0).toUpperCase()+s.slice(1):''; }
+function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
 function safeId(s){ return s.replace(/\W/g,'_'); }
 
 // ─────────────────────────────────────────────
 //  FORM LISTENERS
 // ─────────────────────────────────────────────
-window.addEventListener('beforeunload',e=>{ if(App._dirty){e.preventDefault();e.returnValue='';} });
-['fDatum','fDag','fColli','fNorm','fLeider'].forEach(id=>{
-  const el=document.getElementById(id); if(!el) return;
-  el.addEventListener('change',()=>{ App._dirty=true; syncAvondFromForm(); updateColliTeller(); });
+window.addEventListener('beforeunload', e => { if(App._dirty){ e.preventDefault(); e.returnValue=''; } });
+
+['fDatum','fDag','fColli','fNorm','fLeider'].forEach(id => {
+  const el = document.getElementById(id); if(!el) return;
+  el.addEventListener('change', () => { App._dirty = true; syncAvondFromForm(); updateColliTeller(); });
 });
-document.getElementById('fDatum').addEventListener('change',function(){
-  const datum=this.value; if(!datum) return;
-  const dn=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-  document.getElementById('fDag').value=dn[new Date(datum+'T00:00:00').getDay()];
-  if(App.roosterData[datum]&&App.roosterData[datum].length>0){
-    const d=new Date(datum+'T00:00:00');
+
+document.getElementById('fDatum').addEventListener('change', function(){
+  const datum = this.value; if(!datum) return;
+  const dn = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  document.getElementById('fDag').value = dn[new Date(datum+'T00:00:00').getDay()];
+  if(App.roosterData[datum] && App.roosterData[datum].length > 0){
+    const d = new Date(datum+'T00:00:00');
     if(confirm(`Er staan ${App.roosterData[datum].length} medewerker(s) in het rooster voor ${d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})}. Automatisch inladen?`))
       laadRoosterDatum(datum);
   }
 });
-document.addEventListener('DOMContentLoaded',()=>{
-  const zone=document.getElementById('uploadZone'); if(!zone) return;
-  zone.addEventListener('dragover', e=>{e.preventDefault();zone.classList.add('dragover');});
-  zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
-  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f)parseRoosterFile(f);});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = document.getElementById('uploadZone'); if(!zone) return;
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0]; if(f) parseRoosterFile(f);
+  });
 });
 
 // ─────────────────────────────────────────────
-//  STARTUP — herstel sessie of toon auth
+//  STARTUP  —  Firebase Auth handelt sessie af via onAuthStateChanged
 // ─────────────────────────────────────────────
 laadDark();
-renderQuickLogins();
-const sess=lsGet('kvm_session',null);
-if(sess&&sess.username){
-  fbGet('accounts/'+sess.username)
-    .then(acc=>{ if(acc&&acc.hash) return initSession(sess.username,acc); throw new Error('niet gevonden'); })
-    .catch(()=>{ document.getElementById('loadingScreen').style.display='none'; document.getElementById('authScreen').style.display='flex'; });
-} else {
-  document.getElementById('loadingScreen').style.display='none';
-  document.getElementById('authScreen').style.display='flex';
-}
+// Loading screen blijft zichtbaar totdat onAuthStateChanged vuurt
 </script>
 </body>
 </html>
