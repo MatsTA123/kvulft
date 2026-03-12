@@ -1524,14 +1524,14 @@ tfoot td{background:#f5f5f5;font-weight:800;padding:2px 6px;font-size:8px}
 @media print{@page{margin:0;size:A4 portrait}body{margin:0}#wrap{position:absolute;top:0;left:0}}
 </style></head><body>
 <div id="wrap">${body}</div>
-<script>
+\x3Cscript>
 window.onload=function(){
   var wrap=document.getElementById('wrap');
   var wh=wrap.offsetHeight;
-  var pageH=1122; // A4 px at 96dpi
+  var pageH=1122;
   if(wh>pageH){var s=pageH/wh;wrap.style.transform='scale('+s+')';wrap.style.width=(210/s)+'mm';}
 };
-</script>
+\x3C/script>
 </body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),600);
 };
