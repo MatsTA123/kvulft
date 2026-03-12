@@ -403,6 +403,8 @@ textarea{resize:vertical;min-height:58px}
 .pool-naam{font-weight:800;font-size:.9rem}
 .timer-start{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 .timer-stop{background:var(--red);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer;animation:pulse 1.5s infinite}
+.timer-pauze{background:var(--orange);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.timer-hervat{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(226,0,26,.4)}50%{box-shadow:0 0 0 6px rgba(226,0,26,0)}}
 .timer-display{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--red)}
 .timer-display.over{animation:pulse 1s infinite}
@@ -698,7 +700,6 @@ textarea{resize:vertical;min-height:58px}
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <button class="btn btn-secondary btn-sm" id="hfAlle" onclick="setHistFilter('alle')">Alle avonden</button>
       <button class="btn btn-secondary btn-sm" id="hfAfgesloten" onclick="setHistFilter('afgesloten')">✓ Afgesloten</button>
-      <button class="btn btn-secondary btn-sm" id="hfMijn" onclick="setHistFilter('mijn')">Mijn filiaal</button>
     </div>
     <div id="histContent"><div class="empty"><div class="empty-icon">📁</div><div class="empty-text">Laden…</div></div></div>
   </div>
@@ -765,11 +766,27 @@ textarea{resize:vertical;min-height:58px}
 
 <div class="modal-overlay" id="modalAddKar"><div class="modal">
   <div class="modal-title">🛒 Kar toevoegen</div>
-  <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="addKarNaam" placeholder="bv. Shampoo, Kar 12…"></div>
-  <div class="form-row">
-    <div class="form-group"><label>Verwacht (min)</label><input type="number" id="addKarVerwacht" placeholder="bv. 45"></div>
-    <div class="form-group"><label>Werkelijk (min)</label><input type="number" id="addKarWerkelijk" placeholder="na afloop"></div>
+
+  <!-- Kies uit bestaande pool of nieuw -->
+  <div class="form-group" style="margin-bottom:12px">
+    <label>Kies kar</label>
+    <select id="addKarKeuze" onchange="karKeuzeGewijzigd()">
+      <option value="__nieuw__">+ Nieuwe kar (handmatig)</option>
+    </select>
   </div>
+
+  <!-- Handmatige invoer — alleen zichtbaar als "nieuw" gekozen -->
+  <div id="addKarHandmatig">
+    <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="addKarNaam" placeholder="bv. Shampoo, Kar 12…"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Verwacht (min)</label><input type="number" id="addKarVerwacht" placeholder="bv. 45"></div>
+      <div class="form-group"><label>Werkelijk (min)</label><input type="number" id="addKarWerkelijk" placeholder="na afloop"></div>
+    </div>
+  </div>
+
+  <!-- Info van gekozen pool-kar -->
+  <div id="addKarPoolInfo" class="hidden" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:4px"></div>
+
   <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalAddKar')">Annuleren</button><button class="btn btn-primary" onclick="voegKarToe()">Toevoegen</button></div>
 </div></div>
 
@@ -904,7 +921,7 @@ const App={
   _karMedewIdx:null,_poolKarIdx:null,
   _timerInterval:null,_pauzeInterval:null,
   pauzeTimers:{},alarmGegeven:new Set(),
-  _audioCtx:null,_dirty:false,histFilter:'mijn',
+  _audioCtx:null,_dirty:false,histFilter:'alle',
 };
 
 function nieuwAvond(){
@@ -1156,14 +1173,73 @@ window.voegLidToe=()=>{
 window.verwijderLid=i=>{if(!confirm('Medewerker verwijderen?'))return;App.huidigAvond.team.splice(i,1);App._dirty=true;renderTeam();};
 window.openBewerkNotitie=i=>{const n=prompt('Notitie:',App.huidigAvond.team[i].notitie||'');if(n===null)return;App.huidigAvond.team[i].notitie=n.trim();App._dirty=true;renderTeam();};
 
-window.openKarModalVoor=i=>{App._karMedewIdx=i;document.getElementById('addKarNaam').value='';document.getElementById('addKarVerwacht').value='';document.getElementById('addKarWerkelijk').value='';openModal('modalAddKar');};
+window.openKarModalVoor=i=>{
+  App._karMedewIdx=i;
+  // Vul dropdown met pool-karren
+  const pool=App.huidigAvond.karrenPool||[];
+  const sel=document.getElementById('addKarKeuze');
+  sel.innerHTML='<option value="__nieuw__">+ Nieuwe kar (handmatig)</option>'
+    +pool.map((k,pi)=>`<option value="${pi}">${k.naam}${k.verwacht?' — '+k.verwacht+' min':''}</option>`).join('');
+  // Reset velden
+  document.getElementById('addKarNaam').value='';
+  document.getElementById('addKarVerwacht').value='';
+  document.getElementById('addKarWerkelijk').value='';
+  document.getElementById('addKarHandmatig').style.display='block';
+  document.getElementById('addKarPoolInfo').classList.add('hidden');
+  openModal('modalAddKar');
+};
+
+window.karKeuzeGewijzigd=()=>{
+  const val=document.getElementById('addKarKeuze').value;
+  const handmatig=document.getElementById('addKarHandmatig');
+  const info=document.getElementById('addKarPoolInfo');
+  if(val==='__nieuw__'){
+    handmatig.style.display='block';
+    info.classList.add('hidden');
+  } else {
+    handmatig.style.display='none';
+    const kar=App.huidigAvond.karrenPool[+val];
+    info.classList.remove('hidden');
+    info.innerHTML=`<strong>${kar.naam}</strong>`
+      +(kar.verwacht?` · ${kar.verwacht} min verwacht`:'')
+      +(kar.personen&&kar.personen.length?`<br><span style="color:var(--text3)">Al gekoppeld aan: ${kar.personen.join(', ')}</span>`:'<br><span style="color:var(--text3)">Nog niet gekoppeld aan iemand</span>');
+  }
+};
 
 window.voegKarToe=()=>{
-  const naam=document.getElementById('addKarNaam').value.trim(),v=+document.getElementById('addKarVerwacht').value||null,w=+document.getElementById('addKarWerkelijk').value||null;
-  if(!naam){alert('Naam vereist.');return;}
-  const i=App._karMedewIdx;if(!App.huidigAvond.team[i].karten)App.huidigAvond.team[i].karten=[];
-  App.huidigAvond.team[i].karten.push({naam,verwacht:v,werkelijk:w,_personen:[App.huidigAvond.team[i].naam]});
-  App._dirty=true;closeModal('modalAddKar');renderTeam();showToast('Kar toegevoegd');
+  const val=document.getElementById('addKarKeuze').value;
+  const i=App._karMedewIdx;
+  if(!App.huidigAvond.team[i].karten)App.huidigAvond.team[i].karten=[];
+
+  if(val==='__nieuw__'){
+    // Handmatige nieuwe kar
+    const naam=document.getElementById('addKarNaam').value.trim();
+    const v=+document.getElementById('addKarVerwacht').value||null;
+    const w=+document.getElementById('addKarWerkelijk').value||null;
+    if(!naam){alert('Naam vereist.');return;}
+    App.huidigAvond.team[i].karten.push({naam,verwacht:v,werkelijk:w,_personen:[App.huidigAvond.team[i].naam]});
+    showToast('Kar "'+naam+'" toegevoegd');
+  } else {
+    // Koppel aan bestaande pool-kar
+    const pi=+val;
+    const kar=App.huidigAvond.karrenPool[pi];
+    if(App.huidigAvond.team[i].karten.find(k=>k._poolId===kar.id)){
+      alert('Deze kar is al gekoppeld aan '+App.huidigAvond.team[i].naam);return;
+    }
+    // Voeg persoon toe aan pool-kar personen lijst
+    if(!kar.personen)kar.personen=[];
+    if(!kar.personen.includes(App.huidigAvond.team[i].naam))
+      kar.personen.push(App.huidigAvond.team[i].naam);
+    // Voeg kar toe aan teamlid
+    App.huidigAvond.team[i].karten.push({naam:kar.naam,verwacht:kar.verwacht,werkelijk:kar.werkelijk,_poolId:kar.id,_personen:kar.personen});
+    // Update _personen op alle andere teamleden die ook deze kar hebben
+    App.huidigAvond.team.forEach(l=>{
+      const tk=l.karten&&l.karten.find(k=>k._poolId===kar.id);
+      if(tk)tk._personen=kar.personen;
+    });
+    showToast('Kar "'+kar.naam+'" gekoppeld aan '+App.huidigAvond.team[i].naam);
+  }
+  App._dirty=true;closeModal('modalAddKar');renderTeam();renderKarrenPool();
 };
 
 window.verwijderKar=(li,ki)=>{App.huidigAvond.team[li].karten.splice(ki,1);App._dirty=true;renderTeam();};
@@ -1185,7 +1261,15 @@ function renderKarrenPool(){
     const persStr=kar.personen&&kar.personen.length?kar.personen.join(', '):'Niet gekoppeld';
     let timerHtml='';
     if(!kar.timerStart){timerHtml=`<button class="timer-start" onclick="startTimer(${i})">▶ Start</button><div style="margin-top:6px"><label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label><input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarWerkelijk(${i},this.value)"></div>`;}
-    else if(bezig){const ov=kar.verwacht?Math.round(((elapsed/60-kar.verwacht)/kar.verwacht)*100):null;timerHtml=`<button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button><div class="timer-display${ov>=20?' over':''}" id="timerDisp_${i}">${fmtSecs(elapsed)}</div><span id="over_${i}" ${ov>=20?'':'style="display:none"'} class="overschrijding">⚠ +${ov}% over</span>`;}
+    else if(bezig){const ov=kar.verwacht?Math.round(((elapsed/60-kar.verwacht)/kar.verwacht)*100):null;const gepauzeerd=!!kar.timerPauze;timerHtml=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        ${gepauzeerd
+          ?`<button class="timer-hervat" onclick="hervatTimer(${i})">▶ Hervat</button>`
+          :`<button class="timer-pauze" onclick="pauzeTimer(${i})">⏸ Pauze</button>`
+        }
+        <button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button>
+      </div>
+      <div class="timer-display${ov>=20&&!gepauzeerd?' over':''}" id="timerDisp_${i}">${gepauzeerd?'⏸ ':''} ${fmtSecs(elapsed)}</div>
+      <span id="over_${i}" ${ov>=20&&!gepauzeerd?'':'style="display:none"'} class="overschrijding">⚠ +${ov}% over</span>`;}
     else{timerHtml=`<div style="font-weight:800;color:var(--green)">✓ ${kar.werkelijk} min</div><button class="btn btn-ghost btn-xs" style="margin-top:4px" onclick="resetTimer(${i})">↺ Reset</button>`;}
     return`<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}"><div class="pool-row-top"><div style="flex:1"><div class="pool-naam">${kar.naam}</div><div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel personen</button><button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button></div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="pool-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div><input type="number" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div><div>${timerHtml}</div></div></div>`;
   }).join('');
@@ -1240,9 +1324,11 @@ function syncPoolNaarTeam(pi){
 function syncAllePool(){(App.huidigAvond.karrenPool||[]).forEach((_,i)=>syncPoolNaarTeam(i));}
 
 // TIMER
-window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
-window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStop=Date.now();k.werkelijk=Math.max(1,Math.round((k.timerStop-k.timerStart)/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
-window.resetTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));k.timerStart=null;k.timerStop=null;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();};
+window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
+window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
+window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
+window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
+window.resetTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));k.timerStart=null;k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();};
 
 function startTimerInterval(){
   if(App._timerInterval)return;
@@ -1251,10 +1337,17 @@ function startTimerInterval(){
     if(!pool.some(k=>k.timerStart&&!k.timerStop)){clearInterval(App._timerInterval);App._timerInterval=null;return;}
     pool.forEach((k,i)=>{
       if(!k.timerStart||k.timerStop)return;
-      const secs=Math.floor((Date.now()-k.timerStart)/1000);
+      // Netto elapsed: totale tijd min pauzetijd
+      const rawMs=Date.now()-k.timerStart;
+      const pausedMs=(k.timerPauzeTotal||0)+(k.timerPauze?(Date.now()-k.timerPauze):0);
+      const secs=Math.floor((rawMs-pausedMs)/1000);
+      const gepauzeerd=!!k.timerPauze;
       const el=document.getElementById('timerDisp_'+i);
-      if(el){el.textContent=fmtSecs(secs);if(k.verwacht&&secs/60>k.verwacht)el.className='timer-display over';}
-      if(k.verwacht){const ov=Math.round(((secs/60-k.verwacht)/k.verwacht)*100),key=k.id+'_'+Math.floor(ov/20);if(ov>=20&&!App.alarmGegeven.has(key)){App.alarmGegeven.add(key);speelAlarm();const b=document.getElementById('over_'+i);if(b){b.style.display='inline-flex';b.textContent='⚠ +'+ov+'% over';}}}
+      if(el){
+        el.textContent=(gepauzeerd?'⏸ ':'')+fmtSecs(secs);
+        if(k.verwacht&&secs/60>k.verwacht&&!gepauzeerd)el.className='timer-display over';
+      }
+      if(k.verwacht&&!gepauzeerd){const ov=Math.round(((secs/60-k.verwacht)/k.verwacht)*100),key=k.id+'_'+Math.floor(ov/20);if(ov>=20&&!App.alarmGegeven.has(key)){App.alarmGegeven.add(key);speelAlarm();const b=document.getElementById('over_'+i);if(b){b.style.display='inline-flex';b.textContent='⚠ +'+ov+'% over';}}}
     });
     if(document.getElementById('tab-live').classList.contains('active'))renderLive();
   },1000);
@@ -1409,18 +1502,27 @@ window.renderLive=()=>{
     pool.forEach((k,i)=>{
       const done=k.werkelijk&&k.werkelijk>0;
       const bz=k.timerStart&&!k.timerStop&&!done;
-      const secs=bz?Math.floor((now-k.timerStart)/1000):0;
-      const ov=bz&&k.verwacht?Math.round(((secs/60-k.verwacht)/k.verwacht)*100):null;
-      const cls=done?'klaar':bz?(ov>=20?'over':'actief'):'';
+      const gepauzeerd=bz&&!!k.timerPauze;
+      const rawMs=bz?(Date.now()-k.timerStart):0;
+      const pausedMs=bz?((k.timerPauzeTotal||0)+(k.timerPauze?(Date.now()-k.timerPauze):0)):0;
+      const secs=Math.floor((rawMs-pausedMs)/1000);
+      const ov=bz&&k.verwacht&&!gepauzeerd?Math.round(((secs/60-k.verwacht)/k.verwacht)*100):null;
+      const cls=done?'klaar':bz?(gepauzeerd?'':'actief'):'';
 
       let timerVal='';
       if(done) timerVal=`<span class="live-pill-timer klaar">✓ ${k.werkelijk}m</span>`;
-      else if(bz) timerVal=`<span class="live-pill-timer${ov>=20?' over':''}" id="livepill_${i}">${fmtSecs(secs)}</span>`;
+      else if(bz) timerVal=`<span class="live-pill-timer${ov>=20?' over':''}" id="livepill_${i}">${gepauzeerd?'⏸ ':''} ${fmtSecs(secs)}</span>`;
       else timerVal=`<span class="live-pill-timer" style="color:var(--text3)">${k.verwacht?k.verwacht+'m exp':'—'}</span>`;
 
       let actionBtn='';
-      if(!done&&bz) actionBtn=`<button class="live-pill-stop" onclick="stopTimer(${i});renderLive()">⏹</button>`;
-      else if(!done&&!bz) actionBtn=`<button class="live-pill-start" onclick="startTimer(${i});renderLive()">▶</button>`;
+      if(!done&&bz){
+        actionBtn=gepauzeerd
+          ?`<button class="live-pill-start" onclick="hervatTimer(${i});renderLive()">▶</button>`
+          :`<button class="live-pill-stop" style="background:var(--orange)" onclick="pauzeTimer(${i});renderLive()">⏸</button>
+            <button class="live-pill-stop" onclick="stopTimer(${i});renderLive()">⏹</button>`;
+      } else if(!done&&!bz){
+        actionBtn=`<button class="live-pill-start" onclick="startTimer(${i});renderLive()">▶</button>`;
+      }
 
       html+=`<div class="live-timer-pill ${cls}">
         <div class="live-pill-left">
@@ -1519,7 +1621,7 @@ function renderOverzicht(){
 // GESCHIEDENIS
 window.setHistFilter=f=>{
   App.histFilter=f;
-  ['Alle','Afgesloten','Mijn'].forEach(v=>{const b=document.getElementById('hf'+v);if(b){b.style.background=v.toLowerCase()===f?'var(--red)':'';b.style.color=v.toLowerCase()===f?'#fff':'';}});
+  ['Alle','Afgesloten'].forEach(v=>{const b=document.getElementById('hf'+v);if(b){b.style.background=v.toLowerCase()===f?'var(--red)':'';b.style.color=v.toLowerCase()===f?'#fff':'';}});
   renderHistory();
 };
 
@@ -1529,19 +1631,21 @@ window.renderHistory=async()=>{
   try{
     const zoek=(document.getElementById('histZoek')?.value||'').toLowerCase().trim();
     let q;
-    if(App.histFilter==='mijn')q=query(collection(db,'avonden'),where('_account','==',App.uid),orderBy('created','desc'));
-    else if(App.histFilter==='afgesloten')q=query(collection(db,'avonden'),where('afgesloten','==',true),orderBy('created','desc'));
-    else q=query(collection(db,'avonden'),orderBy('created','desc'));
+    // Altijd gefilterd op eigen filiaal/_account
+    if(App.histFilter==='afgesloten')
+      q=query(collection(db,'avonden'),where('_account','==',App.uid),where('afgesloten','==',true),orderBy('created','desc'));
+    else
+      q=query(collection(db,'avonden'),where('_account','==',App.uid),orderBy('created','desc'));
+
     const snap=await getDocs(q);
     let lijst=snap.docs.map(d=>({...d.data(),fbId:d.id}));
-    if(zoek)lijst=lijst.filter(av=>(av.dag||'').toLowerCase().includes(zoek)||(av.datum||'').includes(zoek)||(av._filiaal||'').toLowerCase().includes(zoek)||(av.leidinggevende||'').toLowerCase().includes(zoek)||(av._leider||'').toLowerCase().includes(zoek)||(av.team||[]).some(l=>l.naam.toLowerCase().includes(zoek)));
+    if(zoek)lijst=lijst.filter(av=>(av.dag||'').toLowerCase().includes(zoek)||(av.datum||'').includes(zoek)||(av.leidinggevende||'').toLowerCase().includes(zoek)||(av._leider||'').toLowerCase().includes(zoek)||(av.team||[]).some(l=>l.naam.toLowerCase().includes(zoek)));
     if(!lijst.length){c.innerHTML='<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">'+(zoek?'Geen resultaten.':'Nog geen avonden.')+'</div></div>';return;}
     c.innerHTML=lijst.map(av=>{
-      const d=new Date(av.datum),eigen=av._account===App.uid;
+      const d=new Date(av.datum);
       const u=(av.team||[]).reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
-      const filTag=av._filiaal&&av._filiaal!==App.filiaal?`<span class="tag">🏪 ${av._filiaal}</span>`:'';
       const lTag=(av.leidinggevende||av._leider)?`<span class="tag">🔑 ${av.leidinggevende||av._leider}</span>`:'';
-      return`<div class="hist-avond ${av.afgesloten?'afgesloten':''}"><div class="hist-top"><div><div style="font-weight:900;font-size:1rem">${av.afgesloten?'✓ ':''}<strong>${cap(av.dag||'')}</strong></div><div class="hist-info"><span class="tag">${d.toLocaleDateString('nl-NL')}</span>${filTag}${lTag}<span class="tag">${(av.team||[]).length} pers.</span><span class="tag">${u.toFixed(1)}u</span><span class="tag">${av.werkelijkColli||av.colli} colli</span>${av.afgesloten?'<span class="badge badge-ok">✓ Afgesloten</span>':''}</div>${av.eindnotitie?`<div style="font-size:.78rem;color:var(--text3);margin-top:5px;font-style:italic">📝 ${av.eindnotitie}</div>`:''}</div><div class="hist-actions"><button class="btn btn-secondary btn-sm" onclick="laadAvond('${av.fbId}')">${eigen?'Open':'Bekijk'}</button>${eigen?`<button class="btn btn-danger btn-sm" onclick="verwijderAvond('${av.fbId}')">✕</button>`:''}</div></div></div>`;
+      return`<div class="hist-avond ${av.afgesloten?'afgesloten':''}"><div class="hist-top"><div><div style="font-weight:900;font-size:1rem">${av.afgesloten?'✓ ':''}<strong>${cap(av.dag||'')}</strong></div><div class="hist-info"><span class="tag">${d.toLocaleDateString('nl-NL')}</span>${lTag}<span class="tag">${(av.team||[]).length} pers.</span><span class="tag">${u.toFixed(1)}u</span><span class="tag">${av.werkelijkColli||av.colli} colli</span>${av.afgesloten?'<span class="badge badge-ok">✓ Afgesloten</span>':''}</div>${av.eindnotitie?`<div style="font-size:.78rem;color:var(--text3);margin-top:5px;font-style:italic">📝 ${av.eindnotitie}</div>`:''}</div><div class="hist-actions"><button class="btn btn-secondary btn-sm" onclick="laadAvond('${av.fbId}')">Open</button><button class="btn btn-danger btn-sm" onclick="verwijderAvond('${av.fbId}')">✕</button></div></div></div>`;
     }).join('');
   }catch(e){c.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Fout: '+e.message+'</div></div>';}
 };
