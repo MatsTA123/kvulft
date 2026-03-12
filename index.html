@@ -295,6 +295,13 @@ textarea{resize:vertical;min-height:58px}
 .vergelijk-bar{height:4px;border-radius:2px;margin-top:4px;min-width:4px;transition:width .4s}
 
 /* ─── SAMENVATTING ─── */
+.sparkline{display:flex;align-items:flex-end;gap:2px;height:28px;padding:2px 0}
+.spark-bar{width:8px;border-radius:2px 2px 0 0;min-height:3px;transition:opacity .15s}
+.spark-bar:hover{opacity:.75}
+.spark-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.trend-up{color:var(--green);font-weight:800;font-size:.72rem}
+.trend-down{color:var(--red);font-weight:800;font-size:.72rem}
+.trend-flat{color:var(--text3);font-weight:700;font-size:.72rem}
 .samenvatting-box{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px;font-family:var(--mono);font-size:.78rem;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:380px;overflow-y:auto}
 
 /* ─── LEIDERS ─── */
@@ -561,7 +568,7 @@ textarea{resize:vertical;min-height:58px}
 
   <!-- ═══════════ GESCHIEDENIS ═══════════ -->
   <div id="tab-history" class="tab-panel">
-    <div class="section-head"><div><div class="page-title">Geschiedenis <span>avonden</span></div><div class="page-sub">Alle avonden uit de cloud</div></div></div>
+    <div class="section-head"><div><div class="page-title">Geschiedenis <span>avonden</span></div><div class="page-sub">Alle avonden uit de cloud</div></div><button class="btn btn-secondary btn-sm" onclick="exporteerCSV()">⬇️ CSV export</button></div>
     <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="histZoek" type="text" placeholder="Zoek op dag, datum, naam of leider…" oninput="renderHistory()"></div>
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <button class="btn btn-secondary btn-sm" id="hfAlle" onclick="setHistFilter('alle')">Alle avonden</button>
@@ -1056,6 +1063,14 @@ function startTimerInterval(){
     });
     if(document.getElementById('tab-live').classList.contains('active'))renderLiveTimers();
   },1000);
+
+  // Auto-refresh Live tab volledig elke 30 seconden (held stats + eindtijd bijwerken)
+  if(App._liveRefreshInterval)clearInterval(App._liveRefreshInterval);
+  App._liveRefreshInterval=setInterval(()=>{
+    if(document.getElementById('tab-live').classList.contains('active')){
+      renderLive();
+    }
+  },30000);
 }
 
 function fmtSecs(s){return Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s';}
@@ -1165,13 +1180,98 @@ window.renderHistory=async()=>{
   }catch(e){c.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Fout: '+e.message+'</div></div>';}
 };
 
+// ── CSV EXPORT ──
+window.exporteerCSV=async()=>{
+  showToast('CSV ophalen…');
+  try{
+    const snap=await getDocs(query(collection(db,'avonden'),where('_account','==',App.uid),orderBy('created','desc')));
+    const avonden=snap.docs.map(d=>({...d.data(),fbId:d.id}));
+    if(!avonden.length){showToast('Geen avonden gevonden.');return;}
+    const norm_default=80;
+    // Rijen: één rij per medewerker per avond
+    const rows=[['Datum','Dag','Filiaal','Leidinggevende','Vracht colli','Werkelijk colli','Norm (colli/u)','Medewerker','Start','Eind','Pauze (min)','Uren','Target colli','Karren','Verwacht totaal (min)','Werkelijk totaal (min)','Score (%)','Status','Notitie']];
+    avonden.forEach(av=>{
+      const norm=av.norm||norm_default;
+      (av.team||[]).forEach(lid=>{
+        const u=berekenUren(lid.start,lid.eind,lid.pauze),target=Math.round(u*norm),ka=lid.karten||[];
+        const totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
+        const pct=totV>0&&totW>0?Math.round((totV/totW)*100):null;
+        const status=pct===null?'—':pct>=95?'Op tijd / Snel':pct>=80?'Iets langzamer':'Langzaam';
+        rows.push([
+          av.datum||'',cap(av.dag||''),av._filiaal||App.filiaal||'',av.leidinggevende||'',
+          av.colli||'',av.werkelijkColli||'',norm,
+          lid.naam,lid.start||'',lid.eind||'',lid.pauze||0,
+          u.toFixed(2),target,ka.length,
+          totV||'',totW||'',pct!==null?pct:'',status,lid.notitie||''
+        ]);
+      });
+    });
+    const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+    const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='vulploeg_export_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+    URL.revokeObjectURL(url);showToast('CSV gedownload ✓');
+  }catch(e){showToast('Fout: '+e.message);}
+};
+
 // ── STATISTIEKEN ──
 function renderStatistieken(){
-  const c=document.getElementById('statsContent'),alle=App.avonden.filter(av=>av.team&&av.team.length>0);
+  const c=document.getElementById('statsContent'),alle=App.avonden.filter(av=>av.team&&av.team.length>0).sort((a,b)=>a.datum>b.datum?1:-1);
   if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div>';return;}
+
+  // Bouw stats per medewerker inclusief chronologische avond-scores voor sparkline
   const stats={};
-  alle.forEach(av=>{const norm=av.norm||80;av.team.forEach(lid=>{if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totKarren:0,opTijd:0,snel:0,langzaam:0,record:null,recordNaam:'',recordMin:0,recordVerwacht:0};const s=stats[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[],tV=ka.reduce((x,k)=>x+(k.verwacht||0),0),tW=ka.reduce((x,k)=>x+(k.werkelijk||0),0);s.avonden++;s.totUren+=u;s.totKarren+=ka.length;if(tV>0&&tW>0){const p=tW/tV;if(p<=.9)s.snel++;else if(p<=1.1)s.opTijd++;else s.langzaam++;}ka.forEach(k=>{if(k.werkelijk>0&&k.verwacht>0){const r=k.werkelijk/k.verwacht;if(s.record===null||r<s.record){s.record=r;s.recordNaam=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;}}});});});
-  c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Record</th></tr></thead><tbody>'+Object.values(stats).sort((a,b)=>b.avonden-a.avonden).map(s=>{const pg=s.opTijd+s.snel,pt=pg+s.langzaam,pct=pt>0?Math.round(pg/pt*100):null,bk=pct>=80?'background:var(--green)':pct>=50?'background:var(--orange)':'background:var(--red)';return`<tr><td><strong>${s.naam}</strong></td><td class="mono">${s.avonden}</td><td class="mono">${s.totUren.toFixed(1)}u</td><td class="mono">${s.totKarren}</td><td>${pct!==null?`<div style="font-size:.78rem;font-weight:700">${pct}%</div><div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${pct}%;${bk}"></div></div>`:'—'}</td><td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--orange)">${s.snel}⚡</span> <span style="color:var(--red)">${s.langzaam}⚠</span></td><td>${s.record!==null?`<span style="font-size:.7rem;background:var(--orange-dim);border:1px solid var(--orange);color:#b45309;border-radius:6px;padding:2px 7px">🏆 ${s.recordNaam} ${s.recordMin}/${s.recordVerwacht}min</span>`:'—'}</td></tr>`;}).join('')+'</tbody></table></div>';
+  alle.forEach(av=>{
+    const norm=av.norm||80;
+    av.team.forEach(lid=>{
+      if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totKarren:0,opTijd:0,snel:0,langzaam:0,record:null,recordNaam:'',recordMin:0,recordVerwacht:0,scores:[]};
+      const s=stats[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[],tV=ka.reduce((x,k)=>x+(k.verwacht||0),0),tW=ka.reduce((x,k)=>x+(k.werkelijk||0),0);
+      s.avonden++;s.totUren+=u;s.totKarren+=ka.length;
+      let avScore=null;
+      if(tV>0&&tW>0){const p=tW/tV;avScore=Math.round((tV/tW)*100);if(p<=.9)s.snel++;else if(p<=1.1)s.opTijd++;else s.langzaam++;}
+      s.scores.push({datum:av.datum,pct:avScore});
+      ka.forEach(k=>{if(k.werkelijk>0&&k.verwacht>0){const r=k.werkelijk/k.verwacht;if(s.record===null||r<s.record){s.record=r;s.recordNaam=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;}}});
+    });
+  });
+
+  // Helper: bouw SVG sparkline van laatste 8 avonden
+  function maakSparkline(scores){
+    const recent=scores.filter(s=>s.pct!==null).slice(-8);
+    if(recent.length<2)return '<span style="font-size:.7rem;color:var(--text3)">Onvoldoende data</span>';
+    const vals=recent.map(s=>s.pct),mx=Math.max(...vals,60),mn=Math.min(...vals,40),range=Math.max(mx-mn,10);
+    const W=80,H=28,bw=8,gap=2,total=recent.length*(bw+gap)-gap,ox=(W-total)/2;
+    let bars='';
+    vals.forEach((v,i)=>{
+      const h=Math.max(3,Math.round(((v-mn)/range)*(H-4)));
+      const clr=v>=95?'#0ea35a':v>=80?'#f59e0b':'#E2001A';
+      bars+=`<rect x="${ox+i*(bw+gap)}" y="${H-h}" width="${bw}" height="${h}" rx="2" fill="${clr}" opacity=".85"><title>${recent[i].datum}: ${v}%</title></rect>`;
+    });
+    // Trendlijn
+    const first=vals.slice(0,3).reduce((a,b)=>a+b,0)/3,last=vals.slice(-3).reduce((a,b)=>a+b,0)/vals.slice(-3).length;
+    const diff=Math.round(last-first);
+    const trendCls=diff>3?'trend-up':diff<-3?'trend-down':'trend-flat';
+    const trendIcon=diff>3?'↑':diff<-3?'↓':'→';
+    return `<div style="display:flex;align-items:center;gap:8px"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">${bars}</svg><span class="${trendCls}">${trendIcon} ${diff>0?'+':''}${diff}%</span></div>`;
+  }
+
+  const rijen=Object.values(stats).sort((a,b)=>b.avonden-a.avonden).map(s=>{
+    const pg=s.opTijd+s.snel,pt=pg+s.langzaam,pct=pt>0?Math.round(pg/pt*100):null;
+    const bk=pct>=80?'background:var(--green)':pct>=50?'background:var(--orange)':'background:var(--red)';
+    const spark=maakSparkline(s.scores);
+    return`<tr>
+      <td><strong>${s.naam}</strong></td>
+      <td class="mono">${s.avonden}</td>
+      <td class="mono">${s.totUren.toFixed(1)}u</td>
+      <td class="mono">${s.totKarren}</td>
+      <td>${pct!==null?`<div style="font-size:.78rem;font-weight:700">${pct}%</div><div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${pct}%;${bk}"></div></div>`:'—'}</td>
+      <td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--orange)">${s.snel}⚡</span> <span style="color:var(--red)">${s.langzaam}⚠</span></td>
+      <td>${spark}</td>
+      <td>${s.record!==null?`<span style="font-size:.7rem;background:var(--orange-dim);border:1px solid var(--orange);color:#b45309;border-radius:6px;padding:2px 7px">🏆 ${s.recordNaam} ${s.recordMin}/${s.recordVerwacht}min</span>`:'—'}</td>
+    </tr>`;
+  }).join('');
+
+  c.innerHTML=`<div style="font-size:.7rem;color:var(--text3);margin-bottom:10px;display:flex;gap:12px;flex-wrap:wrap"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#0ea35a;display:inline-block"></span>Snel (≥95%)</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#f59e0b;display:inline-block"></span>Op tijd (80–95%)</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#E2001A;display:inline-block"></span>Langzaam (&lt;80%)</span></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Trend (laatste 8)</th><th>Record</th></tr></thead><tbody>${rijen}</tbody></table></div>`;
 }
 
 // ── MEDEWERKERS ──
@@ -1449,6 +1549,18 @@ window.goTab=(name,btn)=>{
   const db2=document.querySelector(`.tab-btn[data-tab="${name}"]`);if(db2)db2.classList.add('active');
   const mb=document.getElementById('bnav-'+name);if(mb)mb.classList.add('active');
   ({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,karren:renderKarrenPool,statistieken:renderStatistieken,live:renderLive,print:renderPrintTab}[name]||function(){})();
+
+  // Live tab: start auto-refresh interval; stop when andere tab
+  if(name==='live'){
+    if(!App._liveRefreshInterval){
+      App._liveRefreshInterval=setInterval(()=>{
+        if(document.getElementById('tab-live').classList.contains('active'))renderLive();
+      },30000);
+    }
+  } else {
+    if(App._liveRefreshInterval){clearInterval(App._liveRefreshInterval);App._liveRefreshInterval=null;}
+  }
+
   // Scroll naar boven op mobiel bij tab-wissel
   window.scrollTo({top:0,behavior:'smooth'});
 };
