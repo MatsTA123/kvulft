@@ -454,7 +454,7 @@ textarea{resize:vertical;min-height:58px}
       <div class="flex gap-6 flex-wrap">
         <button class="btn btn-secondary btn-sm" onclick="openNieuweAvond()">+ Nieuw</button>
         <button class="btn btn-secondary btn-sm" onclick="openZiekModal(-1)">🤒 Ziek</button>
-        <button class="btn btn-secondary btn-sm" onclick="openSamenvatting()">💬 Deel</button>
+        <button class="btn btn-secondary btn-sm" onclick="goTab('print')">🖨️ Print</button>
         <button class="btn btn-orange btn-sm" onclick="sluitAvondAf()">✓ Afsluiten</button>
         <button class="btn btn-primary btn-sm" onclick="slaOp()">💾 Opslaan</button>
       </div>
@@ -1302,15 +1302,9 @@ function renderPrintTab(){
 
     // Notitieveld + paraaf
     previewHtml+=`
-        <div style="padding:12px 16px;border-top:1.5px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end">
-          <div>
-            <div style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Notities leider</div>
-            <div style="min-height:40px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:8px 12px;font-size:.82rem;color:var(--text3);font-style:italic">&nbsp;</div>
-          </div>
-          <div style="text-align:center;min-width:120px">
-            <div style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Paraaf</div>
-            <div style="width:120px;height:40px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2)"></div>
-          </div>
+        <div style="padding:12px 16px;border-top:1.5px solid var(--border)">
+          <div style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Notities leider</div>
+          <div style="min-height:40px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:8px 12px;font-size:.82rem;color:var(--text3);font-style:italic">&nbsp;</div>
         </div>
       </div>`;
   });
@@ -1345,9 +1339,9 @@ window.printDagOverzicht=()=>{
   if(!team.length){alert('Geen medewerkers.');return;}
   const d=new Date(av.datum),ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-  let body=`<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #E2001A;padding-bottom:12px;margin-bottom:20px">
-    <div><div style="font-size:20px;font-weight:900;color:#E2001A">Kruidvat Vulploeg</div><div style="font-size:13px;font-weight:700;color:#555;margin-top:4px">${ds}</div><div style="font-size:11px;color:#999;margin-top:2px">${App.filiaal||''}${av.leidinggevende?' · Leiding: '+av.leidinggevende:''} · Norm: ${norm} colli/uur · Vracht: ${av.colli} colli</div></div>
-    <div style="text-align:right;font-size:11px;color:#999">Afgedrukt: ${new Date().toLocaleString('nl-NL')}</div>
+  let body=`<div class="header-bar">
+    <div><div style="font-size:16px;font-weight:900;color:#E2001A">Kruidvat Vulploeg</div><div style="font-size:11px;font-weight:700;color:#555;margin-top:3px">${ds}</div><div style="font-size:9px;color:#999;margin-top:2px">${App.filiaal||''}${av.leidinggevende?' · Leiding: '+av.leidinggevende:''} · Norm: ${norm} colli/uur · Vracht: ${av.colli} colli</div></div>
+    <div style="text-align:right;font-size:9px;color:#999">Afgedrukt: ${new Date().toLocaleString('nl-NL')}</div>
   </div>`;
 
   team.forEach(lid=>{
@@ -1357,50 +1351,50 @@ window.printDagOverzicht=()=>{
     let scoreStr='—',scoreColor='#555';
     if(pctScr!==null){if(pctScr>=95){scoreStr='✓ Op tijd / Snel';scoreColor='#0ea35a';}else if(pctScr>=80){scoreStr='~ Iets langzamer';scoreColor='#f59e0b';}else{scoreStr='⚠ Langzaam';scoreColor='#E2001A';}}
 
-    body+=`<div style="margin-bottom:20px;border:1.5px solid #ddd;border-radius:8px;overflow:hidden;break-inside:avoid">
-      <div style="background:#111;color:#fff;padding:9px 14px;display:flex;justify-content:space-between;align-items:center">
-        <div><div style="font-size:14px;font-weight:900">${lid.naam}${lid.ziek?'<span style="background:#ff9800;border-radius:4px;padding:1px 7px;font-size:10px;margin-left:8px">🤒 ZIEK</span>':''}</div>
-        <div style="font-size:10px;opacity:.7;margin-top:3px">${lid.start} – ${lid.eind}${lid.pauze?' · '+lid.pauze+'min pauze':''} · ${u.toFixed(1)}u · Target: ${target} colli${lid.vervanger?' · Vervanger: '+lid.vervanger:''}</div></div>
-        <div style="text-align:right"><div style="font-size:11px;font-weight:800;color:${scoreColor}">${scoreStr}</div>${verschil!==null?`<div style="font-size:10px;opacity:.8">${verschil<=0?verschil+' min':'+'+verschil+' min'} t.o.v. verwacht</div>`:''}</div>
+    body+=`<div class="member-block">
+      <div class="member-head">
+        <div><div style="font-size:12px;font-weight:900">${lid.naam}${lid.ziek?'<span style="background:#ff9800;border-radius:3px;padding:1px 6px;font-size:9px;margin-left:6px">🤒 ZIEK</span>':''}</div>
+        <div style="font-size:9px;opacity:.7;margin-top:2px">${lid.start} – ${lid.eind}${lid.pauze?' · '+lid.pauze+'min pauze':''} · ${u.toFixed(1)}u · Target: ${target} colli${lid.vervanger?' · Vervanger: '+lid.vervanger:''}</div></div>
+        <div style="text-align:right"><div style="font-size:10px;font-weight:800;color:${scoreColor}">${scoreStr}</div>${verschil!==null?`<div style="font-size:9px;opacity:.8">${verschil<=0?verschil+' min':'+'+verschil+' min'} t.o.v. verwacht</div>`:''}</div>
       </div>
-      ${lid.notitie?`<div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:6px 14px;font-size:11px;color:#e65100">📝 ${lid.notitie}</div>`:''}
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr style="background:#f5f5f5"><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:center;border-bottom:1.5px solid #ddd">#</th><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:left;border-bottom:1.5px solid #ddd">Kar / Afdeling</th><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:center;border-bottom:1.5px solid #ddd">Verwacht (min)</th><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:center;border-bottom:1.5px solid #ddd">Werkelijk (min)</th><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:center;border-bottom:1.5px solid #ddd">Verschil</th><th style="padding:6px 10px;font-size:9.5px;font-weight:800;color:#777;text-transform:uppercase;text-align:center;border-bottom:1.5px solid #ddd">Score</th></tr></thead>
+      ${lid.notitie?`<div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:4px 10px;font-size:9px;color:#e65100">📝 ${lid.notitie}</div>`:''}
+      <table class="member-table">
+        <thead><tr><th>#</th><th>Kar / Afdeling</th><th>Verwacht (min)</th><th>Werkelijk (min)</th><th>Verschil</th><th>Score</th></tr></thead>
         <tbody>`;
 
-    if(ka.length===0){body+=`<tr><td colspan="6" style="padding:10px;font-size:11px;color:#aaa;text-align:center">Geen karren geregistreerd</td></tr>`;}
-    else{ka.forEach((kar,ki)=>{const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null,pct=v&&w?Math.round((v/w)*100):null;let st='—',sc='#555';if(pct!==null){if(pct>=95){st='⚡ Snel';sc='#0ea35a';}else if(pct>=80){st='✓ Goed';sc='#0ea35a';}else{st='⚠ Langzaam';sc='#E2001A';}}body+=`<tr style="border-bottom:1px solid #eee"><td style="padding:7px 10px;font-size:10px;color:#aaa;text-align:center">${ki+1}</td><td style="padding:7px 10px"><div style="font-weight:800;font-size:11px">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:9px;color:#999">👥 ${kar._personen.join(', ')}</div>`:''}</td><td style="padding:7px 10px;text-align:center;font-size:11px">${v||'—'}</td><td style="padding:7px 10px;text-align:center;font-size:11px;font-weight:800">${w||'—'}</td><td style="padding:7px 10px;text-align:center;font-size:11px;font-weight:800;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#555'}">${diff!==null?(diff<=0?diff+' min':'+'+diff+' min'):'—'}</td><td style="padding:7px 10px;text-align:center;font-size:10px;font-weight:800;color:${sc}">${st}</td></tr>`;});}
+    if(ka.length===0){body+=`<tr><td colspan="6" style="padding:6px 8px;font-size:9px;color:#aaa;text-align:center">Geen karren geregistreerd</td></tr>`;}
+    else{ka.forEach((kar,ki)=>{const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null,pct=v&&w?Math.round((v/w)*100):null;let st='—',sc='#555';if(pct!==null){if(pct>=95){st='⚡ Snel';sc='#0ea35a';}else if(pct>=80){st='✓ Goed';sc='#0ea35a';}else{st='⚠ Langzaam';sc='#E2001A';}}body+=`<tr><td>${ki+1}</td><td><div style="font-weight:800">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:8px;color:#999">👥 ${kar._personen.join(', ')}</div>`:''}</td><td>${v||'—'}</td><td style="font-weight:800">${w||'—'}</td><td style="font-weight:800;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#555'}">${diff!==null?(diff<=0?diff+' min':'+'+diff+' min'):'—'}</td><td style="font-weight:800;color:${sc}">${st}</td></tr>`;});}
 
-    if(ka.length>0&&(totV>0||totW>0)){body+=`<tr style="background:#f5f5f5"><td colspan="2" style="padding:7px 10px;font-size:11px;font-weight:900">Totaal</td><td style="padding:7px 10px;text-align:center;font-size:11px;font-weight:800">${totV||'—'}</td><td style="padding:7px 10px;text-align:center;font-size:11px;font-weight:800">${totW||'—'}</td><td style="padding:7px 10px;text-align:center;font-size:11px;font-weight:800;color:${totV>0&&totW>0?(totW-totV<=0?'#0ea35a':'#E2001A'):'#555'}">${totV>0&&totW>0?(totW-totV<=0?totW-totV+' min':'+'+(totW-totV)+' min'):'—'}</td><td style="padding:7px 10px;text-align:center;font-size:10px;font-weight:800;color:${scoreColor}">${scoreStr}</td></tr>`;}
+    if(ka.length>0&&(totV>0||totW>0)){body+=`<tfoot><tr><td colspan="2" style="padding:4px 8px;font-weight:900;font-size:9.5px">Totaal</td><td style="font-weight:800">${totV||'—'}</td><td style="font-weight:800">${totW||'—'}</td><td style="font-weight:800;color:${totV>0&&totW>0?(totW-totV<=0?'#0ea35a':'#E2001A'):'#555'}">${totV>0&&totW>0?(totW-totV<=0?totW-totV+' min':'+'+(totW-totV)+' min'):'—'}</td><td style="font-weight:800;color:${scoreColor}">${scoreStr}</td></tr></tfoot>`;}
 
     body+=`</tbody></table>
-      <div style="padding:10px 14px;border-top:1.5px solid #eee;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end">
-        <div><div style="font-size:9px;font-weight:800;color:#999;text-transform:uppercase;margin-bottom:5px">📋 Notities leider</div><div style="min-height:36px;border:1px solid #ddd;border-radius:5px;background:#fafafa;padding:6px 10px;font-size:11px;color:#aaa">&nbsp;</div></div>
-        <div style="text-align:center;min-width:110px"><div style="font-size:9px;font-weight:800;color:#999;text-transform:uppercase;margin-bottom:5px">Paraaf medewerker</div><div style="width:110px;height:36px;border:1px solid #ddd;border-radius:5px;background:#fafafa"></div></div>
+      <div class="notitie-row">
+        <div style="font-size:8px;font-weight:800;color:#999;text-transform:uppercase;margin-bottom:3px">📋 Notities leider</div>
+        <div style="min-height:22px;border:1px solid #ddd;border-radius:3px;background:#fafafa;padding:3px 7px;font-size:9px;color:#aaa">&nbsp;</div>
       </div>
     </div>`;
   });
 
   const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0),totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
-  body+=`<div style="border:2px solid #111;border-radius:8px;padding:14px;margin-top:8px;break-inside:avoid">
-    <div style="font-weight:900;font-size:12px;margin-bottom:10px">📊 Avondtotaal</div>
-    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px">
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Medewerkers</div><div style="font-size:18px;font-weight:900">${team.length}</div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Totaal uren</div><div style="font-size:18px;font-weight:900">${totU.toFixed(1)}u</div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Team target</div><div style="font-size:18px;font-weight:900">${totTarget}</div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Vracht colli</div><div style="font-size:18px;font-weight:900">${av.colli}</div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Werkelijk</div><div style="font-size:18px;font-weight:900">${av.werkelijkColli||'—'}</div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase">Leiding</div><div style="font-size:12px;font-weight:800;margin-top:4px">${av.leidinggevende||'—'}</div></div>
+  body+=`<div class="totaal-box">
+    <div style="font-weight:900;font-size:11px;margin-bottom:8px">📊 Avondtotaal</div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:8px">
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Medewerkers</div><div style="font-size:15px;font-weight:900">${team.length}</div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Totaal uren</div><div style="font-size:15px;font-weight:900">${totU.toFixed(1)}u</div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Team target</div><div style="font-size:15px;font-weight:900">${totTarget}</div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Vracht colli</div><div style="font-size:15px;font-weight:900">${av.colli}</div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Werkelijk</div><div style="font-size:15px;font-weight:900">${av.werkelijkColli||'—'}</div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase">Leiding</div><div style="font-size:11px;font-weight:800;margin-top:3px">${av.leidinggevende||'—'}</div></div>
     </div>
-    ${av.eindnotitie?`<div style="margin-bottom:10px;padding:6px 10px;background:#f5f5f5;border-radius:5px;font-size:10px;color:#555;font-style:italic">📝 ${av.eindnotitie}</div>`:''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase;margin-bottom:5px">Handtekening leidinggevende</div><div style="height:40px;border:1px solid #ddd;border-radius:5px"></div></div>
-      <div><div style="font-size:9px;color:#999;font-weight:800;text-transform:uppercase;margin-bottom:5px">Afgedrukt op</div><div style="height:40px;border:1px solid #ddd;border-radius:5px;padding:6px 10px;font-size:10px;color:#999">${new Date().toLocaleString('nl-NL')}</div></div>
+    ${av.eindnotitie?`<div style="margin-bottom:8px;padding:4px 8px;background:#f5f5f5;border-radius:4px;font-size:9px;color:#555;font-style:italic">📝 ${av.eindnotitie}</div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase;margin-bottom:4px">Handtekening leidinggevende</div><div style="height:34px;border:1px solid #ddd;border-radius:4px"></div></div>
+      <div><div style="font-size:8px;color:#999;font-weight:800;text-transform:uppercase;margin-bottom:4px">Afgedrukt op</div><div style="height:34px;border:1px solid #ddd;border-radius:4px;padding:5px 8px;font-size:9px;color:#999">${new Date().toLocaleString('nl-NL')}</div></div>
     </div>
   </div>`;
 
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:20px;font-size:12px;color:#111;background:#fff}@media print{@page{margin:.8cm;size:A4}body{padding:0}}</style></head><body>${body}</body></html>`);
+  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;color:#111;background:#fff}@media print{@page{margin:.5cm;size:A4 portrait}body{padding:0}}.page-wrap{padding:12px;width:210mm;transform-origin:top left}.header-bar{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #E2001A;padding-bottom:8px;margin-bottom:12px}.member-block{margin-bottom:10px;border:1px solid #ddd;border-radius:6px;overflow:hidden;break-inside:avoid}.member-head{background:#111;color:#fff;padding:6px 10px;display:flex;justify-content:space-between;align-items:center}.member-table{width:100%;border-collapse:collapse}.member-table th{padding:4px 8px;font-size:8px;font-weight:800;color:#777;text-transform:uppercase;background:#f5f5f5;border-bottom:1px solid #ddd;text-align:center}.member-table th:nth-child(2){text-align:left}.member-table td{padding:4px 8px;font-size:9.5px;border-bottom:1px solid #eee;text-align:center}.member-table td:nth-child(2){text-align:left}.member-table tfoot tr{background:#f5f5f5}.notitie-row{padding:5px 10px;border-top:1px solid #eee}.totaal-box{border:1.5px solid #111;border-radius:6px;padding:10px 12px;margin-top:8px;break-inside:avoid}</style></head><body><div class="page-wrap">${body}</div></body></html>`);
   w.document.close();w.focus();setTimeout(()=>w.print(),600);
 };
 
