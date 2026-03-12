@@ -375,11 +375,19 @@ textarea{resize:vertical;min-height:58px}
     </div>
     <div id="authLogin">
       <div class="auth-hint"><strong>☁️ Cloud opslag:</strong> Log in met je e-mailadres en wachtwoord. Alle leiders van hetzelfde filiaal gebruiken hetzelfde account.</div>
-      <input class="auth-field" id="loginEmail" type="email" placeholder="E-mailadres" autocomplete="email" onkeydown="if(event.key==='Enter')getElementById('loginWW').focus()">
+      <input class="auth-field" id="loginEmail" type="email" placeholder="E-mailadres" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('loginWW').focus()">
       <input class="auth-field" id="loginWW" type="password" placeholder="Wachtwoord" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
       <div class="auth-err" id="loginErr"></div>
       <button class="auth-btn" id="loginBtn" onclick="doLogin()">Inloggen →</button>
-      <span class="auth-link" onclick="doWachtwoordReset()">Wachtwoord vergeten?</span>
+      <button type="button" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);font-family:var(--font);font-weight:700;font-size:.88rem;cursor:pointer;margin-bottom:8px" onclick="toonWWReset()">🔑 Wachtwoord vergeten?</button>
+    </div>
+    <div id="authReset" class="hidden">
+      <div class="auth-hint" style="background:var(--orange-dim);border:1px solid var(--orange)"><strong>🔑 Wachtwoord herstellen</strong><br>Vul je e-mailadres in en we sturen een reset-link.</div>
+      <input class="auth-field" id="resetEmail" type="email" placeholder="E-mailadres" autocomplete="email">
+      <div class="auth-err" id="resetErr"></div>
+      <div class="auth-ok" id="resetOk"></div>
+      <button class="auth-btn" onclick="doWachtwoordReset()">✉️ Reset-link sturen</button>
+      <button type="button" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--text3);font-family:var(--font);font-weight:700;font-size:.85rem;cursor:pointer" onclick="toonWWReset(false)">← Terug naar inloggen</button>
     </div>
     <div id="authRegister" class="hidden">
       <div class="auth-hint"><strong>🏪 Nieuw filiaal?</strong> Maak één account per filiaal. Alle leiders loggen in met hetzelfde e-mailadres en wachtwoord.</div>
@@ -425,6 +433,7 @@ textarea{resize:vertical;min-height:58px}
   <button class="tab-btn" data-tab="leiders" onclick="goTab('leiders',this)">🔑 Leiders</button>
   <button class="tab-btn" data-tab="history" onclick="goTab('history',this)">📁 Geschiedenis</button>
   <button class="tab-btn" data-tab="statistieken" onclick="goTab('statistieken',this)">🏆 Stats</button>
+  <button class="tab-btn" data-tab="maandrapport" onclick="goTab('maandrapport',this)">📅 Maandrapport</button>
   <button class="tab-btn" data-tab="print" onclick="goTab('print',this)">🖨️ Print</button>
 </div>
 
@@ -446,6 +455,7 @@ textarea{resize:vertical;min-height:58px}
     <button class="btn btn-secondary" onclick="closeMeer();goTab('leiders')">🔑 Leiders</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('history')">📁 Geschiedenis</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('statistieken')">🏆 Stats</button>
+    <button class="btn btn-secondary" onclick="closeMeer();goTab('maandrapport')">📅 Maandrapport</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('print')">🖨️ Print PDF</button>
     <button class="btn btn-secondary" onclick="closeMeer();openSamenvatting()">💬 Delen</button>
     <button class="btn btn-secondary" onclick="closeMeer();openZiekModal(-1)">🤒 Ziek</button>
@@ -583,10 +593,22 @@ textarea{resize:vertical;min-height:58px}
     <div id="statsContent" class="card"><div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div></div>
   </div>
 
+  <!-- ═══════════ MAANDRAPPORT ═══════════ -->
+  <div id="tab-maandrapport" class="tab-panel">
+    <div class="section-head">
+      <div><div class="page-title">Maandrapport <span>per medewerker</span></div><div class="page-sub">Prestaties per persoon over een volledige maand</div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="maandSel" class="form-control" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--font);font-weight:700;font-size:.85rem" onchange="renderMaandrapport()"></select>
+        <button class="btn btn-secondary btn-sm" onclick="exportMaandCSV()">⬇️ CSV</button>
+      </div>
+    </div>
+    <div id="maandContent"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Laden…</div></div></div>
+  </div>
+
   <!-- ═══════════ PRINT / PDF ═══════════ -->
   <div id="tab-print" class="tab-panel">
     <div class="section-head">
-      <div><div class="page-title">Dagoverzicht <span>printen</span></div><div class="page-sub">Professioneel overzicht per medewerker — geschikt voor PDF</div></div>
+      <div><div class="page-title">Dagoverzicht <span>printen</span></div><div class="page-sub">Volledige avond op 1 pagina — geschikt voor PDF of dubbelzijdig afdrukken</div></div>
       <button class="btn btn-primary btn-sm" onclick="printDagOverzicht()">🖨️ Afdrukken / PDF</button>
     </div>
     <div id="printPreviewContent">
@@ -746,9 +768,29 @@ enableIndexedDbPersistence(db).catch(()=>{});
 // ── Offline banner ──
 function updateOfflineBanner(){
   let b=document.getElementById('offlineBanner');
-  if(!b){b=document.createElement('div');b.id='offlineBanner';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:#1a1a1a;color:#fff;font-family:var(--font);font-size:.78rem;font-weight:800;text-align:center;padding:7px 16px;display:none;align-items:center;justify-content:center;gap:8px';document.body.appendChild(b);}
-  if(!navigator.onLine){b.style.display='flex';b.innerHTML='📡 Offline — wijzigingen worden lokaal opgeslagen';document.getElementById('appHeader').style.top='38px';}
-  else{b.style.display='none';document.getElementById('appHeader').style.top='0';if(App&&App._offlineWasOffline){App._offlineWasOffline=false;showToast('✓ Weer online — synchroniseren…');if(App._dirty)slaOp();}}
+  if(!b){
+    b=document.createElement('div');b.id='offlineBanner';
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:#1a1a1a;color:#fff;font-family:var(--font);font-size:.75rem;font-weight:700;padding:0;display:none;flex-direction:column;align-items:stretch';
+    document.body.appendChild(b);
+  }
+  if(!navigator.onLine){
+    b.style.display='flex';
+    b.innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:#1a1a1a;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1rem">📡</span><span>Offline — geen internetverbinding</span></div>
+        <div style="display:flex;gap:12px;font-size:.7rem;opacity:.85">
+          <span style="color:#4ade80">✓ Huidig avond bewerken</span>
+          <span style="color:#4ade80">✓ Timers &amp; karren</span>
+          <span style="color:#f87171">✗ Cloud opslaan</span>
+          <span style="color:#f87171">✗ Geschiedenis laden</span>
+        </div>
+      </div>`;
+    document.getElementById('appHeader').style.top='46px';
+  } else {
+    b.style.display='none';
+    document.getElementById('appHeader').style.top='0';
+    if(App&&App._offlineWasOffline){App._offlineWasOffline=false;showToast('✓ Weer online — synchroniseren…');if(App._dirty)slaOp();}
+  }
 }
 window.addEventListener('online',()=>{App._offlineWasOffline=true;updateOfflineBanner();});
 window.addEventListener('offline',()=>{updateOfflineBanner();});
@@ -806,11 +848,26 @@ window.doLogout=async()=>{
   await signOut(auth);
 };
 
+window.toonWWReset=(toon=true)=>{
+  document.getElementById('authLogin').classList.toggle('hidden',toon);
+  document.getElementById('authReset').classList.toggle('hidden',!toon);
+  if(toon){
+    const email=document.getElementById('loginEmail').value;
+    document.getElementById('resetEmail').value=email;
+    document.getElementById('resetErr').style.display='none';
+    document.getElementById('resetOk').style.display='none';
+  }
+};
 window.doWachtwoordReset=async()=>{
-  const email=document.getElementById('loginEmail').value.trim();
-  if(!email){authErr('loginErr','Vul eerst je e-mailadres in.');return;}
-  try{await sendPasswordResetEmail(auth,email);showToast('✉️ Reset-link verstuurd naar '+email);}
-  catch(e){authErr('loginErr',vertaalAuthFout(e.code));}
+  const email=document.getElementById('resetEmail').value.trim();
+  const err=document.getElementById('resetErr'),ok=document.getElementById('resetOk');
+  err.style.display='none';ok.style.display='none';
+  if(!email){err.textContent='Vul je e-mailadres in.';err.style.display='block';return;}
+  try{
+    await sendPasswordResetEmail(auth,email);
+    ok.textContent='✉️ Reset-link verstuurd naar '+email+'. Controleer ook je spam.';
+    ok.style.display='block';
+  }catch(e){err.textContent=vertaalAuthFout(e.code);err.style.display='block';}
 };
 
 onAuthStateChanged(auth,async(fbUser)=>{
@@ -1274,7 +1331,131 @@ function renderStatistieken(){
   <div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Trend (laatste 8)</th><th>Record</th></tr></thead><tbody>${rijen}</tbody></table></div>`;
 }
 
-// ── MEDEWERKERS ──
+// ── MAANDRAPPORT ──
+window.renderMaandrapport=async()=>{
+  const c=document.getElementById('maandContent');
+  const sel=document.getElementById('maandSel');
+
+  // Laad alle avonden als nog niet geladen
+  c.innerHTML='<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Laden…</div></div>';
+  let alle=[];
+  try{
+    const snap=await getDocs(query(collection(db,'avonden'),where('_account','==',App.uid),orderBy('created','desc')));
+    alle=snap.docs.map(d=>({...d.data(),fbId:d.id})).filter(av=>av.datum&&av.team&&av.team.length);
+  }catch(e){c.innerHTML='<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Fout: '+e.message+'</div></div>';return;}
+
+  if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div>';return;}
+
+  // Bouw maand-opties
+  const maanden=[...new Set(alle.map(av=>av.datum.substring(0,7)))].sort().reverse();
+  const huidig=sel.value||maanden[0];
+  sel.innerHTML=maanden.map(m=>{const[y,mo]=m.split('-');const naam=new Date(y,mo-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'});return`<option value="${m}" ${m===huidig?'selected':''}>${naam}</option>`;}).join('');
+
+  const avonden=alle.filter(av=>av.datum.startsWith(huidig));
+  if(!avonden.length){c.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Geen avonden in deze maand.</div></div>';return;}
+
+  // Groepeer per medewerker
+  const norm_=av=>av.norm||80;
+  const medewMap={};
+  avonden.sort((a,b)=>a.datum>b.datum?1:-1).forEach(av=>{
+    (av.team||[]).forEach(lid=>{
+      if(!medewMap[lid.naam])medewMap[lid.naam]={naam:lid.naam,avonden:[],totUren:0,totKarren:0,totVerwacht:0,totWerkelijk:0,scores:[]};
+      const m=medewMap[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[];
+      const tV=ka.reduce((s,k)=>s+(k.verwacht||0),0),tW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
+      const pct=tV>0&&tW>0?Math.round((tV/tW)*100):null;
+      m.avonden.push({datum:av.datum,dag:av.dag,uren:u,karren:ka.length,verwacht:tV,werkelijk:tW,pct,leidinggevende:av.leidinggevende||'',notitie:lid.notitie||''});
+      m.totUren+=u;m.totKarren+=ka.length;m.totVerwacht+=tV;m.totWerkelijk+=tW;
+      if(pct!==null)m.scores.push(pct);
+    });
+  });
+
+  const [jaar,maandNr]=huidig.split('-');
+  const maandNaam=new Date(jaar,maandNr-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'});
+
+  // Overzichtskaarten bovenaan
+  const alleScores=Object.values(medewMap).flatMap(m=>m.scores);
+  const gemScore=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
+  const totUren=Object.values(medewMap).reduce((s,m)=>s+m.totUren,0);
+
+  let html=`<div class="stats-grid" style="margin-bottom:16px">
+    <div class="stat-card"><div class="stat-val" style="color:var(--red)">${avonden.length}</div><div class="stat-label">Avonden</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--blue)">${Object.keys(medewMap).length}</div><div class="stat-label">Medewerkers</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--orange)">${totUren.toFixed(0)}u</div><div class="stat-label">Totaal uren</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:${gemScore>=90?'var(--green)':gemScore>=75?'var(--orange)':'var(--red)'}">${gemScore!==null?gemScore+'%':'—'}</div><div class="stat-label">Gem. score</div></div>
+  </div>`;
+
+  // Per medewerker een kaart
+  Object.values(medewMap).sort((a,b)=>b.totUren-a.totUren).forEach(m=>{
+    const gemPct=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
+    const kleur=gemPct>=95?'var(--green)':gemPct>=80?'var(--orange)':'var(--red)';
+    const totVerschil=m.totVerwacht>0&&m.totWerkelijk>0?m.totWerkelijk-m.totVerwacht:null;
+
+    html+=`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-weight:900;font-size:1.05rem">${m.naam}</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:3px">${m.avonden.length} avonden · ${m.totUren.toFixed(1)} uur · ${m.totKarren} karren</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:1.4rem;font-weight:900;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</div>
+          <div style="font-size:.7rem;color:var(--text3)">gem. score</div>
+          ${totVerschil!==null?`<div style="font-size:.72rem;font-weight:800;color:${totVerschil<=0?'var(--green)':'var(--red)'};margin-top:2px">${totVerschil<=0?totVerschil:'+'+totVerschil} min totaal</div>`:''}
+        </div>
+      </div>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Datum</th><th>Dag</th><th>Uren</th><th>Karren</th><th>Verwacht</th><th>Werkelijk</th><th>Verschil</th><th>Score</th><th>Notitie</th></tr></thead>
+        <tbody>
+        ${m.avonden.map(a=>{
+          const diff=a.verwacht>0&&a.werkelijk>0?a.werkelijk-a.verwacht:null;
+          const sc=a.pct!==null?(a.pct>=95?'<span class="badge badge-snel">⚡ Snel</span>':a.pct>=80?'<span class="badge badge-ok">✓ Goed</span>':'<span class="badge badge-langzaam">⚠ Traag</span>'):'<span class="badge badge-bezig">—</span>';
+          return`<tr>
+            <td class="mono">${new Date(a.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</td>
+            <td>${a.dag?a.dag.charAt(0).toUpperCase()+a.dag.slice(1,2):'—'}</td>
+            <td class="mono">${a.uren.toFixed(1)}u</td>
+            <td class="mono">${a.karren}</td>
+            <td class="mono">${a.verwacht||'—'}</td>
+            <td class="mono" style="font-weight:800">${a.werkelijk||'—'}</td>
+            <td class="mono" style="font-weight:800;color:${diff!==null?(diff<=0?'var(--green)':'var(--red)'):'var(--text3)'}">${diff!==null?(diff<=0?diff:'+'+diff)+' min':'—'}</td>
+            <td>${sc}</td>
+            <td style="font-size:.72rem;color:var(--text3)">${a.notitie||'—'}</td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+        <tfoot><tr style="background:var(--surface2)">
+          <td colspan="2" style="font-weight:900;padding:8px 12px">Totaal</td>
+          <td class="mono" style="font-weight:800">${m.totUren.toFixed(1)}u</td>
+          <td class="mono" style="font-weight:800">${m.totKarren}</td>
+          <td class="mono">${m.totVerwacht||'—'}</td>
+          <td class="mono" style="font-weight:800">${m.totWerkelijk||'—'}</td>
+          <td class="mono" style="font-weight:800;color:${totVerschil!==null?(totVerschil<=0?'var(--green)':'var(--red)'):'var(--text3)'}">${totVerschil!==null?(totVerschil<=0?totVerschil:'+'+totVerschil)+' min':'—'}</td>
+          <td style="font-weight:900;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</td>
+          <td></td>
+        </tr></tfoot>
+      </table></div>
+    </div>`;
+  });
+
+  c.innerHTML=html;
+  // Sla avonden op voor CSV export
+  App._maandData={maandNaam,avonden,medewMap};
+};
+
+window.exportMaandCSV=()=>{
+  if(!App._maandData){showToast('Laad eerst een maand.');return;}
+  const{maandNaam,medewMap}=App._maandData;
+  const rows=[['Maand','Medewerker','Datum','Dag','Uren','Karren','Verwacht (min)','Werkelijk (min)','Verschil (min)','Score (%)','Notitie']];
+  Object.values(medewMap).forEach(m=>{
+    m.avonden.forEach(a=>{
+      const diff=a.verwacht>0&&a.werkelijk>0?a.werkelijk-a.verwacht:null;
+      rows.push([maandNaam,m.naam,a.datum,a.dag||'',a.uren.toFixed(2),a.karren,a.verwacht||'',a.werkelijk||'',diff!==null?diff:'',a.pct!==null?a.pct:'',a.notitie]);
+    });
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='maandrapport_'+maandNaam.replace(' ','_')+'.csv';a.click();
+  URL.revokeObjectURL(url);showToast('CSV gedownload ✓');
+};
 window.openNieuwMedewModal=()=>{document.getElementById('nieuwMedewNaam').value='';document.getElementById('nieuwMedewFunctie').value='';openModal('modalNieuwMedew');};
 window.slaaNieuwMedewOp=async()=>{const naam=document.getElementById('nieuwMedewNaam').value.trim(),functie=document.getElementById('nieuwMedewFunctie').value.trim();if(!naam){alert('Naam vereist.');return;}setSyncStatus('bezig');try{const fbId=await fbAdd('accounts/'+App.uid+'/medewerkers',{naam,functie,created:Date.now()});App.medewerkers.push({id:fbId,fbId,naam,functie});App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));setSyncStatus('ok');closeModal('modalNieuwMedew');renderMedewBeheer();vulLeiderSelect();showToast('Medewerker opgeslagen');}catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}};
 window.verwijderMedew=async fbId=>{if(!confirm('Medewerker verwijderen?'))return;try{await fbDel('accounts/'+App.uid+'/medewerkers/'+fbId);App.medewerkers=App.medewerkers.filter(m=>m.fbId!==fbId);renderMedewBeheer();showToast('Verwijderd');}catch(e){showToast('Fout: '+e.message);}};
@@ -1332,208 +1513,130 @@ window.calcColliToTijd=()=>{const c=+document.getElementById('calcColli').value|
 window.calcTijdToColli=()=>{const m=+document.getElementById('calcMin').value||0,n=App.huidigAvond.norm||80;if(m>0){const c=Math.round((m/60)*n);document.getElementById('calcColli').value=c;document.getElementById('calcTip').textContent=m+' min × '+n+' ÷ 60 = '+c+' colli';}else{document.getElementById('calcColli').value='';document.getElementById('calcTip').textContent='';}};
 
 // ═══════════════════════════════════════════════════════════
-// ── PRINT TAB — Professioneel dagoverzicht per medewerker ──
+// ── PRINT TAB ──
 // ═══════════════════════════════════════════════════════════
+
 function renderPrintTab(){
   const c=document.getElementById('printPreviewContent');
   const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
   if(!team.length){c.innerHTML='<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-text">Selecteer eerst een avond met medewerkers.</div></div>';return;}
   const d=new Date(av.datum),ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-
-  let previewHtml=`
-    <div class="print-preview-wrap">
-      <div class="print-preview-header">
-        <div>
-          <div style="font-weight:900;font-size:.95rem">${ds}</div>
-          <div style="font-size:.75rem;color:var(--text3);margin-top:2px">${App.filiaal||'Kruidvat'} · ${team.length} medewerkers · Norm: ${norm} colli/uur</div>
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="printDagOverzicht()">🖨️ Afdrukken / PDF</button>
-      </div>
-      <div style="padding:16px;overflow-x:auto">`;
-
-  team.forEach(lid=>{
-    const u=berekenUren(lid.start,lid.eind,lid.pauze),target=Math.round(u*norm),ka=lid.karten||[];
-    const totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
-    const verschil=totV>0&&totW>0?totW-totV:null,pctScr=totV>0&&totW>0?Math.round((totV/totW)*100):null;
-    let scoreStr='—',scoreCls='';
-    if(pctScr!==null){if(pctScr>=95){scoreStr='✓ Op tijd / Snel';scoreCls='color:#0ea35a';}else if(pctScr>=80){scoreStr='~ Iets langzamer';scoreCls='color:#f59e0b';}else{scoreStr='⚠ Langzaam';scoreCls='color:#E2001A';}}
-
-    previewHtml+=`
-      <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px">
-        <div style="background:#111;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-          <div>
-            <div style="font-weight:900;font-size:1rem">${lid.naam}${lid.ziek?'<span style="background:#ff9800;color:#fff;border-radius:4px;padding:1px 7px;font-size:.7rem;margin-left:8px">🤒 ZIEK</span>':''}</div>
-            <div style="font-size:.75rem;opacity:.7;margin-top:3px">${lid.start} – ${lid.eind} · ${lid.pauze?lid.pauze+'min pauze · ':''}${u.toFixed(1)} uur · Target: ${target} colli</div>
-            ${lid.vervanger?`<div style="font-size:.72rem;opacity:.8;margin-top:2px">→ Vervanger: ${lid.vervanger}</div>`:''}
-          </div>
-          <div style="text-align:right">
-            ${pctScr!==null?`<div style="font-size:.78rem;font-weight:800;${scoreCls}">${scoreStr}</div>`:''}
-            ${verschil!==null?`<div style="font-size:.72rem;opacity:.75">${verschil>=0?'+ ':'− '}${Math.abs(verschil)} min t.o.v. verwacht</div>`:''}
-          </div>
-        </div>`;
-
-    if(lid.notitie){previewHtml+=`<div style="background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:7px 16px;font-size:.78rem;color:#e65100">📝 ${lid.notitie}</div>`;}
-
-    // Karrentabel
-    previewHtml+=`
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse">
-            <thead>
-              <tr style="background:var(--surface2)">
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:left;border-bottom:1.5px solid var(--border)">#</th>
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:left;border-bottom:1.5px solid var(--border)">Kar / Afdeling</th>
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:center;border-bottom:1.5px solid var(--border)">Verwacht (min)</th>
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:center;border-bottom:1.5px solid var(--border)">Werkelijk (min)</th>
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:center;border-bottom:1.5px solid var(--border)">Verschil</th>
-                <th style="padding:8px 14px;font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:center;border-bottom:1.5px solid var(--border)">Score</th>
-              </tr>
-            </thead>
-            <tbody>`;
-
-    if(ka.length===0){previewHtml+=`<tr><td colspan="6" style="padding:12px 14px;font-size:.82rem;color:var(--text3);text-align:center">Geen karren geregistreerd</td></tr>`;}
-    else{ka.forEach((kar,ki)=>{const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null,pct=v&&w?Math.round((v/w)*100):null;let sclr='',stxt='—';if(pct!==null){if(pct>=95){stxt='⚡ Snel';sclr='color:#0ea35a';}else if(pct>=80){stxt='✓ Goed';sclr='color:#0ea35a';}else{stxt='⚠ Langzaam';sclr='color:#E2001A';}}const diffTxt=diff!==null?(diff<=0?`<span style="color:#0ea35a;font-weight:800">${diff} min</span>`:`<span style="color:#E2001A;font-weight:800">+${diff} min</span>`):'—';previewHtml+=`<tr style="border-bottom:1px solid var(--border)"><td style="padding:9px 14px;font-size:.82rem;color:var(--text3);font-family:var(--mono)">${ki+1}</td><td style="padding:9px 14px"><div style="font-weight:800;font-size:.88rem">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.7rem;color:var(--text3)">👥 ${kar._personen.join(', ')}</div>`:''}</td><td style="padding:9px 14px;text-align:center;font-family:var(--mono);font-size:.85rem">${v||'—'}</td><td style="padding:9px 14px;text-align:center;font-family:var(--mono);font-size:.85rem;font-weight:800">${w||'—'}</td><td style="padding:9px 14px;text-align:center;font-size:.82rem">${diffTxt}</td><td style="padding:9px 14px;text-align:center;font-size:.78rem;font-weight:800;${sclr}">${stxt}</td></tr>`;});}
-
-    previewHtml+=`</tbody>`;
-
-    // Totaalrij
-    if(ka.length>0&&(totV>0||totW>0)){previewHtml+=`<tfoot><tr style="background:var(--surface2)"><td colspan="2" style="padding:9px 14px;font-size:.82rem;font-weight:900">Totaal</td><td style="padding:9px 14px;text-align:center;font-family:var(--mono);font-weight:800">${totV||'—'}</td><td style="padding:9px 14px;text-align:center;font-family:var(--mono);font-weight:800">${totW||'—'}</td><td style="padding:9px 14px;text-align:center;font-size:.82rem;font-weight:800">${totV>0&&totW>0?(totW-totV<=0?`<span style="color:#0ea35a">${totW-totV} min</span>`:`<span style="color:#E2001A">+${totW-totV} min</span>`):'—'}</td><td style="padding:9px 14px;text-align:center;font-size:.78rem;font-weight:800;${scoreCls}">${scoreStr}</td></tr></tfoot>`;}
-
-    previewHtml+=`</table></div>`;
-
-    // Notitieveld + paraaf
-    previewHtml+=`
-        <div style="padding:12px 16px;border-top:1.5px solid var(--border)">
-          <div style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📋 Notities leider</div>
-          <div style="min-height:40px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:8px 12px;font-size:.82rem;color:var(--text3);font-style:italic">&nbsp;</div>
-        </div>
-      </div>`;
-  });
-
-  // Samenvatting onderaan
-  const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0),totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
-  previewHtml+=`
-    <div style="border:2px solid #111;border-radius:10px;padding:14px 18px;margin-top:8px">
-      <div style="font-weight:900;font-size:.9rem;margin-bottom:10px">📊 Avondtotaal</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px">
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Medewerkers</div><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700">${team.length}</div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Totaal uren</div><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700">${totU.toFixed(1)}u</div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Team target</div><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700">${totTarget} colli</div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Vracht</div><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700">${av.colli} colli</div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Werkelijk colli</div><div style="font-family:var(--mono);font-size:1.3rem;font-weight:700">${av.werkelijkColli||'—'}</div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase">Leidinggevende</div><div style="font-size:.9rem;font-weight:800;margin-top:3px">${av.leidinggevende||'—'}</div></div>
-      </div>
-      ${av.eindnotitie?`<div style="margin-top:10px;padding:8px 12px;background:var(--surface2);border-radius:6px;font-size:.8rem;font-style:italic">📝 ${av.eindnotitie}</div>`:''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase;margin-bottom:6px">Handtekening leidinggevende</div><div style="height:44px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2)"></div></div>
-        <div><div style="font-size:.65rem;color:var(--text3);font-weight:800;text-transform:uppercase;margin-bottom:6px">Datum &amp; tijdstip afdruk</div><div style="height:44px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);padding:8px 12px;font-size:.78rem;color:var(--text3)">${new Date().toLocaleString('nl-NL')}</div></div>
-      </div>
-    </div>`;
-
-  previewHtml+=`</div></div>`;
-  c.innerHTML=previewHtml;
+  c.innerHTML=`<div class="print-preview-wrap"><div class="print-preview-header"><div><div style="font-weight:900;font-size:.95rem">${ds}</div><div style="font-size:.75rem;color:var(--text3);margin-top:2px">${App.filiaal||'Kruidvat'} · ${team.length} medewerkers · Norm: ${norm} colli/uur</div></div><button class="btn btn-primary btn-sm" onclick="printDagOverzicht()">🖨️ Afdrukken / PDF</button></div><div style="padding:12px 16px;font-size:.8rem;color:var(--text3)">Alle ${team.length} medewerkers op 1 pagina — schaal past automatisch aan.</div></div>`;
 }
 
-// ── PRINT ACTIE ──
 window.printDagOverzicht=()=>{
   const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
   if(!team.length){alert('Geen medewerkers.');return;}
   const d=new Date(av.datum),ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
+  const totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
 
-  let body=`<div class="hdr">
-    <div><div class="hdr-title">Kruidvat Vulploeg</div><div class="hdr-sub">${ds}</div><div class="hdr-meta">${App.filiaal||''}${av.leidinggevende?' · Leiding: '+av.leidinggevende:''} · Norm: ${norm} colli/uur · Vracht: ${av.colli} colli</div></div>
-    <div class="hdr-right">Afgedrukt: ${new Date().toLocaleString('nl-NL')}</div>
+  // Header
+  let body=`
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #E2001A;padding-bottom:8px;margin-bottom:14px">
+    <div>
+      <div style="font-size:18px;font-weight:900;color:#E2001A;letter-spacing:-0.5px">Kruidvat Vulploeg</div>
+      <div style="font-size:11px;font-weight:700;color:#333;margin-top:3px">${ds}</div>
+      <div style="font-size:9.5px;color:#777;margin-top:2px">${App.filiaal||''}${av.leidinggevende?' &nbsp;·&nbsp; Leidinggevende: <strong>'+av.leidinggevende+'</strong>':''} &nbsp;·&nbsp; Norm: ${norm} colli/u &nbsp;·&nbsp; Vracht: <strong>${av.colli} colli</strong></div>
+    </div>
+    <div style="text-align:right;font-size:8.5px;color:#aaa">Afgedrukt: ${new Date().toLocaleString('nl-NL')}</div>
   </div>`;
 
+  // Per medewerker
   team.forEach(lid=>{
     const u=berekenUren(lid.start,lid.eind,lid.pauze),target=Math.round(u*norm),ka=lid.karten||[];
     const totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
     const verschil=totV>0&&totW>0?totW-totV:null,pctScr=totV>0&&totW>0?Math.round((totV/totW)*100):null;
     let scoreStr='—',scoreColor='#555';
-    if(pctScr!==null){if(pctScr>=95){scoreStr='✓ Op tijd / Snel';scoreColor='#0ea35a';}else if(pctScr>=80){scoreStr='~ Iets langzamer';scoreColor='#f59e0b';}else{scoreStr='⚠ Langzaam';scoreColor='#E2001A';}}
+    if(pctScr!==null){if(pctScr>=95){scoreStr='✓ Snel';scoreColor='#0ea35a';}else if(pctScr>=80){scoreStr='~ Goed';scoreColor='#f59e0b';}else{scoreStr='⚠ Traag';scoreColor='#E2001A';}}
 
-    body+=`<div class="mb">
-      <div class="mh">
-        <div><div class="mh-name">${lid.naam}${lid.ziek?'<span style="background:#ff9800;border-radius:3px;padding:1px 5px;font-size:7px;margin-left:5px">ZIEK</span>':''}</div>
-        <div class="mh-meta">${lid.start}–${lid.eind}${lid.pauze?' · '+lid.pauze+'m pauze':''} · ${u.toFixed(1)}u · Target: ${target} colli${lid.vervanger?' · Vervanger: '+lid.vervanger:''}</div></div>
-        <div class="mh-score" style="color:${scoreColor}">${scoreStr}${verschil!==null?`<div style="font-size:7px;opacity:.8">${verschil<=0?verschil:'+'+verschil} min</div>`:''}</div>
+    body+=`
+    <div style="border:1px solid #ddd;border-radius:5px;overflow:hidden;margin-bottom:7px">
+      <div style="background:#111;color:#fff;padding:5px 10px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <span style="font-size:11px;font-weight:900">${lid.naam}</span>
+          ${lid.ziek?'<span style="background:#ff9800;border-radius:3px;padding:1px 5px;font-size:8px;margin-left:6px">ZIEK</span>':''}
+          <span style="font-size:8.5px;opacity:.65;margin-left:8px">${lid.start}–${lid.eind}${lid.pauze?' · '+lid.pauze+'m pauze':''} · ${u.toFixed(1)}u · target: ${target} colli</span>
+        </div>
+        <div style="text-align:right;font-size:9px;font-weight:800;color:${scoreColor}">${scoreStr}${verschil!==null?` <span style="font-weight:600;opacity:.8">(${verschil<=0?verschil:'+'+verschil} min)</span>`:''}</div>
       </div>
-      ${lid.notitie?`<div class="notif">📝 ${lid.notitie}</div>`:''}
-      <table><thead><tr><th>#</th><th>Kar</th><th>Verwacht</th><th>Werkelijk</th><th>Verschil</th><th>Score</th></tr></thead><tbody>`;
+      ${lid.notitie?`<div style="background:#fff8e1;border-bottom:1px solid #ffe082;padding:3px 10px;font-size:8.5px;color:#b45309">📝 ${lid.notitie}</div>`:''}
+      <table style="width:100%;border-collapse:collapse;font-size:9px">
+        <thead><tr style="background:#f7f7f7">
+          <th style="padding:3px 8px;font-weight:700;color:#888;text-transform:uppercase;font-size:7.5px;border-bottom:1px solid #e5e5e5;text-align:center;width:24px">#</th>
+          <th style="padding:3px 8px;font-weight:700;color:#888;text-transform:uppercase;font-size:7.5px;border-bottom:1px solid #e5e5e5;text-align:left">Kar / Afdeling</th>
+          <th style="padding:3px 8px;font-weight:700;color:#888;text-transform:uppercase;font-size:7.5px;border-bottom:1px solid #e5e5e5;text-align:center">Verwacht</th>
+          <th style="padding:3px 8px;font-weight:700;color:#888;text-transform:uppercase;font-size:7.5px;border-bottom:1px solid #e5e5e5;text-align:center">Werkelijk</th>
+          <th style="padding:3px 8px;font-weight:700;color:#888;text-transform:uppercase;font-size:7.5px;border-bottom:1px solid #e5e5e5;text-align:center">Verschil</th>
+        </tr></thead>
+        <tbody>`;
 
-    if(ka.length===0){body+=`<tr><td colspan="6" style="padding:4px;font-size:8px;color:#aaa;text-align:center">Geen karren</td></tr>`;}
-    else{ka.forEach((kar,ki)=>{const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null,pct=v&&w?Math.round((v/w)*100):null;let st='—',sc='#555';if(pct!==null){if(pct>=95){st='Snel';sc='#0ea35a';}else if(pct>=80){st='Goed';sc='#0ea35a';}else{st='Traag';sc='#E2001A';}}body+=`<tr><td>${ki+1}</td><td>${kar.naam}</td><td>${v||'—'}</td><td style="font-weight:800">${w||'—'}</td><td style="font-weight:800;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#555'}">${diff!==null?(diff<=0?diff:'+'+diff):'—'}</td><td style="font-weight:800;color:${sc}">${st}</td></tr>`;});}
+    if(!ka.length){body+=`<tr><td colspan="5" style="padding:5px;text-align:center;color:#bbb;font-style:italic">Geen karren</td></tr>`;}
+    else{
+      ka.forEach((kar,ki)=>{
+        const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null;
+        body+=`<tr style="border-bottom:1px solid #f0f0f0">
+          <td style="padding:3px 8px;text-align:center;color:#bbb">${ki+1}</td>
+          <td style="padding:3px 8px;font-weight:600">${kar.naam}</td>
+          <td style="padding:3px 8px;text-align:center">${v?v+' min':'—'}</td>
+          <td style="padding:3px 8px;text-align:center;font-weight:700">${w?w+' min':'—'}</td>
+          <td style="padding:3px 8px;text-align:center;font-weight:700;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#999'}">${diff!==null?(diff<=0?diff:'+'+diff)+' min':'—'}</td>
+        </tr>`;
+      });
+    }
 
-    if(ka.length>0&&(totV>0||totW>0)){body+=`<tfoot><tr><td colspan="2">Totaal</td><td>${totV||'—'}</td><td>${totW||'—'}</td><td style="color:${totV>0&&totW>0?(totW-totV<=0?'#0ea35a':'#E2001A'):'#555'}">${totV>0&&totW>0?(totW-totV<=0?totW-totV:'+'+(totW-totV)):'—'}</td><td style="color:${scoreColor}">${pctScr!==null?pctScr+'%':'—'}</td></tr></tfoot>`;}
+    // Totaalrij alleen als er data is
+    if(totV>0||totW>0){
+      body+=`<tr style="background:#f7f7f7;font-weight:800">
+        <td colspan="2" style="padding:3px 8px;font-size:8.5px">Totaal</td>
+        <td style="padding:3px 8px;text-align:center">${totV?totV+' min':'—'}</td>
+        <td style="padding:3px 8px;text-align:center">${totW?totW+' min':'—'}</td>
+        <td style="padding:3px 8px;text-align:center;color:${verschil!==null?(verschil<=0?'#0ea35a':'#E2001A'):'#999'}">${verschil!==null?(verschil<=0?verschil:'+'+verschil)+' min':'—'}</td>
+      </tr>`;
+    }
 
     body+=`</tbody></table>
-      <div class="nrow"><div class="nrow-lbl">Notities leider</div><div class="nrow-box">&nbsp;</div></div>
+      <div style="padding:4px 10px;border-top:1px solid #eee;display:flex;gap:16px;align-items:flex-start">
+        <div style="flex:1"><div style="font-size:7px;font-weight:800;color:#aaa;text-transform:uppercase;margin-bottom:2px">Notities leidinggevende</div><div style="min-height:18px;border:1px solid #e5e5e5;border-radius:3px;background:#fafafa">&nbsp;</div></div>
+      </div>
     </div>`;
   });
 
-  const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0),totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
-  body+=`<div class="tot">
-    <div class="tot-title">📊 Avondtotaal</div>
-    <div class="tot-grid">
-      <div><div class="tot-lbl">Medewerkers</div><div class="tot-val">${team.length}</div></div>
-      <div><div class="tot-lbl">Totaal uren</div><div class="tot-val">${totU.toFixed(1)}u</div></div>
-      <div><div class="tot-lbl">Team target</div><div class="tot-val">${totTarget}</div></div>
-      <div><div class="tot-lbl">Vracht</div><div class="tot-val">${av.colli}</div></div>
-      <div><div class="tot-lbl">Werkelijk</div><div class="tot-val">${av.werkelijkColli||'—'}</div></div>
-      <div><div class="tot-lbl">Leiding</div><div style="font-size:9px;font-weight:800;margin-top:2px">${av.leidinggevende||'—'}</div></div>
+  // Avondtotaal
+  body+=`
+  <div style="border:1.5px solid #222;border-radius:5px;padding:8px 12px;margin-top:8px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Medewerkers</div><div style="font-size:16px;font-weight:900">${team.length}</div></div>
+      <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Totaal uren</div><div style="font-size:16px;font-weight:900">${totU.toFixed(1)}u</div></div>
+      <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Team target</div><div style="font-size:16px;font-weight:900">${totTarget}</div></div>
+      <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Vracht colli</div><div style="font-size:16px;font-weight:900">${av.colli}</div></div>
+      <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Werkelijk colli</div><div style="font-size:16px;font-weight:900">${av.werkelijkColli||'—'}</div></div>
     </div>
-    ${av.eindnotitie?`<div style="margin-bottom:5px;padding:3px 6px;background:#f5f5f5;border-radius:3px;font-size:8px;color:#555;font-style:italic">📝 ${av.eindnotitie}</div>`:''}
-    <div class="tot-sig">
-      <div><div class="sig-lbl">Handtekening leidinggevende</div><div class="sig-box"></div></div>
-      <div><div class="sig-lbl">Afgedrukt op</div><div class="sig-box">${new Date().toLocaleString('nl-NL')}</div></div>
+    <div style="min-width:140px">
+      <div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase;margin-bottom:4px">Handtekening leidinggevende</div>
+      <div style="height:32px;border:1px solid #ddd;border-radius:3px"></div>
     </div>
-  </div>`;
+  </div>
+  ${av.eindnotitie?`<div style="margin-top:6px;padding:5px 10px;background:#f5f5f5;border-radius:4px;font-size:9px;color:#555;font-style:italic">📝 ${av.eindnotitie}</div>`:''}`;
 
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title><style>
+  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title>
+<style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#fff;color:#111}
-#wrap{width:210mm;padding:8mm;position:absolute;top:0;left:0;transform-origin:top left}
-.hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #E2001A;padding-bottom:5px;margin-bottom:8px}
-.hdr-title{font-size:14px;font-weight:900;color:#E2001A}
-.hdr-sub{font-size:9px;color:#555;margin-top:2px;font-weight:700}
-.hdr-meta{font-size:8px;color:#999;margin-top:2px}
-.hdr-right{font-size:8px;color:#999;text-align:right}
-.mb{margin-bottom:6px;border:1px solid #ccc;border-radius:4px;overflow:hidden;font-size:8px}
-.mh{background:#111;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;align-items:center}
-.mh-name{font-size:10px;font-weight:900}
-.mh-meta{font-size:7.5px;opacity:.7;margin-top:1px}
-.mh-score{text-align:right;font-size:8px;font-weight:800}
-.notif{background:#fff3e0;border-bottom:1px solid #ffe0b2;padding:3px 8px;font-size:7.5px;color:#e65100}
-table{width:100%;border-collapse:collapse}
-th{padding:2px 6px;font-size:7px;font-weight:800;color:#777;text-transform:uppercase;background:#f5f5f5;border-bottom:1px solid #ddd;text-align:center}
-th:nth-child(2){text-align:left}
-td{padding:2px 6px;font-size:8px;border-bottom:1px solid #eee;text-align:center}
-td:nth-child(2){text-align:left}
-tfoot td{background:#f5f5f5;font-weight:800;padding:2px 6px;font-size:8px}
-.nrow{padding:3px 8px;border-top:1px solid #eee}
-.nrow-lbl{font-size:7px;font-weight:800;color:#999;text-transform:uppercase;margin-bottom:2px}
-.nrow-box{min-height:16px;border:1px solid #ddd;border-radius:2px;background:#fafafa;padding:2px 5px;font-size:7.5px;color:#aaa}
-.tot{border:1.5px solid #111;border-radius:4px;padding:7px 9px;margin-top:6px}
-.tot-title{font-weight:900;font-size:9px;margin-bottom:5px}
-.tot-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:6px}
-.tot-lbl{font-size:7px;color:#999;font-weight:800;text-transform:uppercase}
-.tot-val{font-size:12px;font-weight:900}
-.tot-sig{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
-.sig-lbl{font-size:7px;color:#999;font-weight:800;text-transform:uppercase;margin-bottom:3px}
-.sig-box{height:26px;border:1px solid #ddd;border-radius:3px;background:#fafafa;padding:3px 6px;font-size:7.5px;color:#999}
-@media print{@page{margin:0;size:A4 portrait}body{margin:0}#wrap{position:absolute;top:0;left:0}}
+body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#111;background:#fff}
+#wrap{width:210mm;padding:10mm;transform-origin:top left}
+@media print{@page{margin:0;size:A4 portrait}body{margin:0}#wrap{position:fixed;top:0;left:0}}
 </style></head><body>
 <div id="wrap">${body}</div>
 \x3Cscript>
 window.onload=function(){
-  var wrap=document.getElementById('wrap');
-  var wh=wrap.offsetHeight;
-  var pageH=1122;
-  if(wh>pageH){var s=pageH/wh;wrap.style.transform='scale('+s+')';wrap.style.width=(210/s)+'mm';}
+  var el=document.getElementById('wrap');
+  var scale=Math.min(1, (window.innerHeight||1122) / el.offsetHeight);
+  if(scale<1){el.style.transform='scale('+scale+')';el.style.width=(210/scale)+'mm';}
 };
 \x3C/script>
 </body></html>`);
-  w.document.close();w.focus();setTimeout(()=>w.print(),600);
+  w.document.close();w.focus();setTimeout(()=>w.print(),700);
 };
 
 // ── DARK MODE ──
@@ -1548,7 +1651,7 @@ window.goTab=(name,btn)=>{
   const panel=document.getElementById('tab-'+name);if(panel)panel.classList.add('active');
   const db2=document.querySelector(`.tab-btn[data-tab="${name}"]`);if(db2)db2.classList.add('active');
   const mb=document.getElementById('bnav-'+name);if(mb)mb.classList.add('active');
-  ({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,karren:renderKarrenPool,statistieken:renderStatistieken,live:renderLive,print:renderPrintTab}[name]||function(){})();
+  ({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,karren:renderKarrenPool,statistieken:renderStatistieken,live:renderLive,print:renderPrintTab,maandrapport:renderMaandrapport}[name]||function(){})();
 
   // Live tab: start auto-refresh interval; stop when andere tab
   if(name==='live'){
@@ -1567,6 +1670,27 @@ window.goTab=(name,btn)=>{
 
 window.toggleMeer=()=>{const m=document.getElementById('meerPanel'),o=document.getElementById('meerOverlay'),open=m.style.display!=='block';m.style.display=open?'block':'none';o.style.display=open?'block':'none';};
 window.closeMeer=()=>{document.getElementById('meerPanel').style.display='none';document.getElementById('meerOverlay').style.display='none';};
+
+// ── SWIPE TABS op mobiel ──
+(()=>{
+  const TABS=['avond','live','karren','overzicht','medewerkers','leiders','history','statistieken','print'];
+  let tx=0,ty=0,dragging=false;
+  document.addEventListener('touchstart',e=>{
+    if(e.target.closest('.modal-overlay,.meer-panel,.bottom-nav,.app-header,.tab-bar'))return;
+    tx=e.touches[0].clientX;ty=e.touches[0].clientY;dragging=true;
+  },{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!dragging)return;dragging=false;
+    const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return; // te klein of te verticaal
+    const cur=document.querySelector('.tab-panel.active');
+    if(!cur)return;
+    const curName=cur.id.replace('tab-','');
+    const idx=TABS.indexOf(curName);
+    if(dx<0&&idx<TABS.length-1)goTab(TABS[idx+1]); // swipe links → volgende
+    else if(dx>0&&idx>0)goTab(TABS[idx-1]);          // swipe rechts → vorige
+  },{passive:true});
+})();
 
 // ── MODALS & TOAST ──
 window.openModal=id=>document.getElementById(id).classList.add('open');
