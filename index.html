@@ -409,10 +409,7 @@ textarea{resize:vertical;min-height:58px}
 .timer-display{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--red)}
 .timer-display.over{animation:pulse 1s infinite}
 .overschrijding{background:#fff3e0;border:1px solid #ff9800;color:#e65100;border-radius:6px;padding:2px 7px;font-size:.7rem;font-weight:800;display:inline-flex;align-items:center;gap:3px}
-.pauze-chip{display:inline-flex;align-items:center;gap:4px;background:var(--orange-dim);border:1.5px solid var(--orange);color:#b45309;border-radius:20px;padding:4px 10px;font-size:.7rem;font-weight:800;cursor:pointer}
-.pauze-chip.actief{background:var(--orange);color:#fff;animation:pulseOranje 2s infinite}
-.pauze-chip.laat{background:var(--red);color:#fff;border-color:var(--red)}
-@keyframes pulseOranje{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
+
 .data-table{width:100%;border-collapse:collapse}
 .data-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--text3);padding:9px 12px;text-align:left;border-bottom:2px solid var(--border)}
 .data-table td{padding:10px 12px;font-size:.84rem;border-bottom:1px solid var(--border);vertical-align:middle}
@@ -877,7 +874,8 @@ textarea{resize:vertical;min-height:58px}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, addDoc, deleteDoc,
-  collection, getDocs, query, where, orderBy
+  collection, getDocs, query, where, orderBy,
+  enableIndexedDbPersistence, onSnapshotsInSync
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
@@ -896,6 +894,47 @@ const FB_CFG = {
 const fbApp = initializeApp(FB_CFG);
 const db    = getFirestore(fbApp);
 const auth  = getAuth(fbApp);
+
+// Schakel offline opslag in via IndexedDB
+enableIndexedDbPersistence(db).catch(err=>{
+  if(err.code==='failed-precondition'){
+    console.warn('Offline persistence niet beschikbaar: meerdere tabbladen open.');
+  } else if(err.code==='unimplemented'){
+    console.warn('Offline persistence niet ondersteund door deze browser.');
+  }
+});
+
+// ── Offline/online banner ──
+function updateOfflineBanner(){
+  let banner=document.getElementById('offlineBanner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='offlineBanner';
+    banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:#1a1a1a;color:#fff;font-family:var(--font);font-size:.78rem;font-weight:800;text-align:center;padding:7px 16px;display:none;align-items:center;justify-content:center;gap:8px;letter-spacing:.3px';
+    document.body.appendChild(banner);
+  }
+  if(!navigator.onLine){
+    banner.style.display='flex';
+    banner.innerHTML='📡 Geen internetverbinding — wijzigingen worden lokaal opgeslagen en automatisch gesynchroniseerd zodra je weer online bent.';
+    // Verplaats de header iets naar beneden zodat de banner er niet overheen valt
+    const header=document.getElementById('appHeader');
+    if(header)header.style.top='38px';
+  } else {
+    banner.style.display='none';
+    const header=document.getElementById('appHeader');
+    if(header)header.style.top='0';
+    // Sync melding
+    if(App&&App._offlineWasOffline){
+      App._offlineWasOffline=false;
+      showToast('✓ Weer online — synchroniseren…');
+      // Sla automatisch op als er unsaved changes zijn
+      if(App._dirty)slaOp();
+    }
+  }
+}
+
+window.addEventListener('online', ()=>{App._offlineWasOffline=true;updateOfflineBanner();});
+window.addEventListener('offline', ()=>{updateOfflineBanner();});
 
 async function fbGet(path){ const d=await getDoc(doc(db,path)); return d.exists()?d.data():null; }
 async function fbSet(path,data){ await setDoc(doc(db,path),data,{merge:true}); }
@@ -919,9 +958,10 @@ const App={
   avonden:[],huidigAvond:null,huidigFbId:null,
   roosterData:{},roosterRawRows:[],roosterHeaders:[],
   _karMedewIdx:null,_poolKarIdx:null,
-  _timerInterval:null,_pauzeInterval:null,
-  pauzeTimers:{},alarmGegeven:new Set(),
+  _timerInterval:null,
+  alarmGegeven:new Set(),
   _audioCtx:null,_dirty:false,histFilter:'alle',
+  _offlineWasOffline:false,
 };
 
 function nieuwAvond(){
@@ -973,8 +1013,7 @@ window.doLogin=async()=>{
 window.doLogout=async()=>{
   if(App._dirty&&!confirm('Niet-opgeslagen wijzigingen gaan verloren. Toch uitloggen?'))return;
   if(App._timerInterval){clearInterval(App._timerInterval);App._timerInterval=null;}
-  if(App._pauzeInterval){clearInterval(App._pauzeInterval);App._pauzeInterval=null;}
-  App.pauzeTimers={};App.alarmGegeven=new Set();App._dirty=false;
+  App.alarmGegeven=new Set();App._dirty=false;
   document.getElementById('syncWrap').style.display='none';
   await signOut(auth);
 };
@@ -1051,8 +1090,16 @@ window.slaOp=async()=>{
     App._dirty=false;setSyncStatus('ok');renderAvondSelector();
     const d=new Date(App.huidigAvond.datum);
     document.getElementById('avondTitle').textContent=cap(App.huidigAvond.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
-    showToast('✓ Opgeslagen in de cloud!');
-  }catch(e){setSyncStatus('fout');showToast('⚠ Fout: '+e.message);}
+    if(!navigator.onLine){
+      showToast('💾 Lokaal opgeslagen — sync zodra je online bent');
+    } else {
+      showToast('✓ Opgeslagen in de cloud!');
+    }
+  }catch(e){
+    // Firebase gooit geen error offline dankzij persistence — dit vangen we toch af
+    setSyncStatus('fout');
+    showToast('⚠ Fout bij opslaan: '+e.message);
+  }
 };
 
 window.openNieuweAvond=()=>{
@@ -1146,11 +1193,9 @@ function renderTeam(){
     const u=berekenUren(lid.start,lid.eind,lid.pauze),t=Math.round(u*norm),ka=lid.karten||[];
     const gedaan=ka.filter(k=>k.werkelijk>0).length,vgPct=ka.length>0?Math.min(100,Math.round(gedaan/ka.length*100)):0;
     const vgCls=vgPct>=100?'fill-green':vgPct>=50?'fill-orange':'fill-red';
-    const pk=App.pauzeTimers[lid.naam];
-    const pauzeHtml=pk?`<span class="pauze-chip actief" id="pauze_${safeId(lid.naam)}" onclick="stopPauze('${lid.naam}')">⏸ …</span>`:`<button class="btn btn-ghost btn-xs" onclick="openPauzeModal('${lid.naam}')">⏸ Pauze</button>`;
     const naamHtml=lid.naam+(lid.ziek?'<span class="ziek-badge">🤒 Ziek</span>':'')+(lid.vervanger?'<span class="vervang-badge">→ '+lid.vervanger+'</span>':'');
     const karHtml=ka.length===0?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar"</div>':ka.map((kar,ki)=>{const st=karStatus(kar);return`<div class="kar-row"><div class="kar-row-top"><div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div></div><div class="kar-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div></div></div>`;}).join('');
-    return`<div class="member-card${lid.ziek?' ziek':''}"><div class="member-main"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px"><div style="flex:1"><div class="member-name">${naamHtml}</div><div class="member-meta"><span class="tag">${lid.start}–${lid.eind}</span>${lid.pauze?`<span class="tag">☕ ${lid.pauze}min</span>`:''}</div></div></div>${lid.notitie?`<div class="member-note">📝 ${lid.notitie}</div>`:''}<div class="member-stats"><div><div class="stat-mini-label">Uren</div><div class="stat-mini-val">${u.toFixed(1)}u</div></div><div><div class="stat-mini-label">Target</div><div class="stat-mini-val">${t}</div></div><div><div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div><div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div></div></div><div class="member-actions-row"><button class="btn btn-secondary btn-xs" onclick="openKarModalVoor(${i})">+ Kar</button><button class="btn btn-secondary btn-xs" onclick="openBewerkNotitie(${i})">✏ Notitie</button><button class="btn btn-secondary btn-xs" onclick="openZiekModal(${i})">🤒 Ziek</button>${pauzeHtml}<button class="btn btn-danger btn-xs" onclick="verwijderLid(${i})">✕</button></div></div><div class="karten-section"><div style="font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🛒 Karren</div><div class="kar-list">${karHtml}</div></div></div>`;
+    return`<div class="member-card${lid.ziek?' ziek':''}"><div class="member-main"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px"><div style="flex:1"><div class="member-name">${naamHtml}</div><div class="member-meta"><span class="tag">${lid.start}–${lid.eind}</span>${lid.pauze?`<span class="tag">☕ ${lid.pauze}min</span>`:''}</div></div></div>${lid.notitie?`<div class="member-note">📝 ${lid.notitie}</div>`:''}<div class="member-stats"><div><div class="stat-mini-label">Uren</div><div class="stat-mini-val">${u.toFixed(1)}u</div></div><div><div class="stat-mini-label">Target</div><div class="stat-mini-val">${t}</div></div><div><div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div><div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div></div></div><div class="member-actions-row"><button class="btn btn-secondary btn-xs" onclick="openKarModalVoor(${i})">+ Kar</button><button class="btn btn-secondary btn-xs" onclick="openBewerkNotitie(${i})">✏ Notitie</button><button class="btn btn-secondary btn-xs" onclick="openZiekModal(${i})">🤒 Ziek</button><button class="btn btn-danger btn-xs" onclick="verwijderLid(${i})">✕</button></div></div><div class="karten-section"><div style="font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🛒 Karren</div><div class="kar-list">${karHtml}</div></div></div>`;
   }).join('');
   updateColliTeller();
 }
@@ -1363,22 +1408,6 @@ function speelAlarm(){
   }catch(e){}
 }
 
-// PAUZE
-window.openPauzeModal=naam=>{const d=prompt('Pauze voor '+naam+' — hoeveel minuten?','30');if(!d)return;App.pauzeTimers[naam]={start:Date.now(),duur:+d||30};startPauzeInterval();renderTeam();showToast(naam+' op pauze');};
-window.stopPauze=naam=>{delete App.pauzeTimers[naam];renderTeam();};
-
-function startPauzeInterval(){
-  if(App._pauzeInterval)return;
-  App._pauzeInterval=setInterval(()=>{
-    if(!Object.keys(App.pauzeTimers).length){clearInterval(App._pauzeInterval);App._pauzeInterval=null;return;}
-    Object.entries(App.pauzeTimers).forEach(([naam,p])=>{
-      const rs=Math.max(0,Math.round((p.duur-(Date.now()-p.start)/60000)*60));
-      const el=document.getElementById('pauze_'+safeId(naam));if(!el)return;
-      if(rs<=0){el.className='pauze-chip laat';el.textContent='⚠ '+naam.split(' ')[0]+' terug!';if(!p.ag){p.ag=true;speelAlarm();}}
-      else{el.className='pauze-chip actief';el.textContent='⏸ '+Math.floor(rs/60)+'m'+String(rs%60).padStart(2,'0')+'s';}
-    });
-  },1000);
-}
 
 // ZIEK
 window.openZiekModal=pre=>{
@@ -1454,13 +1483,7 @@ window.renderLive=()=>{
 
   let html='<div class="live-command">';
 
-  // ── Pauze alarmen bovenaan ──
-  const latePauzes=Object.entries(App.pauzeTimers).filter(([,p])=>Math.max(0,(p.duur-(now-p.start)/60000))<=0);
-  if(latePauzes.length){
-    html+=`<div class="live-alarm-strip">⚠️ ${latePauzes.map(([n])=>n.split(' ')[0]).join(', ')} moet terug van pauze!</div>`;
-  }
-
-  // ── Hero: eindtijd + voortgang + team ──
+  // ── Hero: eindtijd + voortgang + actieve timers ──
   const doel=av.colli||2000;
   const verwerkt=av.colliVerwerkt||0;
   const pct=doel>0?Math.min(100,Math.round(verwerkt/doel*100)):0;
@@ -1473,7 +1496,6 @@ window.renderLive=()=>{
   const eindStr=String(Math.floor(em/60)%24).padStart(2,'0')+':'+String(Math.round(em%60)).padStart(2,'0');
 
   const actieveTimers=pool.filter(k=>k.timerStart&&!k.timerStop);
-  const pauzeCount=Object.keys(App.pauzeTimers).length;
 
   html+=`<div class="live-hero">
     <div class="live-hero-item">
@@ -1489,11 +1511,11 @@ window.renderLive=()=>{
     <div class="live-hero-item">
       <div class="live-hero-val">${actieveTimers.length}</div>
       <div class="live-hero-label">Actief</div>
-      <div class="live-hero-sub">${pauzeCount>0?'☕ '+pauzeCount+' pauze':'—'}</div>
+      <div class="live-hero-sub">${actieveTimers.length>0?actieveTimers.length+' timer(s) lopen':'—'}</div>
     </div>
   </div>`;
 
-  // ── Actieve timers (compact pills) ──
+  // ── Karren pills ──
   if(pool.length){
     html+=`<div>
       <div class="live-section-title"><span class="live-dot-pulse"></span> Karren</div>
@@ -1538,24 +1560,6 @@ window.renderLive=()=>{
     html+='</div></div>';
   }
 
-  // ── Pauzes ──
-  const pauzes=Object.entries(App.pauzeTimers);
-  if(pauzes.length){
-    html+=`<div>
-      <div class="live-section-title">☕ Pauzes</div>
-      <div class="live-pauze-pills">`;
-    pauzes.forEach(([naam,p])=>{
-      const rs=Math.max(0,Math.round((p.duur-(now-p.start)/60000)*60));
-      const isL=rs<=0;
-      html+=`<div class="live-pauze-pill ${isL?'laat':''}">
-        <div><div class="live-pauze-naam">${naam}</div><div style="font-size:.72rem;color:var(--text3)">${naam}</div></div>
-        <div class="live-pauze-timer">${isL?'⚠ TERUG!':Math.floor(rs/60)+'m'+String(rs%60).padStart(2,'0')+'s'}</div>
-        <button class="live-pill-start" onclick="stopPauze('${naam}');renderLive()">✓</button>
-      </div>`;
-    });
-    html+='</div></div>';
-  }
-
   // ── Team compact ──
   if(team.length){
     html+=`<div>
@@ -1564,10 +1568,9 @@ window.renderLive=()=>{
     team.forEach(lid=>{
       const ka=lid.karten||[];
       const gd=ka.filter(k=>k.werkelijk>0).length;
-      const heeftPauze=!!App.pauzeTimers[lid.naam];
       const alleKlaar=ka.length>0&&gd===ka.length;
-      const statusCls=heeftPauze?'pauze':alleKlaar?'ok':'bezig';
-      const statusIcon=heeftPauze?'☕':alleKlaar?'✓':'⏳';
+      const statusCls=alleKlaar?'ok':'bezig';
+      const statusIcon=alleKlaar?'✓':'⏳';
       html+=`<div class="live-team-row">
         <div class="live-team-naam">${lid.naam}</div>
         <div class="live-team-uren">${lid.start}–${lid.eind}</div>
@@ -1961,6 +1964,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 laadDark();
+updateOfflineBanner();
 </script>
 </body>
 </html>
