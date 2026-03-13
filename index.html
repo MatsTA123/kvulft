@@ -2,8 +2,24 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Vulploeg Manager — Kruidvat</title>
+
+<!-- ── Favicon ── -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23E2001A'/><text x='16' y='22' font-family='Arial Black,sans-serif' font-size='16' font-weight='900' fill='white' text-anchor='middle'>KV</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23E2001A'/><text x='90' y='125' font-family='Arial Black,sans-serif' font-size='80' font-weight='900' fill='white' text-anchor='middle'>KV</text></svg>">
+
+<!-- ── PWA / webapp meta ── -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vulploeg">
+<meta name="theme-color" content="#E2001A">
+
+<!-- ── Dark mode flicker fix — laad voorkeur vóór render ── -->
+<script>if(localStorage.getItem('kv_dark')==='1')document.documentElement.classList.add('dark-early')</script>
+<style>html.dark-early body{background:#0f0f0f;color:#f0f0f0}</style>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -28,9 +44,13 @@ body.dark{
   --text:#f0f0f0;--text2:#aaa;--text3:#666;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow-x:hidden}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow-x:hidden}
+html.dark-early{color-scheme:dark}
+html.dark-early body,.dark body{background:var(--bg);color:var(--text)}
 button{font-family:var(--font);cursor:pointer;transition:all .15s;touch-action:manipulation}
+.btn{min-height:44px}
+.btn-xs{min-height:32px!important}
 input,select,textarea{font-family:var(--font);font-size:16px}
 input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
@@ -89,19 +109,19 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 @media(max-width:640px){.tab-bar{display:none}}
 
 /* ─── MOBILE BOTTOM NAV ─── */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1.5px solid var(--border);z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1.5px solid var(--border);z-index:200;padding-bottom:max(env(safe-area-inset-bottom), 4px)}
 @media(max-width:640px){.bottom-nav{display:block}}
 .bnav-inner{display:flex;justify-content:space-around}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 10px;background:none;border:none;font-size:.55rem;font-weight:800;color:var(--text3);gap:3px;border-top:2.5px solid transparent;min-height:58px}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 2px 8px;background:none;border:none;font-size:.55rem;font-weight:800;color:var(--text3);gap:3px;border-top:2.5px solid transparent;min-height:54px;min-width:0}
 .bnav-btn.active{color:var(--red);border-top-color:var(--red)}
-.bnav-icon{font-size:1.25rem;line-height:1}
+.bnav-icon{font-size:1.2rem;line-height:1}
 .meer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;backdrop-filter:blur(2px)}
-.meer-panel{position:fixed;bottom:66px;left:0;right:0;z-index:310;background:var(--surface);border-radius:20px 20px 0 0;border-top:1.5px solid var(--border);padding:20px 16px;display:none;max-height:70vh;overflow-y:auto}
+.meer-panel{position:fixed;bottom:0;left:0;right:0;z-index:310;background:var(--surface);border-radius:20px 20px 0 0;border-top:1.5px solid var(--border);padding:20px 16px;padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 16px));display:none;max-height:70vh;overflow-y:auto}
 .meer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .meer-panel-title{font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
 
 /* ─── MAIN LAYOUT ─── */
-main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h) + 20px)}
+main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h) + max(env(safe-area-inset-bottom), 0px) + 20px)}
 @media(min-width:641px){main{padding-bottom:24px}}
 .tab-panel{display:none}.tab-panel.active{display:block;animation:fadein .18s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -111,6 +131,8 @@ main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h
 .page-title span{color:var(--red)}
 .page-sub{color:var(--text3);font-size:.78rem;margin-top:4px;font-weight:600}
 .section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.section-head>div:last-child{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+@media(max-width:640px){.section-head{gap:8px}}
 .card-title{font-weight:800;font-size:.95rem;margin-bottom:14px}
 
 /* ─── CARD ─── */
@@ -201,8 +223,8 @@ textarea{resize:vertical;min-height:58px}
 .member-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .member-card.ziek{border-color:#ff9800}
 .member-main{padding:14px 16px}
-.member-name{font-weight:900;font-size:.95rem}
-.member-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.member-name{font-weight:900;font-size:.95rem;word-break:break-word}
+.member-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;align-items:center;min-width:0}
 .member-note{font-size:.75rem;color:var(--text3);font-style:italic;border-left:2px solid var(--red);padding:2px 8px;margin-top:6px;background:var(--red-dim);border-radius:0 4px 4px 0}
 .member-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
 .stat-mini-label{font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
@@ -221,7 +243,7 @@ textarea{resize:vertical;min-height:58px}
 .pool-row.gekoppeld{border-color:var(--green)}
 .pool-row-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
 .pool-row-bottom{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.pool-naam{font-weight:800;font-size:.9rem}
+.pool-naam{font-weight:800;font-size:.9rem;word-break:break-word}
 .timer-start{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 .timer-stop{background:var(--red);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer;animation:pulse 1.5s infinite}
 .timer-pauze{background:var(--orange);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
@@ -247,7 +269,7 @@ textarea{resize:vertical;min-height:58px}
 .live-timer-pill.over{border-color:var(--red);background:var(--red-dim)}
 .live-timer-pill.klaar{border-color:var(--green);background:var(--green-dim)}
 .live-pill-left{flex:1;min-width:0}
-.live-pill-naam{font-weight:800;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-pill-naam{font-weight:800;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(160px,35vw)}
 .live-pill-personen{font-size:.72rem;color:var(--text3);margin-top:2px}
 .live-pill-timer{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--text);flex-shrink:0}
 .live-pill-timer.over{color:var(--red)}
@@ -323,7 +345,7 @@ textarea{resize:vertical;min-height:58px}
 .modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
 
 /* ─── TOAST ─── */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px) scale(.95);background:var(--text);color:var(--bg);font-weight:800;font-size:.82rem;padding:10px 18px;border-radius:10px;z-index:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:calc(var(--nav-h) + max(env(safe-area-inset-bottom),0px) + 12px);left:50%;transform:translateX(-50%) translateY(20px) scale(.95);background:var(--text);color:var(--bg);font-weight:800;font-size:.82rem;padding:10px 18px;border-radius:10px;z-index:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
 @media(min-width:641px){.toast{bottom:24px;left:auto;right:20px;transform:translateY(20px) scale(.95)}.toast.show{transform:translateY(0) scale(1)}}
 
@@ -396,10 +418,65 @@ textarea{resize:vertical;min-height:58px}
       <input class="auth-field" id="regLeider" type="text" placeholder="Jouw naam">
       <input class="auth-field" id="regWW" type="password" placeholder="Wachtwoord (min. 6 tekens)">
       <input class="auth-field" id="regWW2" type="password" placeholder="Wachtwoord herhalen" onkeydown="if(event.key==='Enter')doRegister()">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;padding:10px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <input type="checkbox" id="regAvg" style="margin-top:2px;accent-color:var(--red);width:16px;height:16px;flex-shrink:0;cursor:pointer">
+        <label for="regAvg" style="font-size:.78rem;color:var(--text2);font-weight:600;cursor:pointer;line-height:1.4">Ik ga akkoord met de verwerking van persoonsgegevens (namen medewerkers, werktijden) voor het bijhouden van vulploegprestaties. <span onclick="openPrivacy()" style="color:var(--red);text-decoration:underline;cursor:pointer">Privacyverklaring lezen →</span></label>
+      </div>
       <div class="auth-err" id="regErr"></div>
       <div class="auth-ok" id="regOk"></div>
       <button class="auth-btn" id="regBtn" onclick="doRegister()">Account aanmaken →</button>
     </div>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div id="privacyModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);overflow-y:auto;padding:20px">
+  <div style="background:var(--surface);border-radius:16px;max-width:600px;margin:0 auto;padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.3);position:relative">
+    <button onclick="closePrivacy()" style="position:absolute;top:16px;right:16px;background:var(--surface2);border:none;border-radius:8px;padding:6px 12px;font-weight:800;color:var(--text2);cursor:pointer;font-family:var(--font)">✕ Sluiten</button>
+    <div style="font-weight:900;font-size:1.2rem;margin-bottom:4px">Privacyverklaring</div>
+    <div style="font-size:.75rem;color:var(--text3);margin-bottom:20px">Kruidvat Vulploeg Manager · Laatst bijgewerkt: januari 2025</div>
+
+    <div style="font-size:.85rem;line-height:1.7;color:var(--text2)">
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">1. Wie zijn wij?</div>
+      <p style="margin-bottom:14px">Deze applicatie wordt beheerd door de leidinggevende(n) van het Kruidvat-filiaal dat het account heeft aangemaakt. De applicatie is een intern hulpmiddel voor het registreren van vulploegprestaties.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">2. Welke gegevens slaan we op?</div>
+      <p style="margin-bottom:8px">Wij verwerken de volgende persoonsgegevens:</p>
+      <ul style="margin-bottom:14px;padding-left:18px">
+        <li>Voornaam (of naam) van medewerkers</li>
+        <li>Werktijden per avond (begin, eind, pauze)</li>
+        <li>Prestaties per avond (karren, tijden, scores)</li>
+        <li>E-mailadres van de accounthouder (leidinggevende)</li>
+      </ul>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">3. Waarom verwerken we deze gegevens?</div>
+      <p style="margin-bottom:14px">De gegevens worden uitsluitend gebruikt voor interne bedrijfsvoering: het bijhouden en analyseren van vulploegprestaties, het maken van roosters en het opstellen van avondoverzichten.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">4. Hoe lang bewaren we de gegevens?</div>
+      <p style="margin-bottom:14px">Gegevens worden bewaard zolang het account actief is. Bij verwijdering van het account worden alle gekoppelde gegevens verwijderd.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">5. Wie heeft toegang?</div>
+      <p style="margin-bottom:14px">Alleen de leidinggevenden van het filiaal die inloggen met het filiaal-account hebben toegang tot de gegevens. De data wordt opgeslagen via Google Firebase (Firestore), een ISO 27001-gecertificeerde clouddienst.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">6. Jouw rechten (AVG)</div>
+      <p style="margin-bottom:8px">Medewerkers van wie gegevens zijn opgeslagen hebben het recht op:</p>
+      <ul style="margin-bottom:14px;padding-left:18px">
+        <li><strong>Inzage</strong> — opvragen welke gegevens er zijn opgeslagen</li>
+        <li><strong>Correctie</strong> — onjuiste gegevens laten aanpassen</li>
+        <li><strong>Verwijdering</strong> — verzoeken om verwijdering van gegevens</li>
+        <li><strong>Bezwaar</strong> — bezwaar maken tegen de verwerking</li>
+      </ul>
+      <p style="margin-bottom:14px">Voor het uitoefenen van deze rechten kunt u contact opnemen met de leidinggevende van het betreffende filiaal.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">7. Verwerkersovereenkomst</div>
+      <p style="margin-bottom:14px">Google Firebase (Google LLC) treedt op als verwerker van de opgeslagen data. Google heeft standaard verwerkersvoorwaarden gepubliceerd die van toepassing zijn: <a href="https://cloud.google.com/terms/data-processing-addendum" target="_blank" style="color:var(--red)">cloud.google.com/terms/data-processing-addendum</a>.</p>
+
+      <div style="font-weight:900;color:var(--text);margin-bottom:6px">8. Vragen of klachten?</div>
+      <p style="margin-bottom:0">Vragen over privacy kunt u stellen aan de leidinggevende van uw filiaal. U heeft ook het recht een klacht in te dienen bij de Autoriteit Persoonsgegevens: <a href="https://www.autoriteitpersoonsgegevens.nl" target="_blank" style="color:var(--red)">autoriteitpersoonsgegevens.nl</a>.</p>
+    </div>
+
+    <button onclick="closePrivacy()" style="margin-top:22px;width:100%;padding:12px;border-radius:10px;border:none;background:var(--red);color:#fff;font-family:var(--font);font-weight:900;font-size:.95rem;cursor:pointer">Begrepen — sluiten</button>
   </div>
 </div>
 
@@ -418,6 +495,7 @@ textarea{resize:vertical;min-height:58px}
       <span id="syncTxt">Opgeslagen</span>
     </div>
     <button class="icon-btn" onclick="toggleDark()">🌙</button>
+    <button class="icon-btn" onclick="openPrivacy()" title="Privacyverklaring">🔒</button>
     <div class="chip"><div class="chip-av" id="userAv">?</div><span id="userName">—</span></div>
     <button class="icon-btn" onclick="doLogout()">Uit</button>
   </div>
@@ -457,6 +535,7 @@ textarea{resize:vertical;min-height:58px}
     <button class="btn btn-secondary" onclick="closeMeer();goTab('statistieken')">🏆 Stats</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('maandrapport')">📅 Maandrapport</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('print')">🖨️ Print PDF</button>
+    <button class="btn btn-secondary" onclick="closeMeer();openPrivacy()">🔒 Privacy</button>
     <button class="btn btn-secondary" onclick="closeMeer();openSamenvatting()">💬 Delen</button>
     <button class="btn btn-secondary" onclick="closeMeer();openZiekModal(-1)">🤒 Ziek</button>
     <button class="btn btn-orange" style="grid-column:span 2" onclick="closeMeer();sluitAvondAf()">✅ Avond afsluiten</button>
@@ -519,8 +598,8 @@ textarea{resize:vertical;min-height:58px}
         <div class="form-group"><label>Dag</label>
           <select id="fDag"><option value="maandag">Maandag</option><option value="dinsdag">Dinsdag</option><option value="woensdag">Woensdag</option><option value="donderdag">Donderdag</option><option value="vrijdag">Vrijdag</option><option value="zaterdag">Zaterdag</option><option value="zondag">Zondag</option></select>
         </div>
-        <div class="form-group"><label>Totaal colli</label><input type="number" id="fColli" value="2000"></div>
-        <div class="form-group"><label>Norm (colli/uur)</label><input type="number" id="fNorm" value="80"></div>
+        <div class="form-group"><label>Totaal colli</label><input type="number" inputmode="numeric" id="fColli" value="2000"></div>
+        <div class="form-group"><label>Norm (colli/uur)</label><input type="number" inputmode="numeric" id="fNorm" value="80"></div>
       </div>
       <div class="form-group" style="max-width:280px"><label>Leidinggevende</label><select id="fLeider"><option value="">— Kies —</option></select></div>
     </div>
@@ -565,6 +644,18 @@ textarea{resize:vertical;min-height:58px}
       <button class="btn btn-primary btn-sm" onclick="openNieuwMedewModal()">+ Nieuw</button>
     </div>
     <div class="card" id="medewContent"><div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Laden…</div></div></div>
+    <div class="card" style="margin-top:8px;border-color:var(--border)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:1.3rem">🔒</span>
+        <div><div class="card-title" style="margin-bottom:0">Privacy &amp; gegevens</div><div style="font-size:.72rem;color:var(--text3)">AVG — Recht op inzage, correctie en verwijdering</div></div>
+      </div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:12px;line-height:1.6">Deze app slaat namen en werktijden van medewerkers op voor interne bedrijfsvoering. Medewerkers hebben recht op inzage en verwijdering van hun gegevens.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="openPrivacy()">📄 Privacyverklaring</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportMijnData()">⬇️ Data exporteren</button>
+        <button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border:1px solid rgba(226,0,26,.2);border-radius:8px;padding:6px 12px;font-family:var(--font);font-weight:700;font-size:.8rem;cursor:pointer" onclick="verwijderAlleData()">🗑️ Account &amp; data verwijderen</button>
+      </div>
+    </div>
   </div>
 
   <!-- ═══════════ LEIDERS ═══════════ -->
@@ -629,7 +720,7 @@ textarea{resize:vertical;min-height:58px}
     <div class="form-group"><label>Starttijd</label><input type="time" id="addLidStart" value="18:00"></div>
     <div class="form-group"><label>Eindtijd</label><input type="time" id="addLidEind" value="22:00"></div>
   </div>
-  <div class="form-group" style="margin-top:10px"><label>Pauze (min)</label><input type="number" id="addLidPauze" value="30" min="0"></div>
+  <div class="form-group" style="margin-top:10px"><label>Pauze (min)</label><input type="number" inputmode="numeric" id="addLidPauze" value="30" min="0"></div>
   <div class="form-group" style="margin-top:10px"><label>Notitie</label><textarea id="addLidNotitie" placeholder="bv. kas doen, eerder weg…"></textarea></div>
   <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalAddLid')">Annuleren</button><button class="btn btn-primary" onclick="voegLidToe()">Toevoegen</button></div>
 </div></div>
@@ -641,8 +732,8 @@ textarea{resize:vertical;min-height:58px}
   <div id="addKarHandmatig">
     <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="addKarNaam" placeholder="bv. Shampoo, Kar 12…"></div>
     <div class="form-row">
-      <div class="form-group"><label>Verwacht (min)</label><input type="number" id="addKarVerwacht" placeholder="bv. 45"></div>
-      <div class="form-group"><label>Werkelijk (min)</label><input type="number" id="addKarWerkelijk" placeholder="na afloop"></div>
+      <div class="form-group"><label>Verwacht (min)</label><input type="number" inputmode="numeric" id="addKarVerwacht" placeholder="bv. 45"></div>
+      <div class="form-group"><label>Werkelijk (min)</label><input type="number" inputmode="numeric" id="addKarWerkelijk" placeholder="na afloop"></div>
     </div>
   </div>
   <div id="addKarPoolInfo" class="hidden" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:4px"></div>
@@ -656,9 +747,9 @@ textarea{resize:vertical;min-height:58px}
   <div class="calc-box">
     <div class="calc-label">🔄 Colli ↔ Tijd <span id="calcNormTip" style="font-size:.65rem;color:var(--text3)"></span></div>
     <div class="calc-row">
-      <div class="form-group"><label>Colli</label><input type="number" id="calcColli" placeholder="bv. 120" oninput="calcColliToTijd()"></div>
+      <div class="form-group"><label>Colli</label><input type="number" inputmode="numeric" id="calcColli" placeholder="bv. 120" oninput="calcColliToTijd()"></div>
       <div style="font-size:1.2rem;color:var(--text3);text-align:center;padding-top:18px">⇄</div>
-      <div class="form-group"><label>Verwacht (min)</label><input type="number" id="calcMin" placeholder="bv. 45" oninput="calcTijdToColli()"></div>
+      <div class="form-group"><label>Verwacht (min)</label><input type="number" inputmode="numeric" id="calcMin" placeholder="bv. 45" oninput="calcTijdToColli()"></div>
     </div>
     <div class="calc-tip" id="calcTip"></div>
   </div>
@@ -713,8 +804,8 @@ textarea{resize:vertical;min-height:58px}
     <div id="afsluitVergelijkInhoud"></div>
   </div>
   <div class="form-row">
-    <div class="form-group"><label>Werkelijk colli (totaal)</label><input type="number" id="afsluitWerkelijk" placeholder="bv. 1850"></div>
-    <div class="form-group"><label>Gepland colli</label><input type="number" id="afsluitGepland" readonly style="opacity:.5"></div>
+    <div class="form-group"><label>Werkelijk colli (totaal)</label><input type="number" inputmode="numeric" id="afsluitWerkelijk" placeholder="bv. 1850"></div>
+    <div class="form-group"><label>Gepland colli</label><input type="number" inputmode="numeric" id="afsluitGepland" readonly style="opacity:.5"></div>
   </div>
   <div class="form-group" style="margin-top:12px"><label>Eindnotitie</label><textarea id="afsluitNotitie" placeholder="bv. alles verwerkt, 3 pallets retour…"></textarea></div>
   <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalAfsluiten')">Annuleren</button><button class="btn btn-primary" onclick="bevestigAfsluiten()">✓ Afsluiten</button></div>
@@ -824,10 +915,20 @@ function vertaalAuthFout(code){const map={'auth/invalid-email':'Ongeldig e-maila
 window.doRegister=async()=>{
   const email=document.getElementById('regEmail').value.trim(),filiaal=document.getElementById('regFiliaal').value.trim(),leider=document.getElementById('regLeider').value.trim(),ww1=document.getElementById('regWW').value,ww2=document.getElementById('regWW2').value,btn=document.getElementById('regBtn');
   document.getElementById('regErr').style.display='none';document.getElementById('regOk').style.display='none';
-  if(!email)return authErr('regErr','Vul een e-mailadres in.');if(!filiaal)return authErr('regErr','Vul de filiaalnaam in.');if(!leider)return authErr('regErr','Vul jouw naam in.');if(ww1.length<6)return authErr('regErr','Wachtwoord minimaal 6 tekens.');if(ww1!==ww2)return authErr('regErr','Wachtwoorden komen niet overeen.');
+  if(!email)return authErr('regErr','Vul een e-mailadres in.');
+  if(!filiaal)return authErr('regErr','Vul de filiaalnaam in.');
+  if(!leider)return authErr('regErr','Vul jouw naam in.');
+  if(ww1.length<6)return authErr('regErr','Wachtwoord minimaal 6 tekens.');
+  if(ww1!==ww2)return authErr('regErr','Wachtwoorden komen niet overeen.');
+  if(!document.getElementById('regAvg').checked)return authErr('regErr','Je moet akkoord gaan met de privacyverklaring om een account aan te maken.');
   btn.disabled=true;btn.textContent='Aanmaken…';
-  try{const cred=await createUserWithEmailAndPassword(auth,email,ww1);const uid=cred.user.uid;await fbSet('accounts/'+uid,{filiaal,leiderNaam:leider,email,created:new Date().toISOString()});await fbAdd('accounts/'+uid+'/leiders',{naam:leider,functie:'Vulploegleider',created:Date.now()});const ok=document.getElementById('regOk');ok.textContent='✓ Account aangemaakt! Je wordt ingelogd…';ok.style.display='block';}
-  catch(e){authErr('regErr',vertaalAuthFout(e.code));}
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,ww1);
+    const uid=cred.user.uid;
+    await fbSet('accounts/'+uid,{filiaal,leiderNaam:leider,email,created:new Date().toISOString(),avgAkkoord:true,avgAkkoordDatum:new Date().toISOString()});
+    await fbAdd('accounts/'+uid+'/leiders',{naam:leider,functie:'Vulploegleider',created:Date.now()});
+    const ok=document.getElementById('regOk');ok.textContent='✓ Account aangemaakt! Je wordt ingelogd…';ok.style.display='block';
+  }catch(e){authErr('regErr',vertaalAuthFout(e.code));}
   btn.disabled=false;btn.textContent='Account aanmaken →';
 };
 
@@ -844,6 +945,7 @@ window.doLogout=async()=>{
   if(App._dirty&&!confirm('Niet-opgeslagen wijzigingen gaan verloren. Toch uitloggen?'))return;
   if(App._timerInterval){clearInterval(App._timerInterval);App._timerInterval=null;}
   App.alarmGegeven=new Set();App._dirty=false;
+  geefWakeLockVrij();
   document.getElementById('syncWrap').style.display='none';
   await signOut(auth);
 };
@@ -902,6 +1004,7 @@ async function initSession(uid,acc){
   document.getElementById('loginBtn').textContent='Inloggen →';
   syncFormFromAvond();renderAvondSelector();renderTeam();vulLeiderSelect();
   setSyncStatus('ok');
+  vraagWakeLock();
 }
 
 // ── AVOND CRUD ──
@@ -911,7 +1014,7 @@ window.slaOp=async()=>{
   App.huidigAvond._leider=App.huidigAvond.leidinggevende||App.leiderNaam;
   App.huidigAvond.updated=Date.now();
   if(!App.huidigAvond.created)App.huidigAvond.created=Date.now();
-  setSyncStatus('bezig');
+  setSyncStatus('bezig');haptic('light');
   try{
     const{fbId,...data}=App.huidigAvond;
     if(App.huidigFbId){await setDoc(doc(db,'avonden',App.huidigFbId),data);}
@@ -919,11 +1022,11 @@ window.slaOp=async()=>{
     const li=App.avonden.findIndex(a=>a.fbId===App.huidigFbId);
     const copy={...deepCopy(App.huidigAvond),fbId:App.huidigFbId};
     if(li>=0)App.avonden[li]=copy;else App.avonden.unshift(copy);
-    App._dirty=false;setSyncStatus('ok');renderAvondSelector();
+    App._dirty=false;setSyncStatus('ok');renderAvondSelector();haptic('success');
     const d=new Date(App.huidigAvond.datum);
     document.getElementById('avondTitle').textContent=cap(App.huidigAvond.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
     showToast(navigator.onLine?'✓ Opgeslagen in de cloud!':'💾 Lokaal opgeslagen — sync zodra je online bent');
-  }catch(e){setSyncStatus('fout');showToast('⚠ Fout: '+e.message);}
+  }catch(e){setSyncStatus('fout');showToast('⚠ Fout: '+e.message);haptic('error');}
 };
 
 window.openNieuweAvond=()=>{
@@ -991,7 +1094,7 @@ function renderTeam(){
     const gedaan=ka.filter(k=>k.werkelijk>0).length,vgPct=ka.length>0?Math.min(100,Math.round(gedaan/ka.length*100)):0;
     const vgCls=vgPct>=100?'fill-green':vgPct>=50?'fill-orange':'fill-red';
     const naamHtml=lid.naam+(lid.ziek?'<span class="ziek-badge">🤒 Ziek</span>':'')+(lid.vervanger?'<span class="vervang-badge">→ '+lid.vervanger+'</span>':'');
-    const karHtml=ka.length===0?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar"</div>':ka.map((kar,ki)=>{const st=karStatus(kar);return`<div class="kar-row"><div class="kar-row-top"><div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div></div><div class="kar-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div></div></div>`;}).join('');
+    const karHtml=ka.length===0?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar"</div>':ka.map((kar,ki)=>{const st=karStatus(kar);return`<div class="kar-row"><div class="kar-row-top"><div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div></div><div class="kar-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" inputmode="numeric" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div></div></div>`;}).join('');
     return`<div class="member-card${lid.ziek?' ziek':''}"><div class="member-main"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px"><div style="flex:1"><div class="member-name">${naamHtml}</div><div class="member-meta"><span class="tag">${lid.start}–${lid.eind}</span>${lid.pauze?`<span class="tag">☕ ${lid.pauze}min`+`</span>`:''}</div></div></div>${lid.notitie?`<div class="member-note">📝 ${lid.notitie}</div>`:''}<div class="member-stats"><div><div class="stat-mini-label">Uren</div><div class="stat-mini-val">${u.toFixed(1)}u</div></div><div><div class="stat-mini-label">Target</div><div class="stat-mini-val">${t}</div></div><div><div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div><div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div></div></div><div class="member-actions-row"><button class="btn btn-secondary btn-xs" onclick="openKarModalVoor(${i})">+ Kar</button><button class="btn btn-secondary btn-xs" onclick="openBewerkNotitie(${i})">✏ Notitie</button><button class="btn btn-secondary btn-xs" onclick="openZiekModal(${i})">🤒 Ziek</button><button class="btn btn-danger btn-xs" onclick="verwijderLid(${i})">✕</button></div></div><div class="karten-section"><div style="font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🛒 Karren</div><div class="kar-list">${karHtml}</div></div></div>`;
   }).join('');
   updateColliTeller();
@@ -1057,10 +1160,10 @@ function renderKarrenPool(){
     const st=karStatus(kar),bezig=kar.timerStart&&!kar.timerStop,elapsed=kar.timerStart?Math.floor((Date.now()-kar.timerStart)/1000):0;
     const persStr=kar.personen&&kar.personen.length?kar.personen.join(', '):'Niet gekoppeld';
     let timerHtml='';
-    if(!kar.timerStart){timerHtml=`<button class="timer-start" onclick="startTimer(${i})">▶ Start</button><div style="margin-top:6px"><label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label><input type="number" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarWerkelijk(${i},this.value)"></div>`;}
+    if(!kar.timerStart){timerHtml=`<button class="timer-start" onclick="startTimer(${i})">▶ Start</button><div style="margin-top:6px"><label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label><input type="number" inputmode="numeric" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarWerkelijk(${i},this.value)"></div>`;}
     else if(bezig){const ov=kar.verwacht?Math.round(((elapsed/60-kar.verwacht)/kar.verwacht)*100):null;const gepauzeerd=!!kar.timerPauze;timerHtml=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${gepauzeerd?`<button class="timer-hervat" onclick="hervatTimer(${i})">▶ Hervat</button>`:`<button class="timer-pauze" onclick="pauzeTimer(${i})">⏸ Pauze</button>`}<button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button></div><div class="timer-display${ov>=20&&!gepauzeerd?' over':''}" id="timerDisp_${i}">${gepauzeerd?'⏸ ':''} ${fmtSecs(elapsed)}</div><span id="over_${i}" ${ov>=20&&!gepauzeerd?'':'style="display:none"'} class="overschrijding">⚠ +${ov}% over</span>`;}
     else{timerHtml=`<div style="font-weight:800;color:var(--green)">✓ ${kar.werkelijk} min</div><button class="btn btn-ghost btn-xs" style="margin-top:4px" onclick="resetTimer(${i})">↺ Reset</button>`;}
-    return`<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}"><div class="pool-row-top"><div style="flex:1"><div class="pool-naam">${kar.naam}</div><div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel</button><button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button></div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="pool-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div><input type="number" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div><div>${timerHtml}</div></div></div>`;
+    return`<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}"><div class="pool-row-top"><div style="flex:1"><div class="pool-naam">${kar.naam}</div><div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel</button><button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button></div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="pool-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div><input type="number" inputmode="numeric" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div><div>${timerHtml}</div></div></div>`;
   }).join('');
   if(pool.some(k=>k.timerStart&&!k.timerStop))startTimerInterval();
 }
@@ -1100,10 +1203,10 @@ function syncPoolNaarTeam(pi){const k=App.huidigAvond.karrenPool[pi];(k.personen
 function syncAllePool(){(App.huidigAvond.karrenPool||[]).forEach((_,i)=>syncPoolNaarTeam(i));}
 
 // ── TIMERS ──
-window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
-window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
-window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
-window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
+window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;haptic('medium');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
+window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));haptic('success');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
+window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
+window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
 window.resetTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));k.timerStart=null;k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();};
 
 function startTimerInterval(){
@@ -1626,8 +1729,66 @@ body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#111;backgrou
 
 
 // ── DARK MODE ──
-window.toggleDark=()=>{const d=document.body.classList.toggle('dark');localStorage.setItem('kv_dark',d?'1':'0');};
-function laadDark(){if(localStorage.getItem('kv_dark')==='1')document.body.classList.add('dark');}
+window.toggleDark=()=>{const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark-early',d);localStorage.setItem('kv_dark',d?'1':'0');};
+function laadDark(){if(localStorage.getItem('kv_dark')==='1'){document.body.classList.add('dark');document.documentElement.classList.add('dark-early');}}
+
+// ── PRIVACY & AVG ──
+window.openPrivacy=()=>{document.getElementById('privacyModal').style.display='block';document.body.style.overflow='hidden';};
+window.closePrivacy=()=>{document.getElementById('privacyModal').style.display='none';document.body.style.overflow='';};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrivacy();});
+
+window.exportMijnData=async()=>{
+  if(!App.uid){showToast('Niet ingelogd.');return;}
+  showToast('⏳ Data exporteren…');
+  try{
+    const[acc,medewerkers,leiders,avondenSnap]=await Promise.all([
+      fbGet('accounts/'+App.uid),
+      fbCol('accounts/'+App.uid+'/medewerkers'),
+      fbCol('accounts/'+App.uid+'/leiders'),
+      getDocs(query(collection(db,'avonden'),where('_account','==',App.uid)))
+    ]);
+    const avonden=avondenSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const export_={
+      exportDatum:new Date().toISOString(),
+      account:{filiaal:acc.filiaal,email:acc.email,aangemaakt:acc.created,avgAkkoord:acc.avgAkkoord||false},
+      medewerkers:medewerkers.map(m=>({naam:m.naam,functie:m.functie})),
+      leiders:leiders.map(l=>({naam:l.naam,functie:l.functie})),
+      avonden:avonden.map(a=>({datum:a.datum,dag:a.dag,colli:a.colli,leidinggevende:a.leidinggevende,medewerkers:(a.team||[]).map(t=>({naam:t.naam,start:t.start,eind:t.eind,pauze:t.pauze}))}))
+    };
+    const blob=new Blob([JSON.stringify(export_,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='vulploeg_data_export_'+new Date().toISOString().split('T')[0]+'.json';a.click();
+    URL.revokeObjectURL(url);
+    showToast('✓ Data geëxporteerd als JSON');
+  }catch(e){showToast('Fout: '+e.message);}
+};
+  if(!App.uid)return;
+  const stap1=confirm('⚠️ Weet je zeker dat je ALLE data wilt verwijderen?\n\nDit verwijdert:\n• Alle avonden\n• Alle medewerkers\n• Alle leiders\n• Je accountgegevens\n\nDit kan NIET ongedaan worden gemaakt.');
+  if(!stap1)return;
+  const stap2=confirm('Laatste waarschuwing: alle data wordt permanent verwijderd. Doorgaan?');
+  if(!stap2)return;
+  showToast('🗑️ Data verwijderen…');
+  try{
+    // Verwijder alle subcollecties
+    const [avonden,medewerkers,leiders]=await Promise.all([fbCol('avonden'),fbCol('accounts/'+App.uid+'/medewerkers'),fbCol('accounts/'+App.uid+'/leiders')]);
+    const avondenVanFiliaal=avonden.filter(a=>a._account===App.uid);
+    await Promise.all([
+      ...avondenVanFiliaal.map(a=>fbDel('avonden/'+a.fbId)),
+      ...medewerkers.map(m=>fbDel('accounts/'+App.uid+'/medewerkers/'+m.fbId)),
+      ...leiders.map(l=>fbDel('accounts/'+App.uid+'/leiders/'+l.fbId)),
+    ]);
+    await fbDel('accounts/'+App.uid);
+    // Verwijder Firebase Auth account
+    await auth.currentUser.delete();
+    showToast('✓ Alle data verwijderd');
+  }catch(e){
+    if(e.code==='auth/requires-recent-login'){
+      alert('Om je account te verwijderen moet je opnieuw inloggen. Log uit en log opnieuw in, dan kun je het account verwijderen.');
+    }else{
+      alert('Fout bij verwijderen: '+e.message);
+    }
+  }
+};
 
 // ── NAVIGATIE ──
 window.goTab=(name,btn)=>{
@@ -1657,26 +1818,27 @@ window.goTab=(name,btn)=>{
 window.toggleMeer=()=>{const m=document.getElementById('meerPanel'),o=document.getElementById('meerOverlay'),open=m.style.display!=='block';m.style.display=open?'block':'none';o.style.display=open?'block':'none';};
 window.closeMeer=()=>{document.getElementById('meerPanel').style.display='none';document.getElementById('meerOverlay').style.display='none';};
 
-// ── SWIPE TABS op mobiel ──
-(()=>{
-  const TABS=['avond','live','karren','overzicht','medewerkers','leiders','history','statistieken','print'];
-  let tx=0,ty=0,dragging=false;
-  document.addEventListener('touchstart',e=>{
-    if(e.target.closest('.modal-overlay,.meer-panel,.bottom-nav,.app-header,.tab-bar'))return;
-    tx=e.touches[0].clientX;ty=e.touches[0].clientY;dragging=true;
-  },{passive:true});
-  document.addEventListener('touchend',e=>{
-    if(!dragging)return;dragging=false;
-    const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
-    if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return; // te klein of te verticaal
-    const cur=document.querySelector('.tab-panel.active');
-    if(!cur)return;
-    const curName=cur.id.replace('tab-','');
-    const idx=TABS.indexOf(curName);
-    if(dx<0&&idx<TABS.length-1)goTab(TABS[idx+1]); // swipe links → volgende
-    else if(dx>0&&idx>0)goTab(TABS[idx-1]);          // swipe rechts → vorige
-  },{passive:true});
-})();
+// ── HAPTIC FEEDBACK ──
+function haptic(type='light'){
+  if(!navigator.vibrate)return;
+  if(type==='light')navigator.vibrate(8);
+  else if(type==='medium')navigator.vibrate(18);
+  else if(type==='success')navigator.vibrate([10,50,10]);
+  else if(type==='error')navigator.vibrate([30,20,30]);
+}
+
+// ── WAKE LOCK — scherm actief houden tijdens avond ──
+let _wakeLock=null;
+async function vraagWakeLock(){
+  if(!('wakeLock' in navigator))return;
+  try{_wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+}
+async function geefWakeLockVrij(){
+  if(_wakeLock){try{await _wakeLock.release();}catch(e){}}_wakeLock=null;
+}
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'&&App.huidigAvond&&!App.huidigAvond.afgesloten)vraagWakeLock();
+});
 
 // ── MODALS & TOAST ──
 window.openModal=id=>document.getElementById(id).classList.add('open');
