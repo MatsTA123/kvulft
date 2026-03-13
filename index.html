@@ -1762,6 +1762,7 @@ window.exportMijnData=async()=>{
     showToast('✓ Data geëxporteerd als JSON');
   }catch(e){showToast('Fout: '+e.message);}
 };
+window.verwijderAlleData=async()=>{
   if(!App.uid)return;
   const stap1=confirm('⚠️ Weet je zeker dat je ALLE data wilt verwijderen?\n\nDit verwijdert:\n• Alle avonden\n• Alle medewerkers\n• Alle leiders\n• Je accountgegevens\n\nDit kan NIET ongedaan worden gemaakt.');
   if(!stap1)return;
