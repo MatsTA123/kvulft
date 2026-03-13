@@ -127,17 +127,18 @@ main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ─── TYPOGRAPHY ─── */
-.page-title{font-weight:900;font-size:1.35rem;line-height:1.1}
+.page-title{font-weight:900;font-size:1.25rem;line-height:1.2;word-break:break-word;min-width:0}
 .page-title span{color:var(--red)}
-.page-sub{color:var(--text3);font-size:.78rem;margin-top:4px;font-weight:600}
-.section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.section-head>div:last-child{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-@media(max-width:640px){.section-head{gap:8px}}
-.card-title{font-weight:800;font-size:.95rem;margin-bottom:14px}
+.page-sub{color:var(--text3);font-size:.75rem;margin-top:3px;font-weight:600;line-height:1.4}
+.section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+.section-head>div:first-child{flex:1;min-width:0;overflow:hidden}
+.section-head .btn-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0}
+.card-title{font-weight:800;font-size:.92rem;margin-bottom:14px;word-break:break-word}
 
 /* ─── CARD ─── */
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:8px;flex-wrap:wrap;min-width:0}
+.card-header>*:first-child{flex:1;min-width:0}
 
 /* ─── FORMS ─── */
 .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:10px}
@@ -547,7 +548,7 @@ textarea{resize:vertical;min-height:58px}
   <div id="tab-avond" class="tab-panel active">
     <div class="section-head">
       <div><div class="page-title">Vulavond <span id="avondTitle">instellen</span></div><div class="page-sub">Registreer medewerkers, uren en karren</div></div>
-      <div class="flex gap-6 flex-wrap">
+      <div class="btn-row">
         <button class="btn btn-secondary btn-sm" onclick="openNieuweAvond()">+ Nieuw</button>
         <button class="btn btn-secondary btn-sm" onclick="openZiekModal(-1)">🤒 Ziek</button>
         <button class="btn btn-secondary btn-sm" onclick="goTab('print')">🖨️ Print</button>
@@ -629,7 +630,7 @@ textarea{resize:vertical;min-height:58px}
   <div id="tab-karren" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Karren <span>pool</span></div><div class="page-sub">Meerdere personen per kar mogelijk</div></div>
-      <button class="btn btn-primary btn-sm" onclick="openNieuweKarModal()">+ Kar toevoegen</button>
+      <div class="btn-row"><button class="btn btn-primary btn-sm" onclick="openNieuweKarModal()">+ Kar toevoegen</button></div>
     </div>
     <div class="card">
       <div class="card-header"><div class="card-title">🛒 Karren van de avond</div><span id="karrenSamenvatting" style="font-size:.78rem;color:var(--text3)"></span></div>
@@ -641,7 +642,7 @@ textarea{resize:vertical;min-height:58px}
   <div id="tab-medewerkers" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Medewerkers <span>beheer</span></div><div class="page-sub">Opgeslagen in de cloud per filiaal</div></div>
-      <button class="btn btn-primary btn-sm" onclick="openNieuwMedewModal()">+ Nieuw</button>
+      <div class="btn-row"><button class="btn btn-primary btn-sm" onclick="openNieuwMedewModal()">+ Nieuw</button></div>
     </div>
     <div class="card" id="medewContent"><div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Laden…</div></div></div>
     <div class="card" style="margin-top:8px;border-color:var(--border)">
@@ -653,7 +654,7 @@ textarea{resize:vertical;min-height:58px}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-secondary btn-sm" onclick="openPrivacy()">📄 Privacyverklaring</button>
         <button class="btn btn-secondary btn-sm" onclick="exportMijnData()">⬇️ Data exporteren</button>
-        <button class="btn btn-sm" style="background:var(--red-dim);color:var(--red);border:1px solid rgba(226,0,26,.2);border-radius:8px;padding:6px 12px;font-family:var(--font);font-weight:700;font-size:.8rem;cursor:pointer" onclick="verwijderAlleData()">🗑️ Account &amp; data verwijderen</button>
+        <button class="btn btn-sm btn-danger" onclick="verwijderAlleData()">🗑️ Account verwijderen</button>
       </div>
     </div>
   </div>
@@ -662,14 +663,17 @@ textarea{resize:vertical;min-height:58px}
   <div id="tab-leiders" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Leiders <span>&amp; leidinggevenden</span></div><div class="page-sub">Vulploegleiders van het filiaal</div></div>
-      <button class="btn btn-primary btn-sm" onclick="openNieuwLeiderModal()">+ Leider toevoegen</button>
+      <div class="btn-row"><button class="btn btn-primary btn-sm" onclick="openNieuwLeiderModal()">+ Leider toevoegen</button></div>
     </div>
     <div id="leidersContent"><div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Laden…</div></div></div>
   </div>
 
   <!-- ═══════════ GESCHIEDENIS ═══════════ -->
   <div id="tab-history" class="tab-panel">
-    <div class="section-head"><div><div class="page-title">Geschiedenis <span>avonden</span></div><div class="page-sub">Alle avonden uit de cloud</div></div><button class="btn btn-secondary btn-sm" onclick="exporteerCSV()">⬇️ CSV export</button></div>
+    <div class="section-head">
+      <div><div class="page-title">Geschiedenis <span>avonden</span></div><div class="page-sub">Alle avonden uit de cloud</div></div>
+      <div class="btn-row"><button class="btn btn-secondary btn-sm" onclick="exporteerCSV()">⬇️ CSV</button></div>
+    </div>
     <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="histZoek" type="text" placeholder="Zoek op dag, datum, naam of leider…" oninput="renderHistory()"></div>
     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
       <button class="btn btn-secondary btn-sm" id="hfAlle" onclick="setHistFilter('alle')">Alle avonden</button>
@@ -687,9 +691,9 @@ textarea{resize:vertical;min-height:58px}
   <!-- ═══════════ MAANDRAPPORT ═══════════ -->
   <div id="tab-maandrapport" class="tab-panel">
     <div class="section-head">
-      <div><div class="page-title">Maandrapport <span>per medewerker</span></div><div class="page-sub">Prestaties per persoon over een volledige maand</div></div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <select id="maandSel" class="form-control" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--font);font-weight:700;font-size:.85rem" onchange="renderMaandrapport()"></select>
+      <div><div class="page-title">Maandrapport <span>overzicht</span></div><div class="page-sub">Prestaties per medewerker per maand</div></div>
+      <div class="btn-row">
+        <select id="maandSel" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--font);font-weight:700;font-size:.85rem;outline:none" onchange="renderMaandrapport()"></select>
         <button class="btn btn-secondary btn-sm" onclick="exportMaandCSV()">⬇️ CSV</button>
       </div>
     </div>
@@ -1438,8 +1442,6 @@ function renderStatistieken(){
 window.renderMaandrapport=async()=>{
   const c=document.getElementById('maandContent');
   const sel=document.getElementById('maandSel');
-
-  // Laad alle avonden als nog niet geladen
   c.innerHTML='<div class="empty"><div class="empty-icon">⏳</div><div class="empty-text">Laden…</div></div>';
   let alle=[];
   try{
@@ -1449,108 +1451,118 @@ window.renderMaandrapport=async()=>{
 
   if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Nog geen avonden opgeslagen.</div></div>';return;}
 
-  // Bouw maand-opties
   const maanden=[...new Set(alle.map(av=>av.datum.substring(0,7)))].sort().reverse();
   const huidig=sel.value||maanden[0];
-  sel.innerHTML=maanden.map(m=>{const[y,mo]=m.split('-');const naam=new Date(y,mo-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'});return`<option value="${m}" ${m===huidig?'selected':''}>${naam}</option>`;}).join('');
+  sel.innerHTML=maanden.map(mn=>{const[y,mo]=mn.split('-');const naam=new Date(y,mo-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'});return`<option value="${mn}"${mn===huidig?' selected':''}>${naam}</option>`;}).join('');
 
   const avonden=alle.filter(av=>av.datum.startsWith(huidig));
   if(!avonden.length){c.innerHTML='<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Geen avonden in deze maand.</div></div>';return;}
 
   // Groepeer per medewerker
-  const norm_=av=>av.norm||80;
-  const medewMap={};
+  const map={};
   avonden.sort((a,b)=>a.datum>b.datum?1:-1).forEach(av=>{
     (av.team||[]).forEach(lid=>{
-      if(!medewMap[lid.naam])medewMap[lid.naam]={naam:lid.naam,avonden:[],totUren:0,totKarren:0,totVerwacht:0,totWerkelijk:0,scores:[]};
-      const m=medewMap[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[];
+      if(!map[lid.naam])map[lid.naam]={naam:lid.naam,rijen:[],totUren:0,totKarren:0,totV:0,totW:0,scores:[]};
+      const m=map[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[];
       const tV=ka.reduce((s,k)=>s+(k.verwacht||0),0),tW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
       const pct=tV>0&&tW>0?Math.round((tV/tW)*100):null;
-      m.avonden.push({datum:av.datum,dag:av.dag,uren:u,karren:ka.length,verwacht:tV,werkelijk:tW,pct,leidinggevende:av.leidinggevende||'',notitie:lid.notitie||''});
-      m.totUren+=u;m.totKarren+=ka.length;m.totVerwacht+=tV;m.totWerkelijk+=tW;
+      const diff=tV>0&&tW>0?tW-tV:null;
+      m.rijen.push({datum:av.datum,dag:av.dag||'',start:lid.start||'',eind:lid.eind||'',pauze:lid.pauze||0,uren:u,karren:ka.length,verwacht:tV,werkelijk:tW,diff,pct,notitie:lid.notitie||''});
+      m.totUren+=u;m.totKarren+=ka.length;m.totV+=tV;m.totW+=tW;
       if(pct!==null)m.scores.push(pct);
     });
   });
 
   const [jaar,maandNr]=huidig.split('-');
   const maandNaam=new Date(jaar,maandNr-1,1).toLocaleDateString('nl-NL',{month:'long',year:'numeric'});
-
-  // Overzichtskaarten bovenaan
-  const alleScores=Object.values(medewMap).flatMap(m=>m.scores);
+  const medews=Object.values(map).sort((a,b)=>b.totUren-a.totUren);
+  const alleScores=medews.flatMap(m=>m.scores);
   const gemScore=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
-  const totUren=Object.values(medewMap).reduce((s,m)=>s+m.totUren,0);
+  const totUrenAlle=medews.reduce((s,m)=>s+m.totUren,0);
+  const totKarrenAlle=medews.reduce((s,m)=>s+m.totKarren,0);
 
-  let html=`<div class="stats-grid" style="margin-bottom:16px">
-    <div class="stat-card"><div class="stat-val" style="color:var(--red)">${avonden.length}</div><div class="stat-label">Avonden</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--blue)">${Object.keys(medewMap).length}</div><div class="stat-label">Medewerkers</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:var(--orange)">${totUren.toFixed(0)}u</div><div class="stat-label">Totaal uren</div></div>
-    <div class="stat-card"><div class="stat-val" style="color:${gemScore>=90?'var(--green)':gemScore>=75?'var(--orange)':'var(--red)'}">${gemScore!==null?gemScore+'%':'—'}</div><div class="stat-label">Gem. score</div></div>
+  // Score badge helper
+  const scoreBadge=pct=>pct===null?'<span style="color:var(--text3);font-size:.78rem">—</span>':pct>=95?`<span style="display:inline-flex;align-items:center;gap:3px;background:var(--green-dim);color:var(--green);border-radius:6px;padding:2px 7px;font-size:.75rem;font-weight:800">⚡ ${pct}%</span>`:pct>=80?`<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(37,99,235,.1);color:#2563eb;border-radius:6px;padding:2px 7px;font-size:.75rem;font-weight:800">✓ ${pct}%</span>`:`<span style="display:inline-flex;align-items:center;gap:3px;background:var(--red-dim);color:var(--red);border-radius:6px;padding:2px 7px;font-size:.75rem;font-weight:800">⚠ ${pct}%</span>`;
+  const diffKleur=d=>d===null?'var(--text3)':d<=0?'var(--green)':'var(--red)';
+  const diffTxt=d=>d===null?'—':(d<=0?d:'+'+d)+' min';
+
+  // Maand samenvatting bovenaan
+  let html=`
+  <div style="background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px">
+    <div style="font-size:.68rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📅 ${maandNaam}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">
+      <div><div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1">${avonden.length}</div><div style="font-size:.62rem;opacity:.75;margin-top:3px;font-weight:700">avonden</div></div>
+      <div><div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1">${medews.length}</div><div style="font-size:.62rem;opacity:.75;margin-top:3px;font-weight:700">mensen</div></div>
+      <div><div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1">${totUrenAlle.toFixed(0)}u</div><div style="font-size:.62rem;opacity:.75;margin-top:3px;font-weight:700">uren</div></div>
+      <div><div style="font-family:var(--mono);font-size:1.5rem;font-weight:700;line-height:1">${gemScore!==null?gemScore+'%':'—'}</div><div style="font-size:.62rem;opacity:.75;margin-top:3px;font-weight:700">gem. score</div></div>
+    </div>
   </div>`;
 
-  // Per medewerker een kaart
-  Object.values(medewMap).sort((a,b)=>b.totUren-a.totUren).forEach(m=>{
+  // Per medewerker
+  medews.forEach(m=>{
     const gemPct=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
-    const kleur=gemPct>=95?'var(--green)':gemPct>=80?'var(--orange)':'var(--red)';
-    const totVerschil=m.totVerwacht>0&&m.totWerkelijk>0?m.totWerkelijk-m.totVerwacht:null;
+    const kleur=gemPct===null?'var(--text3)':gemPct>=95?'var(--green)':gemPct>=80?'#2563eb':'var(--red)';
+    const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
+    const scoreBarW=gemPct!==null?Math.min(100,gemPct):0;
+    const scoreBarClr=gemPct>=95?'var(--green)':gemPct>=80?'#2563eb':'var(--red)';
 
-    html+=`<div class="card" style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-        <div>
-          <div style="font-weight:900;font-size:1.05rem">${m.naam}</div>
-          <div style="font-size:.72rem;color:var(--text3);margin-top:3px">${m.avonden.length} avonden · ${m.totUren.toFixed(1)} uur · ${m.totKarren} karren</div>
+    // Avond rijen — compact op mobiel
+    const rijen=m.rijen.map(r=>{
+      const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+      const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
+      const karStr=r.karren?'<span style="font-size:.73rem;color:var(--text3)">🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
+      const verwachtStr=r.verwacht>0?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px"><span style="font-size:.72rem;color:var(--text3)">Verwacht <b style="font-family:var(--mono)">'+r.verwacht+' min</b></span> <span style="font-size:.72rem;color:var(--text3)">Werkelijk <b style="font-family:var(--mono);">'+(r.werkelijk||'&mdash;')+' min</b></span> <span style="font-family:var(--mono);font-size:.72rem;font-weight:800;color:'+diffKleur(r.diff)+'">'+diffTxt(r.diff)+'</span></div>':'';
+      const notitieStr=r.notitie?'<div style="font-size:.72rem;color:var(--text3);font-style:italic;margin-top:4px;padding-left:8px;border-left:2px solid var(--red)">📝 '+r.notitie+'</div>':'';
+      return '<div style="border-bottom:1px solid var(--border);padding:9px 0;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start"><div><div style="font-weight:700;font-size:.82rem">'+datStr+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><span style="font-size:.73rem;color:var(--text3)">🕐 '+r.start+'–'+r.eind+pauzeStr+'</span><span style="font-family:var(--mono);font-size:.73rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'+karStr+'</div>'+verwachtStr+notitieStr+'</div><div style="text-align:right;flex-shrink:0">'+scoreBadge(r.pct)+'</div></div>';
+    }).join('');
+
+    html+=`<div class="card" style="margin-bottom:14px;padding:0;overflow:hidden">
+      <!-- Header medewerker -->
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1.5px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:900;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.naam}</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:3px">${m.rijen.length} avond${m.rijen.length!==1?'en':''} · ${m.totUren.toFixed(1)} uur · ${m.totKarren} karren</div>
+          <!-- Score bar -->
+          <div style="margin-top:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+              <span style="font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score</span>
+              <span style="font-size:.78rem;font-weight:900;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</span>
+            </div>
+            <div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${scoreBarW}%;background:${scoreBarClr};border-radius:3px;transition:width .4s"></div>
+            </div>
+          </div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:1.4rem;font-weight:900;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</div>
-          <div style="font-size:.7rem;color:var(--text3)">gem. score</div>
-          ${totVerschil!==null?`<div style="font-size:.72rem;font-weight:800;color:${totVerschil<=0?'var(--green)':'var(--red)'};margin-top:2px">${totVerschil<=0?totVerschil:'+'+totVerschil} min totaal</div>`:''}
-        </div>
+        <!-- Totaal verschil pill -->
+        ${totDiff!==null?`<div style="background:${totDiff<=0?'var(--green-dim)':'var(--red-dim)'};border:1.5px solid ${totDiff<=0?'var(--green)':'var(--red)'};border-radius:10px;padding:8px 12px;text-align:center;flex-shrink:0">
+          <div style="font-family:var(--mono);font-size:.95rem;font-weight:900;color:${totDiff<=0?'var(--green)':'var(--red)'};">${totDiff<=0?totDiff:'+'+totDiff}</div>
+          <div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:2px">min totaal</div>
+        </div>`:''}
       </div>
-      <div class="table-wrap"><table class="data-table">
-        <thead><tr><th>Datum</th><th>Dag</th><th>Uren</th><th>Karren</th><th>Verwacht</th><th>Werkelijk</th><th>Verschil</th><th>Score</th><th>Notitie</th></tr></thead>
-        <tbody>
-        ${m.avonden.map(a=>{
-          const diff=a.verwacht>0&&a.werkelijk>0?a.werkelijk-a.verwacht:null;
-          const sc=a.pct!==null?(a.pct>=95?'<span class="badge badge-snel">⚡ Snel</span>':a.pct>=80?'<span class="badge badge-ok">✓ Goed</span>':'<span class="badge badge-langzaam">⚠ Traag</span>'):'<span class="badge badge-bezig">—</span>';
-          return`<tr>
-            <td class="mono">${new Date(a.datum).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</td>
-            <td>${a.dag?a.dag.charAt(0).toUpperCase()+a.dag.slice(1,2):'—'}</td>
-            <td class="mono">${a.uren.toFixed(1)}u</td>
-            <td class="mono">${a.karren}</td>
-            <td class="mono">${a.verwacht||'—'}</td>
-            <td class="mono" style="font-weight:800">${a.werkelijk||'—'}</td>
-            <td class="mono" style="font-weight:800;color:${diff!==null?(diff<=0?'var(--green)':'var(--red)'):'var(--text3)'}">${diff!==null?(diff<=0?diff:'+'+diff)+' min':'—'}</td>
-            <td>${sc}</td>
-            <td style="font-size:.72rem;color:var(--text3)">${a.notitie||'—'}</td>
-          </tr>`;
-        }).join('')}
-        </tbody>
-        <tfoot><tr style="background:var(--surface2)">
-          <td colspan="2" style="font-weight:900;padding:8px 12px">Totaal</td>
-          <td class="mono" style="font-weight:800">${m.totUren.toFixed(1)}u</td>
-          <td class="mono" style="font-weight:800">${m.totKarren}</td>
-          <td class="mono">${m.totVerwacht||'—'}</td>
-          <td class="mono" style="font-weight:800">${m.totWerkelijk||'—'}</td>
-          <td class="mono" style="font-weight:800;color:${totVerschil!==null?(totVerschil<=0?'var(--green)':'var(--red)'):'var(--text3)'}">${totVerschil!==null?(totVerschil<=0?totVerschil:'+'+totVerschil)+' min':'—'}</td>
-          <td style="font-weight:900;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</td>
-          <td></td>
-        </tr></tfoot>
-      </table></div>
+      <!-- Avond rijen -->
+      <div style="padding:0 16px">
+        ${rijen}
+      </div>
+      <!-- Footer totalen -->
+      <div style="padding:10px 16px;background:var(--surface2);border-top:1.5px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center">
+        <div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800">${m.totUren.toFixed(1)}u</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:1px">Totaal uren</div></div>
+        <div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800">${m.totKarren}</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:1px">Karren</div></div>
+        <div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800;color:${kleur}">${gemPct!==null?gemPct+'%':'—'}</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:1px">Score</div></div>
+      </div>
     </div>`;
   });
 
   c.innerHTML=html;
-  // Sla avonden op voor CSV export
-  App._maandData={maandNaam,avonden,medewMap};
+  App._maandData={maandNaam,avonden,medewMap:map};
 };
 
 window.exportMaandCSV=()=>{
   if(!App._maandData){showToast('Laad eerst een maand.');return;}
   const{maandNaam,medewMap}=App._maandData;
-  const rows=[['Maand','Medewerker','Datum','Dag','Uren','Karren','Verwacht (min)','Werkelijk (min)','Verschil (min)','Score (%)','Notitie']];
+  const rows=[['Maand','Medewerker','Datum','Dag','Start','Eind','Pauze (min)','Uren','Karren','Verwacht (min)','Werkelijk (min)','Verschil (min)','Score (%)','Notitie']];
   Object.values(medewMap).forEach(m=>{
-    m.avonden.forEach(a=>{
-      const diff=a.verwacht>0&&a.werkelijk>0?a.werkelijk-a.verwacht:null;
-      rows.push([maandNaam,m.naam,a.datum,a.dag||'',a.uren.toFixed(2),a.karren,a.verwacht||'',a.werkelijk||'',diff!==null?diff:'',a.pct!==null?a.pct:'',a.notitie]);
+    m.rijen.forEach(r=>{
+      rows.push([maandNaam,m.naam,r.datum,r.dag||'',r.start||'',r.eind||'',r.pauze||0,r.uren.toFixed(2),r.karren,r.verwacht||'',r.werkelijk||'',r.diff!==null?r.diff:'',r.pct!==null?r.pct:'',r.notitie]);
     });
   });
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n');
