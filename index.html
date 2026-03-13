@@ -695,6 +695,7 @@ textarea{resize:vertical;min-height:58px}
       <div class="btn-row">
         <select id="maandSel" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:var(--font);font-weight:700;font-size:.85rem;outline:none" onchange="renderMaandrapport()"></select>
         <button class="btn btn-secondary btn-sm" onclick="exportMaandCSV()">⬇️ CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="printMaandrapport()">🖨️ PDF</button>
       </div>
     </div>
     <div id="maandContent"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Laden…</div></div></div>
@@ -1570,6 +1571,115 @@ window.exportMaandCSV=()=>{
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='maandrapport_'+maandNaam.replace(' ','_')+'.csv';a.click();
   URL.revokeObjectURL(url);showToast('CSV gedownload ✓');
+};
+window.printMaandrapport=()=>{
+  if(!App._maandData){showToast('Laad eerst een maand.');return;}
+  const{maandNaam,medewMap,avonden}=App._maandData;
+  const medews=Object.values(medewMap).sort((a,b)=>b.totUren-a.totUren);
+  const alleScores=medews.flatMap(m=>m.scores);
+  const gemScore=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
+  const totUren=medews.reduce((s,m)=>s+m.totUren,0);
+  const totKarren=medews.reduce((s,m)=>s+m.totKarren,0);
+  const filiaal=App.filiaal||'Kruidvat';
+  const printDatum=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  const sKleur=p=>p===null?'#999':p>=95?'#0ea35a':p>=80?'#2563eb':'#E2001A';
+  const sLabel=p=>p===null?'&mdash;':p>=95?'Snel':p>=80?'Goed':'Traag';
+  const dKleur=d=>d===null?'#999':d<=0?'#0ea35a':'#E2001A';
+  const dTxt=d=>d===null?'&mdash;':(d<=0?String(d):'+'+d)+' min';
+
+  let body='';
+  medews.forEach(m=>{
+    const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
+    const td=m.totV>0&&m.totW>0?m.totW-m.totV:null;
+    let rows='';
+    m.rijen.forEach((r,i)=>{
+      const ds=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+      const bg=i%2===0?'#fff':'#f9f9f9';
+      const sc='<span style="display:inline-block;padding:2px 6px;border-radius:3px;font-size:8.5px;font-weight:800;background:'+sKleur(r.pct)+'22;color:'+sKleur(r.pct)+'">'+sLabel(r.pct)+(r.pct!==null?' '+r.pct+'%':'')+'</span>';
+      rows+='<tr style="background:'+bg+'">'
+        +'<td>'+ds+'</td>'
+        +'<td style="text-align:center">'+r.start+'&ndash;'+r.eind+(r.pauze?' <span style="color:#aaa;font-size:8px">('+r.pauze+'m)</span>':'')+'</td>'
+        +'<td style="text-align:center;font-weight:600">'+r.uren.toFixed(1)+'u</td>'
+        +'<td style="text-align:center">'+r.karren+'</td>'
+        +'<td style="text-align:center;color:#666">'+( r.verwacht?r.verwacht+' min':'&mdash;')+'</td>'
+        +'<td style="text-align:center;font-weight:700">'+( r.werkelijk?r.werkelijk+' min':'&mdash;')+'</td>'
+        +'<td style="text-align:center;font-weight:800;color:'+dKleur(r.diff)+'">'+dTxt(r.diff)+'</td>'
+        +'<td style="text-align:center">'+sc+'</td>'
+        +'<td style="font-size:8.5px;color:#777;font-style:italic">'+(r.notitie||'&mdash;')+'</td>'
+        +'</tr>';
+    });
+    body+='<div style="break-inside:avoid;margin-bottom:18px;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">'
+      +'<div style="background:#E2001A;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">'
+        +'<div><div style="font-weight:900;font-size:13px;color:#fff">'+m.naam+'</div>'
+        +'<div style="font-size:9px;color:rgba(255,255,255,.8);margin-top:2px">'+m.rijen.length+' avonden &middot; '+m.totUren.toFixed(1)+' uur &middot; '+m.totKarren+' karren</div></div>'
+        +'<div style="text-align:right">'
+          +'<div style="font-family:monospace;font-size:17px;font-weight:900;color:#fff">'+(gp!==null?gp+'%':'&mdash;')+'</div>'
+          +'<div style="font-size:9px;color:rgba(255,255,255,.75)">gem. score</div>'
+          +(td!==null?'<div style="font-size:9.5px;font-weight:800;color:'+(td<=0?'#90ee90':'#ffb3b3')+'">'+dTxt(td)+' totaal</div>':'')
+        +'</div>'
+      +'</div>'
+      +'<div style="padding:6px 14px 8px;background:#fff;border-bottom:1px solid #eee">'
+        +'<div style="display:flex;gap:4px;align-items:center">'
+          +'<div style="flex:1;height:5px;background:#f0f0f0;border-radius:3px;overflow:hidden"><div style="height:100%;width:'+(gp!==null?Math.min(100,gp):0)+'%;background:'+sKleur(gp)+';border-radius:3px"></div></div>'
+          +'<div style="font-family:monospace;font-size:10px;font-weight:700;color:'+sKleur(gp)+';min-width:32px;text-align:right">'+(gp!==null?gp+'%':'&mdash;')+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:10px">'
+        +'<thead><tr style="background:#f7f7f7">'
+          +['Datum','Tijden','Uren','Karren','Verwacht','Werkelijk','Verschil','Score','Notitie'].map(h=>'<th style="padding:5px 7px;text-align:'+(h==='Datum'||h==='Notitie'?'left':'center')+';font-weight:800;font-size:8.5px;color:#888;text-transform:uppercase;border-bottom:1px solid #e0e0e0;letter-spacing:.3px">'+h+'</th>').join('')
+        +'</tr></thead>'
+        +'<tbody>'+rows+'</tbody>'
+        +'<tfoot><tr style="background:#f5f5f5;border-top:2px solid #ddd">'
+          +'<td style="padding:6px 7px;font-weight:900;font-size:10px" colspan="2">Maandtotaal</td>'
+          +'<td style="padding:6px 7px;text-align:center;font-weight:800;font-family:monospace">'+m.totUren.toFixed(1)+'u</td>'
+          +'<td style="padding:6px 7px;text-align:center;font-weight:800;font-family:monospace">'+m.totKarren+'</td>'
+          +'<td style="padding:6px 7px;text-align:center;color:#555;font-family:monospace">'+(m.totV?m.totV+' min':'&mdash;')+'</td>'
+          +'<td style="padding:6px 7px;text-align:center;font-weight:700;font-family:monospace">'+(m.totW?m.totW+' min':'&mdash;')+'</td>'
+          +'<td style="padding:6px 7px;text-align:center;font-weight:900;font-family:monospace;color:'+dKleur(td)+'">'+dTxt(td)+'</td>'
+          +'<td style="padding:6px 7px;text-align:center;font-weight:900;color:'+sKleur(gp)+'">'+(gp!==null?gp+'%':'&mdash;')+'</td>'
+          +'<td></td>'
+        +'</tr></tfoot>'
+      +'</table>'
+    +'</div>';
+  });
+
+  const page='<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8">'
+    +'<title>Maandrapport '+maandNaam+' — '+filiaal+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color:#111;background:#fff;padding:12mm;font-size:10.5px}'
+    +'@media print{@page{margin:8mm;size:A4 portrait}body{padding:0}.no-print{display:none!important}}'
+    +'</style></head><body>'
+    +'<div class="no-print" style="position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:99">'
+      +'<button onclick="window.print()" style="background:#E2001A;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer">&#128438; Opslaan als PDF</button>'
+      +'<button onclick="window.close()" style="background:#eee;color:#333;border:none;border-radius:6px;padding:8px 12px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer">✕ Sluiten</button>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #E2001A">'
+      +'<div>'
+        +'<div style="font-size:21px;font-weight:900;color:#E2001A;letter-spacing:-.5px">Maandrapport</div>'
+        +'<div style="font-size:13px;font-weight:700;color:#333;margin-top:2px">'+maandNaam+' &mdash; '+filiaal+'</div>'
+        +'<div style="font-size:9.5px;color:#aaa;margin-top:3px">Gegenereerd op '+printDatum+'</div>'
+      +'</div>'
+      +'<div style="text-align:right">'
+        +'<div style="font-size:8.5px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Samenvatting</div>'
+        +'<div style="display:flex;gap:14px">'
+          +[{v:avonden.length,l:'avonden'},{v:medews.length,l:'mensen'},{v:totUren.toFixed(0)+'u',l:'uren'},{v:totKarren,l:'karren'},{v:gemScore!==null?gemScore+'%':'&mdash;',l:'gem. score',c:sKleur(gemScore)}].map(x=>'<div style="text-align:center"><div style="font-family:monospace;font-size:17px;font-weight:900;color:'+(x.c||'#333')+'">'+x.v+'</div><div style="font-size:8px;color:#aaa;font-weight:700;text-transform:uppercase">'+x.l+'</div></div>').join('')
+        +'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">'
+      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#0ea35a33;border:1px solid #0ea35a"></span><b style="color:#0ea35a">Snel</b> ≥95%</span>'
+      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#2563eb33;border:1px solid #2563eb"></span><b style="color:#2563eb">Goed</b> 80&ndash;95%</span>'
+      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#E2001A33;border:1px solid #E2001A"></span><b style="color:#E2001A">Traag</b> &lt;80%</span>'
+      +'<span style="font-size:8.5px;color:#aaa">Score = verwacht ÷ werkelijk × 100% &mdash; hoger is beter</span>'
+    +'</div>'
+    +body
+    +'</body></html>';
+
+  const w=window.open('','_blank');
+  w.document.write(page);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>w.print(),700);
 };
 window.openNieuwMedewModal=()=>{document.getElementById('nieuwMedewNaam').value='';document.getElementById('nieuwMedewFunctie').value='';openModal('modalNieuwMedew');};
 window.slaaNieuwMedewOp=async()=>{const naam=document.getElementById('nieuwMedewNaam').value.trim(),functie=document.getElementById('nieuwMedewFunctie').value.trim();if(!naam){alert('Naam vereist.');return;}setSyncStatus('bezig');try{const fbId=await fbAdd('accounts/'+App.uid+'/medewerkers',{naam,functie,created:Date.now()});App.medewerkers.push({id:fbId,fbId,naam,functie});App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));setSyncStatus('ok');closeModal('modalNieuwMedew');renderMedewBeheer();vulLeiderSelect();showToast('Medewerker opgeslagen');}catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}};
