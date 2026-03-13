@@ -1381,64 +1381,152 @@ window.exporteerCSV=async()=>{
 
 // ── STATISTIEKEN ──
 function renderStatistieken(){
-  const c=document.getElementById('statsContent'),alle=App.avonden.filter(av=>av.team&&av.team.length>0).sort((a,b)=>a.datum>b.datum?1:-1);
-  if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div>';return;}
+  const c=document.getElementById('statsContent');
+  const alle=App.avonden.filter(av=>av.team&&av.team.length>0).sort((a,b)=>a.datum>b.datum?1:-1);
+  if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Geen data — sla eerst een avond op.</div></div>';return;}
 
-  // Bouw stats per medewerker inclusief chronologische avond-scores voor sparkline
+  // Bouw stats per medewerker
   const stats={};
   alle.forEach(av=>{
-    const norm=av.norm||80;
     av.team.forEach(lid=>{
-      if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,avonden:0,totUren:0,totKarren:0,opTijd:0,snel:0,langzaam:0,record:null,recordNaam:'',recordMin:0,recordVerwacht:0,scores:[]};
-      const s=stats[lid.naam],u=berekenUren(lid.start,lid.eind,lid.pauze),ka=lid.karten||[],tV=ka.reduce((x,k)=>x+(k.verwacht||0),0),tW=ka.reduce((x,k)=>x+(k.werkelijk||0),0);
-      s.avonden++;s.totUren+=u;s.totKarren+=ka.length;
-      let avScore=null;
-      if(tV>0&&tW>0){const p=tW/tV;avScore=Math.round((tV/tW)*100);if(p<=.9)s.snel++;else if(p<=1.1)s.opTijd++;else s.langzaam++;}
-      s.scores.push({datum:av.datum,pct:avScore});
-      ka.forEach(k=>{if(k.werkelijk>0&&k.verwacht>0){const r=k.werkelijk/k.verwacht;if(s.record===null||r<s.record){s.record=r;s.recordNaam=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;}}});
+      if(!stats[lid.naam])stats[lid.naam]={naam:lid.naam,rijen:[],totUren:0,totKarren:0,totV:0,totW:0,snel:0,opTijd:0,langzaam:0,record:null,recordKar:'',recordMin:0,recordVerwacht:0,scores:[]};
+      const s=stats[lid.naam];
+      const u=berekenUren(lid.start,lid.eind,lid.pauze);
+      const ka=lid.karten||[];
+      const tV=ka.reduce((x,k)=>x+(k.verwacht||0),0);
+      const tW=ka.reduce((x,k)=>x+(k.werkelijk||0),0);
+      const pct=tV>0&&tW>0?Math.round((tV/tW)*100):null;
+      const diff=tV>0&&tW>0?tW-tV:null;
+      s.rijen.push({datum:av.datum,dag:av.dag||'',start:lid.start||'',eind:lid.eind||'',pauze:lid.pauze||0,uren:u,karren:ka.length,verwacht:tV,werkelijk:tW,diff,pct,notitie:lid.notitie||''});
+      s.totUren+=u; s.totKarren+=ka.length; s.totV+=tV; s.totW+=tW;
+      if(pct!==null){s.scores.push(pct);const p=tW/tV;if(p<=.9)s.snel++;else if(p<=1.1)s.opTijd++;else s.langzaam++;}
+      ka.forEach(k=>{if(k.werkelijk>0&&k.verwacht>0){const r=k.werkelijk/k.verwacht;if(s.record===null||r<s.record){s.record=r;s.recordKar=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;}}});
     });
   });
 
-  // Helper: bouw SVG sparkline van laatste 8 avonden
-  function maakSparkline(scores){
-    const recent=scores.filter(s=>s.pct!==null).slice(-8);
-    if(recent.length<2)return '<span style="font-size:.7rem;color:var(--text3)">Onvoldoende data</span>';
-    const vals=recent.map(s=>s.pct),mx=Math.max(...vals,60),mn=Math.min(...vals,40),range=Math.max(mx-mn,10);
-    const W=80,H=28,bw=8,gap=2,total=recent.length*(bw+gap)-gap,ox=(W-total)/2;
+  const sKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
+  const sBadge=p=>{
+    if(p===null)return '<span style="color:var(--text3);font-size:.78rem">—</span>';
+    const clr=sKleur(p);
+    const lbl=p>=95?'⚡ Snel':p>=80?'✓ Goed':'⚠ Traag';
+    return '<span style="display:inline-flex;align-items:center;gap:3px;background:'+clr.replace(')',',0.12)').replace('var(','rgba(').replace('--green','14,163,90').replace('--red','226,0,26').replace('#2563eb','37,99,235')+'22;color:'+clr+';border-radius:6px;padding:2px 8px;font-size:.74rem;font-weight:800">'+lbl+' '+p+'%</span>';
+  };
+  const dKleur=d=>d===null?'var(--text3)':d<=0?'var(--green)':'var(--red)';
+  const dTxt=d=>d===null?'—':(d<=0?d:'+'+d)+' min';
+
+  // Sparkline
+  function sparkline(scores){
+    const recent=scores.filter(p=>p!==null).slice(-10);
+    if(recent.length<2)return '<span style="font-size:.7rem;color:var(--text3)">Te weinig data</span>';
+    const mx=Math.max(...recent,60),mn=Math.min(...recent,40),rng=Math.max(mx-mn,10);
+    const W=90,H=30,bw=7,gap=2,tot=recent.length*(bw+gap)-gap,ox=(W-tot)/2;
     let bars='';
-    vals.forEach((v,i)=>{
-      const h=Math.max(3,Math.round(((v-mn)/range)*(H-4)));
-      const clr=v>=95?'#0ea35a':v>=80?'#f59e0b':'#E2001A';
-      bars+=`<rect x="${ox+i*(bw+gap)}" y="${H-h}" width="${bw}" height="${h}" rx="2" fill="${clr}" opacity=".85"><title>${recent[i].datum}: ${v}%</title></rect>`;
+    recent.forEach((v,i)=>{
+      const h=Math.max(3,Math.round(((v-mn)/rng)*(H-4)));
+      const clr=v>=95?'#0ea35a':v>=80?'#2563eb':'#E2001A';
+      bars+='<rect x="'+(ox+i*(bw+gap))+'" y="'+(H-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+clr+'" opacity=".85"/>';
     });
-    // Trendlijn
-    const first=vals.slice(0,3).reduce((a,b)=>a+b,0)/3,last=vals.slice(-3).reduce((a,b)=>a+b,0)/vals.slice(-3).length;
-    const diff=Math.round(last-first);
-    const trendCls=diff>3?'trend-up':diff<-3?'trend-down':'trend-flat';
-    const trendIcon=diff>3?'↑':diff<-3?'↓':'→';
-    return `<div style="display:flex;align-items:center;gap:8px"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible">${bars}</svg><span class="${trendCls}">${trendIcon} ${diff>0?'+':''}${diff}%</span></div>`;
+    const first=recent.slice(0,3).reduce((a,b)=>a+b,0)/3;
+    const last=recent.slice(-3).reduce((a,b)=>a+b,0)/recent.slice(-3).length;
+    const df=Math.round(last-first);
+    const tc=df>3?'#0ea35a':df<-3?'#E2001A':'var(--text3)';
+    return '<div style="display:flex;align-items:center;gap:6px"><svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible">'+bars+'</svg><span style="font-size:.72rem;font-weight:800;color:'+tc+'">'+(df>3?'↑':df<-3?'↓':'→')+' '+(df>0?'+':'')+df+'%</span></div>';
   }
 
-  const rijen=Object.values(stats).sort((a,b)=>b.avonden-a.avonden).map(s=>{
-    const pg=s.opTijd+s.snel,pt=pg+s.langzaam,pct=pt>0?Math.round(pg/pt*100):null;
-    const bk=pct>=80?'background:var(--green)':pct>=50?'background:var(--orange)':'background:var(--red)';
-    const spark=maakSparkline(s.scores);
-    return`<tr>
-      <td><strong>${s.naam}</strong></td>
-      <td class="mono">${s.avonden}</td>
-      <td class="mono">${s.totUren.toFixed(1)}u</td>
-      <td class="mono">${s.totKarren}</td>
-      <td>${pct!==null?`<div style="font-size:.78rem;font-weight:700">${pct}%</div><div class="perf-bar-bg"><div class="perf-bar-fill" style="width:${pct}%;${bk}"></div></div>`:'—'}</td>
-      <td><span style="color:var(--green);font-weight:800">${s.opTijd}✓</span> <span style="color:var(--orange)">${s.snel}⚡</span> <span style="color:var(--red)">${s.langzaam}⚠</span></td>
-      <td>${spark}</td>
-      <td>${s.record!==null?`<span style="font-size:.7rem;background:var(--orange-dim);border:1px solid var(--orange);color:#b45309;border-radius:6px;padding:2px 7px">🏆 ${s.recordNaam} ${s.recordMin}/${s.recordVerwacht}min</span>`:'—'}</td>
-    </tr>`;
-  }).join('');
+  const medews=Object.values(stats).sort((a,b)=>b.totUren-a.totUren);
+  const alleScores=medews.flatMap(m=>m.scores);
+  const gemOverall=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
+  const gKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
 
-  c.innerHTML=`<div style="font-size:.7rem;color:var(--text3);margin-bottom:10px;display:flex;gap:12px;flex-wrap:wrap"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#0ea35a;display:inline-block"></span>Snel (≥95%)</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#f59e0b;display:inline-block"></span>Op tijd (80–95%)</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#E2001A;display:inline-block"></span>Langzaam (&lt;80%)</span></div>
-  <div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Avonden</th><th>Uren</th><th>Karren</th><th>Score</th><th>Resultaten</th><th>Trend (laatste 8)</th><th>Record</th></tr></thead><tbody>${rijen}</tbody></table></div>`;
+  // Globale samenvatting banner
+  let html='<div style="background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px">'
+    +'<div style="font-size:.65rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🏆 Totaal overzicht — alle avonden</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">'
+    +[{v:alle.length,l:'avonden'},{v:medews.length,l:'medewerkers'},{v:medews.reduce((s,m)=>s+m.totKarren,0),l:'karren'},{v:gemOverall!==null?gemOverall+'%':'—',l:'gem. score'}]
+      .map(x=>'<div><div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;line-height:1">'+x.v+'</div><div style="font-size:.6rem;opacity:.75;margin-top:3px;font-weight:700">'+x.l+'</div></div>').join('')
+    +'</div>'
+  +'</div>';
+
+  // Per medewerker kaart
+  medews.forEach(m=>{
+    const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
+    const kleur=sKleur(gp);
+    const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
+    const barW=gp!==null?Math.min(100,gp):0;
+
+    const rijenHtml=m.rijen.map((r,idx)=>{
+      const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+      const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
+      const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
+      const verwachtStr=r.verwacht>0?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'
+        +'<span style="font-size:.71rem;color:var(--text3)">Verwacht <b style="font-family:var(--mono);color:var(--text)">'+r.verwacht+' min</b></span>'
+        +'<span style="font-size:.71rem;color:var(--text3)">Werkelijk <b style="font-family:var(--mono);color:var(--text)">'+(r.werkelijk||'—')+' min</b></span>'
+        +'<span style="font-family:var(--mono);font-size:.71rem;font-weight:800;color:'+dKleur(r.diff)+'">'+dTxt(r.diff)+'</span>'
+        +'</div>':'';
+      const notitieStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">📝 '+r.notitie+'</div>':'';
+      return '<div style="border-bottom:1px solid var(--border);padding:9px 0;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start">'
+        +'<div>'
+          +'<div style="font-weight:700;font-size:.82rem">'+datStr+'</div>'
+          +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px">'
+            +'<span style="font-size:.72rem;color:var(--text3)">🕐 '+r.start+'–'+r.eind+pauzeStr+'</span>'
+            +'<span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'
+            +karStr
+          +'</div>'
+          +verwachtStr
+          +notitieStr
+        +'</div>'
+        +'<div style="text-align:right;flex-shrink:0">'+sBadge(r.pct)+'</div>'
+      +'</div>';
+    }).join('');
+
+    html+='<div class="card" style="margin-bottom:14px;padding:0;overflow:hidden">'
+      // Header
+      +'<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1.5px solid var(--border)">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-weight:900;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.naam+'</div>'
+          +'<div style="font-size:.72rem;color:var(--text3);margin-top:3px">'+m.rijen.length+' avond'+(m.rijen.length!==1?'en':'')+' · '+m.totUren.toFixed(1)+' uur · '+m.totKarren+' karren</div>'
+          // Score bar
+          +'<div style="margin-top:8px">'
+            +'<div style="display:flex;justify-content:space-between;margin-bottom:3px">'
+              +'<span style="font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score</span>'
+              +'<span style="font-size:.78rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>'
+            +'</div>'
+            +'<div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">'
+              +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:3px;transition:width .4s"></div>'
+            +'</div>'
+          +'</div>'
+          // Sparkline
+          +'<div style="margin-top:10px">'+sparkline(m.scores)+'</div>'
+        +'</div>'
+        // Rechter kolom: totaal verschil + record
+        +'<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0">'
+          +(totDiff!==null?'<div style="background:'+(totDiff<=0?'var(--green-dim)':'var(--red-dim)')+';border:1.5px solid '+(totDiff<=0?'var(--green)':'var(--red)')+';border-radius:10px;padding:7px 11px;text-align:center">'
+            +'<div style="font-family:var(--mono);font-size:.9rem;font-weight:900;color:'+(totDiff<=0?'var(--green)':'var(--red)')+'">'+dTxt(totDiff)+'</div>'
+            +'<div style="font-size:.6rem;color:var(--text3);font-weight:700;margin-top:1px">totaal</div>'
+          +'</div>':'')
+          +(m.record!==null?'<div style="background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:7px 11px;text-align:center;max-width:90px">'
+            +'<div style="font-size:.62rem;color:#b45309;font-weight:800;text-transform:uppercase;letter-spacing:.3px">🏆 Record</div>'
+            +'<div style="font-size:.72rem;font-weight:800;color:#b45309;margin-top:2px;word-break:break-word">'+m.recordKar+'</div>'
+            +'<div style="font-family:var(--mono);font-size:.7rem;color:#b45309">'+m.recordMin+'/'+m.recordVerwacht+' min</div>'
+          +'</div>':'')
+        +'</div>'
+      +'</div>'
+      // Avond rijen
+      +'<div style="padding:0 16px">'+rijenHtml+'</div>'
+      // Footer
+      +'<div style="padding:10px 16px;background:var(--surface2);border-top:1.5px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center">'
+        +[
+          {v:m.totUren.toFixed(1)+'u',l:'uren'},
+          {v:m.totKarren,l:'karren'},
+          {v:'<span style="color:'+dKleur(totDiff)+'">'+dTxt(totDiff)+'</span>',l:'verschil'},
+          {v:'<span style="color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>',l:'score'},
+        ].map(x=>'<div><div style="font-family:var(--mono);font-size:.85rem;font-weight:800">'+x.v+'</div><div style="font-size:.6rem;color:var(--text3);font-weight:700;margin-top:1px">'+x.l+'</div></div>').join('')
+      +'</div>'
+    +'</div>';
+  });
+
+  c.innerHTML=html;
 }
-
 // ── MAANDRAPPORT ──
 window.renderMaandrapport=async()=>{
   const c=document.getElementById('maandContent');
