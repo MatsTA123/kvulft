@@ -950,6 +950,7 @@ window.doLogin=async()=>{
 window.doLogout=async()=>{
   if(App._dirty&&!confirm('Niet-opgeslagen wijzigingen gaan verloren. Toch uitloggen?'))return;
   if(App._timerInterval){clearInterval(App._timerInterval);App._timerInterval=null;}
+  if(App._autosaveInterval){clearInterval(App._autosaveInterval);App._autosaveInterval=null;}
   App.alarmGegeven=new Set();App._dirty=false;
   geefWakeLockVrij();
   document.getElementById('syncWrap').style.display='none';
@@ -1011,6 +1012,13 @@ async function initSession(uid,acc){
   syncFormFromAvond();renderAvondSelector();renderTeam();vulLeiderSelect();
   setSyncStatus('ok');
   vraagWakeLock();
+  // Autosave: sla op na 60s inactiviteit als er wijzigingen zijn
+  if(App._autosaveInterval)clearInterval(App._autosaveInterval);
+  App._autosaveInterval=setInterval(()=>{
+    if(App._dirty&&App.huidigFbId&&navigator.onLine){
+      slaOp().catch(()=>{});
+    }
+  },60000);
 }
 
 // ── AVOND CRUD ──
@@ -1844,6 +1852,9 @@ window.slaaNieuwMedewOp=async()=>{
           bijgewerkt++;
         }
       }
+      // Wis gecachte berekeningen zodat stats/maandrapport opnieuw laden
+      App._statsData=null;
+      App._maandData=null;
       setSyncStatus('ok');
       closeModal('modalNieuwMedew');
       renderMedewBeheer();
