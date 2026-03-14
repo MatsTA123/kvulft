@@ -1195,7 +1195,7 @@ window.voegPoolKarToe=()=>{
   App.huidigAvond.karrenPool.push({id:Date.now(),naam,verwacht:v,werkelijk:null,colli:col,personen:[]});
   App._dirty=true;closeModal('modalPoolKar');renderKarrenPool();showToast('Kar "'+naam+'" toegevoegd');
 };
-window.updatePoolKarVerwacht=(idx,val)=>{App.huidigAvond.karrenPool[idx].verwacht=+val||null;syncPoolNaarTeam(idx);renderTeam();};
+window.updatePoolKarVerwacht=(idx,val)=>{App.huidigAvond.karrenPool[idx].verwacht=+val||null;App._dirty=true;syncPoolNaarTeam(idx);renderTeam();};
 window.updatePoolKarWerkelijk=(idx,val)=>{const v=+val||null;App.huidigAvond.karrenPool[idx].werkelijk=v;syncPoolNaarTeam(idx);renderTeam();};
 window.verwijderPoolKar=idx=>{const kar=App.huidigAvond.karrenPool[idx];(kar.personen||[]).forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n);if(l)l.karten=l.karten.filter(k=>k._poolId!==kar.id);});App.huidigAvond.karrenPool.splice(idx,1);App._dirty=true;renderKarrenPool();renderTeam();};
 window.openKoppelKarModal=idx=>{
@@ -1836,6 +1836,7 @@ window.slaaNieuwMedewOp=async()=>{
   setSyncStatus('bezig');
   try{
     if(App._bewerkMedewId){
+      if(!navigator.onLine){showToast('⚠ Geen verbinding — naam wijzigen vereist internet.');setSyncStatus('fout');return;}
       // Bewerk bestaande medewerker
       const fbId=App._bewerkMedewId;
       const oud=App.medewerkers.find(x=>x.fbId===fbId);
@@ -1851,7 +1852,8 @@ window.slaaNieuwMedewOp=async()=>{
         (av.team||[]).forEach(lid=>{if(lid.naam===oudeNaam){lid.naam=naam;gewijzigd=true;}});
         (av.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
         if(gewijzigd){
-          await fbSet('avonden/'+av.fbId,av);
+          const{fbId:_fid,id:_id,...avData}=av;
+          await fbSet('avonden/'+av.fbId,avData);
           bijgewerkt++;
         }
       }
