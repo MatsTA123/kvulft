@@ -772,10 +772,11 @@ textarea{resize:vertical;min-height:58px}
 
 <!-- Nieuwe medewerker -->
 <div class="modal-overlay" id="modalNieuwMedew"><div class="modal">
-  <div class="modal-title">👤 Nieuwe medewerker</div>
+  <div class="modal-title" id="modalMedewTitel">👤 Nieuwe medewerker</div>
   <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="nieuwMedewNaam" placeholder="Voor- en achternaam"></div>
   <div class="form-group"><label>Functie</label><input type="text" id="nieuwMedewFunctie" placeholder="bv. Vulploeg Medewerker"></div>
-  <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalNieuwMedew')">Annuleren</button><button class="btn btn-primary" onclick="slaaNieuwMedewOp()">Opslaan</button></div>
+  <div id="medewWaarschuwing" style="display:none;background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:8px;padding:10px 12px;font-size:.78rem;color:#b45309;margin-top:10px;line-height:1.5">⚠️ De nieuwe naam wordt ook bijgewerkt in alle historische avonden.</div>
+  <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalNieuwMedew')">Annuleren</button><button class="btn btn-primary" id="modalMedewSlaOp" onclick="slaaNieuwMedewOp()">Opslaan</button></div>
 </div></div>
 
 <!-- Nieuwe leider -->
@@ -1799,10 +1800,70 @@ window.printMaandrapport=()=>{
   w.focus();
   setTimeout(()=>w.print(),700);
 };
-window.openNieuwMedewModal=()=>{document.getElementById('nieuwMedewNaam').value='';document.getElementById('nieuwMedewFunctie').value='';openModal('modalNieuwMedew');};
-window.slaaNieuwMedewOp=async()=>{const naam=document.getElementById('nieuwMedewNaam').value.trim(),functie=document.getElementById('nieuwMedewFunctie').value.trim();if(!naam){alert('Naam vereist.');return;}setSyncStatus('bezig');try{const fbId=await fbAdd('accounts/'+App.uid+'/medewerkers',{naam,functie,created:Date.now()});App.medewerkers.push({id:fbId,fbId,naam,functie});App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));setSyncStatus('ok');closeModal('modalNieuwMedew');renderMedewBeheer();vulLeiderSelect();showToast('Medewerker opgeslagen');}catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}};
+window.openNieuwMedewModal=()=>{
+  App._bewerkMedewId=null;
+  document.getElementById('nieuwMedewNaam').value='';
+  document.getElementById('nieuwMedewFunctie').value='';
+  document.getElementById('modalMedewTitel').textContent='👤 Nieuwe medewerker';
+  document.getElementById('medewWaarschuwing').style.display='none';
+  document.getElementById('modalMedewSlaOp').textContent='Opslaan';
+  openModal('modalNieuwMedew');
+};
+window.bewerkMedew=fbId=>{
+  const m=App.medewerkers.find(x=>x.fbId===fbId);
+  if(!m)return;
+  App._bewerkMedewId=fbId;
+  document.getElementById('nieuwMedewNaam').value=m.naam;
+  document.getElementById('nieuwMedewFunctie').value=m.functie||'';
+  document.getElementById('modalMedewTitel').textContent='✏️ Medewerker bewerken';
+  document.getElementById('medewWaarschuwing').style.display='block';
+  document.getElementById('modalMedewSlaOp').textContent='Opslaan';
+  openModal('modalNieuwMedew');
+};
+window.slaaNieuwMedewOp=async()=>{
+  const naam=document.getElementById('nieuwMedewNaam').value.trim();
+  const functie=document.getElementById('nieuwMedewFunctie').value.trim();
+  if(!naam){alert('Naam vereist.');return;}
+  setSyncStatus('bezig');
+  try{
+    if(App._bewerkMedewId){
+      // Bewerk bestaande medewerker
+      const fbId=App._bewerkMedewId;
+      const oud=App.medewerkers.find(x=>x.fbId===fbId);
+      const oudeNaam=oud.naam;
+      await fbSet('accounts/'+App.uid+'/medewerkers/'+fbId,{naam,functie,created:oud.created||Date.now()});
+      oud.naam=naam; oud.functie=functie;
+      App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
+      // Update naam in alle lokale avonden
+      let bijgewerkt=0;
+      for(const av of App.avonden){
+        let gewijzigd=false;
+        (av.team||[]).forEach(lid=>{if(lid.naam===oudeNaam){lid.naam=naam;gewijzigd=true;}});
+        if(gewijzigd){
+          await fbSet('avonden/'+av.id,av);
+          bijgewerkt++;
+        }
+      }
+      setSyncStatus('ok');
+      closeModal('modalNieuwMedew');
+      renderMedewBeheer();
+      vulLeiderSelect();
+      showToast('Opgeslagen'+(bijgewerkt?' \u00b7 '+bijgewerkt+' avond'+(bijgewerkt!==1?'en':'')+' bijgewerkt':''));
+    } else {
+      // Nieuwe medewerker
+      const fbId=await fbAdd('accounts/'+App.uid+'/medewerkers',{naam,functie,created:Date.now()});
+      App.medewerkers.push({id:fbId,fbId,naam,functie});
+      App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
+      setSyncStatus('ok');
+      closeModal('modalNieuwMedew');
+      renderMedewBeheer();
+      vulLeiderSelect();
+      showToast('Medewerker opgeslagen');
+    }
+  }catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}
+};
 window.verwijderMedew=async fbId=>{if(!confirm('Medewerker verwijderen?'))return;try{await fbDel('accounts/'+App.uid+'/medewerkers/'+fbId);App.medewerkers=App.medewerkers.filter(m=>m.fbId!==fbId);renderMedewBeheer();showToast('Verwijderd');}catch(e){showToast('Fout: '+e.message);}};
-function renderMedewBeheer(){const c=document.getElementById('medewContent');if(!App.medewerkers.length){c.innerHTML='<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>';return;}c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Actie</th></tr></thead><tbody>'+App.medewerkers.map(m=>`<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td><td><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`).join('')+'</tbody></table></div>';}
+function renderMedewBeheer(){const c=document.getElementById('medewContent');if(!App.medewerkers.length){c.innerHTML='<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>';return;}c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Acties</th></tr></thead><tbody>'+App.medewerkers.map(m=>`<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td><td style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="bewerkMedew('${m.fbId}')">✏️</button><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`).join('')+'</tbody></table></div>';}
 
 // ── LEIDERS ──
 window.openNieuwLeiderModal=()=>{document.getElementById('nieuwLeiderNaam').value='';openModal('modalNieuwLeider');};
