@@ -1385,7 +1385,6 @@ function renderStatistieken(){
   const alle=App.avonden.filter(av=>av.team&&av.team.length>0).sort((a,b)=>a.datum>b.datum?1:-1);
   if(!alle.length){c.innerHTML='<div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Geen data — sla eerst een avond op.</div></div>';return;}
 
-  // Bouw stats per medewerker
   const stats={};
   alle.forEach(av=>{
     av.team.forEach(lid=>{
@@ -1403,130 +1402,161 @@ function renderStatistieken(){
       ka.forEach(k=>{if(k.werkelijk>0&&k.verwacht>0){const r=k.werkelijk/k.verwacht;if(s.record===null||r<s.record){s.record=r;s.recordKar=k.naam;s.recordMin=k.werkelijk;s.recordVerwacht=k.verwacht;}}});
     });
   });
+  App._statsData=stats;
+
+  const sKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
+  const medews=Object.values(stats).sort((a,b)=>b.totUren-a.totUren);
+  const alleScores=medews.flatMap(m=>m.scores);
+  const gemOverall=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
+
+  let html='<div style="background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px">'
+    +'<div style="font-size:.65rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🏆 Totaal overzicht</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">'
+    +[{v:alle.length,l:'avonden'},{v:medews.length,l:'mensen'},{v:medews.reduce((s,m)=>s+m.totKarren,0),l:'karren'},{v:gemOverall!==null?gemOverall+'%':'—',l:'gem. score'}]
+      .map(x=>'<div><div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;line-height:1">'+x.v+'</div><div style="font-size:.6rem;opacity:.75;margin-top:3px;font-weight:700">'+x.l+'</div></div>').join('')
+    +'</div></div>'
+    +'<div id="statsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">';
+
+  medews.forEach(m=>{
+    const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
+    const kleur=sKleur(gp);
+    const barW=gp!==null?Math.min(100,gp):0;
+    const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
+    const dKleur=totDiff===null?'var(--text3)':totDiff<=0?'var(--green)':'var(--red)';
+    const dTxt=totDiff===null?'—':(totDiff<=0?String(totDiff):'+'+totDiff)+' min';
+    const ini=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    html+='<div class="stats-card" data-naam="'+m.naam.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 14px 12px;cursor:pointer">'
+      +'<div style="width:44px;height:44px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.95rem;color:#fff;margin-bottom:10px">'+ini+'</div>'
+      +'<div style="font-weight:800;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px">'+m.naam+'</div>'
+      +'<div style="font-size:.68rem;color:var(--text3);margin-bottom:10px">'+m.rijen.length+' avonden</div>'
+      +'<div style="height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-bottom:6px">'
+        +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:2px"></div>'
+      +'</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="font-family:var(--mono);font-size:.82rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>'
+        +'<span style="font-family:var(--mono);font-size:.75rem;font-weight:800;color:'+dKleur+'">'+dTxt+'</span>'
+      +'</div>'
+    +'</div>';
+  });
+  html+='</div>';
+  c.innerHTML=html;
+
+  // Event delegation voor kaartjes
+  document.getElementById('statsGrid').addEventListener('click',function(e){
+    const card=e.target.closest('.stats-card');
+    if(card)openMedewerkerDetail(card.dataset.naam);
+  });
+}
+
+window.openMedewerkerDetail=function(naam){
+  const stats=App._statsData;
+  if(!stats||!stats[naam])return;
+  const m=stats[naam];
+  const c=document.getElementById('statsContent');
 
   const sKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
   const sBadge=p=>{
     if(p===null)return '<span style="color:var(--text3);font-size:.78rem">—</span>';
-    const clr=sKleur(p);
+    const clr=sKleur(p); const rgb=p>=95?'14,163,90':p>=80?'37,99,235':'226,0,26';
     const lbl=p>=95?'⚡ Snel':p>=80?'✓ Goed':'⚠ Traag';
-    return '<span style="display:inline-flex;align-items:center;gap:3px;background:'+clr.replace(')',',0.12)').replace('var(','rgba(').replace('--green','14,163,90').replace('--red','226,0,26').replace('#2563eb','37,99,235')+'22;color:'+clr+';border-radius:6px;padding:2px 8px;font-size:.74rem;font-weight:800">'+lbl+' '+p+'%</span>';
+    return '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba('+rgb+',.12);color:'+clr+';border-radius:6px;padding:2px 8px;font-size:.74rem;font-weight:800">'+lbl+' '+p+'%</span>';
   };
   const dKleur=d=>d===null?'var(--text3)':d<=0?'var(--green)':'var(--red)';
-  const dTxt=d=>d===null?'—':(d<=0?d:'+'+d)+' min';
+  const dTxt=d=>d===null?'—':(d<=0?String(d):'+'+d)+' min';
+
+  const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
+  const kleur=sKleur(gp); const barW=gp!==null?Math.min(100,gp):0;
+  const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
+  const ini=naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
 
   // Sparkline
-  function sparkline(scores){
-    const recent=scores.filter(p=>p!==null).slice(-10);
-    if(recent.length<2)return '<span style="font-size:.7rem;color:var(--text3)">Te weinig data</span>';
+  const recent=m.scores.filter(p=>p!==null).slice(-10);
+  let spark='<span style="font-size:.7rem;color:var(--text3)">Te weinig data</span>';
+  if(recent.length>=2){
     const mx=Math.max(...recent,60),mn=Math.min(...recent,40),rng=Math.max(mx-mn,10);
-    const W=90,H=30,bw=7,gap=2,tot=recent.length*(bw+gap)-gap,ox=(W-tot)/2;
+    const W=120,H=36,bw=9,gap=2,tot=recent.length*(bw+gap)-gap,ox=(W-tot)/2;
     let bars='';
     recent.forEach((v,i)=>{
       const h=Math.max(3,Math.round(((v-mn)/rng)*(H-4)));
       const clr=v>=95?'#0ea35a':v>=80?'#2563eb':'#E2001A';
-      bars+='<rect x="'+(ox+i*(bw+gap))+'" y="'+(H-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+clr+'" opacity=".85"/>';
+      bars+='<rect x="'+(ox+i*(bw+gap))+'" y="'+(H-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+clr+'" opacity=".9"/>';
     });
     const first=recent.slice(0,3).reduce((a,b)=>a+b,0)/3;
     const last=recent.slice(-3).reduce((a,b)=>a+b,0)/recent.slice(-3).length;
-    const df=Math.round(last-first);
-    const tc=df>3?'#0ea35a':df<-3?'#E2001A':'var(--text3)';
-    return '<div style="display:flex;align-items:center;gap:6px"><svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible">'+bars+'</svg><span style="font-size:.72rem;font-weight:800;color:'+tc+'">'+(df>3?'↑':df<-3?'↓':'→')+' '+(df>0?'+':'')+df+'%</span></div>';
+    const df=Math.round(last-first); const tc=df>3?'#0ea35a':df<-3?'#E2001A':'var(--text3)';
+    spark='<div style="display:flex;align-items:center;gap:8px">'
+      +'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible">'+bars+'</svg>'
+      +'<span style="font-size:.78rem;font-weight:900;color:'+tc+'">'+(df>3?'↑':df<-3?'↓':'→')+' '+(df>0?'+':'')+df+'%</span>'
+    +'</div>';
   }
 
-  const medews=Object.values(stats).sort((a,b)=>b.totUren-a.totUren);
-  const alleScores=medews.flatMap(m=>m.scores);
-  const gemOverall=alleScores.length?Math.round(alleScores.reduce((a,b)=>a+b,0)/alleScores.length):null;
-  const gKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
-
-  // Globale samenvatting banner
-  let html='<div style="background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px">'
-    +'<div style="font-size:.65rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🏆 Totaal overzicht — alle avonden</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">'
-    +[{v:alle.length,l:'avonden'},{v:medews.length,l:'medewerkers'},{v:medews.reduce((s,m)=>s+m.totKarren,0),l:'karren'},{v:gemOverall!==null?gemOverall+'%':'—',l:'gem. score'}]
-      .map(x=>'<div><div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;line-height:1">'+x.v+'</div><div style="font-size:.6rem;opacity:.75;margin-top:3px;font-weight:700">'+x.l+'</div></div>').join('')
-    +'</div>'
-  +'</div>';
-
-  // Per medewerker kaart
-  medews.forEach(m=>{
-    const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
-    const kleur=sKleur(gp);
-    const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
-    const barW=gp!==null?Math.min(100,gp):0;
-
-    const rijenHtml=m.rijen.map((r,idx)=>{
-      const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
-      const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
-      const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
-      const verwachtStr=r.verwacht>0?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'
+  const gesorteerd=[...m.rijen].sort((a,b)=>b.datum.localeCompare(a.datum));
+  const rijenHtml=gesorteerd.map(r=>{
+    const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
+    const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
+    const verwStr=r.verwacht>0
+      ?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'
         +'<span style="font-size:.71rem;color:var(--text3)">Verwacht <b style="font-family:var(--mono);color:var(--text)">'+r.verwacht+' min</b></span>'
         +'<span style="font-size:.71rem;color:var(--text3)">Werkelijk <b style="font-family:var(--mono);color:var(--text)">'+(r.werkelijk||'—')+' min</b></span>'
         +'<span style="font-family:var(--mono);font-size:.71rem;font-weight:800;color:'+dKleur(r.diff)+'">'+dTxt(r.diff)+'</span>'
-        +'</div>':'';
-      const notitieStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">📝 '+r.notitie+'</div>':'';
-      return '<div style="border-bottom:1px solid var(--border);padding:9px 0;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:start">'
-        +'<div>'
-          +'<div style="font-weight:700;font-size:.82rem">'+datStr+'</div>'
-          +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px">'
-            +'<span style="font-size:.72rem;color:var(--text3)">🕐 '+r.start+'–'+r.eind+pauzeStr+'</span>'
-            +'<span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'
-            +karStr
-          +'</div>'
-          +verwachtStr
-          +notitieStr
-        +'</div>'
-        +'<div style="text-align:right;flex-shrink:0">'+sBadge(r.pct)+'</div>'
-      +'</div>';
-    }).join('');
+      +'</div>':'';
+    const notStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">📝 '+r.notitie+'</div>':'';
+    return '<div style="border-bottom:1px solid var(--border);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start">'
+      +'<div>'
+        +'<div style="font-weight:700;font-size:.84rem">'+datStr+'</div>'
+        +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px">'
+          +'<span style="font-size:.72rem;color:var(--text3)">🕐 '+r.start+'–'+r.eind+pauzeStr+'</span>'
+          +'<span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'
+          +karStr
+        +'</div>'+verwStr+notStr
+      +'</div>'
+      +'<div>'+sBadge(r.pct)+'</div>'
+    +'</div>';
+  }).join('');
 
-    html+='<div class="card" style="margin-bottom:14px;padding:0;overflow:hidden">'
-      // Header
-      +'<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1.5px solid var(--border)">'
+  c.innerHTML=
+    '<button id="statsTerug" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:7px 14px;font-family:var(--font);font-size:.82rem;font-weight:800;color:var(--text2);cursor:pointer;margin-bottom:16px">'
+      +'← Alle medewerkers'
+    +'</button>'
+    +'<div class="card" style="padding:18px;margin-bottom:14px">'
+      +'<div style="display:flex;gap:14px;align-items:flex-start">'
+        +'<div style="width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0">'+ini+'</div>'
         +'<div style="flex:1;min-width:0">'
-          +'<div style="font-weight:900;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.naam+'</div>'
-          +'<div style="font-size:.72rem;color:var(--text3);margin-top:3px">'+m.rijen.length+' avond'+(m.rijen.length!==1?'en':'')+' · '+m.totUren.toFixed(1)+' uur · '+m.totKarren+' karren</div>'
-          // Score bar
-          +'<div style="margin-top:8px">'
-            +'<div style="display:flex;justify-content:space-between;margin-bottom:3px">'
-              +'<span style="font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score</span>'
-              +'<span style="font-size:.78rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>'
-            +'</div>'
-            +'<div style="height:5px;background:var(--bg2);border-radius:3px;overflow:hidden">'
-              +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:3px;transition:width .4s"></div>'
-            +'</div>'
+          +'<div style="font-weight:900;font-size:1.15rem">'+naam+'</div>'
+          +'<div style="font-size:.73rem;color:var(--text3);margin-top:3px">'+m.rijen.length+' avonden · '+m.totUren.toFixed(1)+' uur · '+m.totKarren+' karren</div>'
+          +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+            +'<span style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score</span>'
+            +'<span style="font-family:var(--mono);font-size:.9rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>'
           +'</div>'
-          // Sparkline
-          +'<div style="margin-top:10px">'+sparkline(m.scores)+'</div>'
-        +'</div>'
-        // Rechter kolom: totaal verschil + record
-        +'<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;flex-shrink:0">'
-          +(totDiff!==null?'<div style="background:'+(totDiff<=0?'var(--green-dim)':'var(--red-dim)')+';border:1.5px solid '+(totDiff<=0?'var(--green)':'var(--red)')+';border-radius:10px;padding:7px 11px;text-align:center">'
-            +'<div style="font-family:var(--mono);font-size:.9rem;font-weight:900;color:'+(totDiff<=0?'var(--green)':'var(--red)')+'">'+dTxt(totDiff)+'</div>'
-            +'<div style="font-size:.6rem;color:var(--text3);font-weight:700;margin-top:1px">totaal</div>'
-          +'</div>':'')
-          +(m.record!==null?'<div style="background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:7px 11px;text-align:center;max-width:90px">'
-            +'<div style="font-size:.62rem;color:#b45309;font-weight:800;text-transform:uppercase;letter-spacing:.3px">🏆 Record</div>'
-            +'<div style="font-size:.72rem;font-weight:800;color:#b45309;margin-top:2px;word-break:break-word">'+m.recordKar+'</div>'
-            +'<div style="font-family:var(--mono);font-size:.7rem;color:#b45309">'+m.recordMin+'/'+m.recordVerwacht+' min</div>'
-          +'</div>':'')
+          +'<div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:12px">'
+            +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:3px;transition:width .5s"></div>'
+          +'</div>'
+          +spark
         +'</div>'
       +'</div>'
-      // Avond rijen
-      +'<div style="padding:0 16px">'+rijenHtml+'</div>'
-      // Footer
-      +'<div style="padding:10px 16px;background:var(--surface2);border-top:1.5px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center">'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;border-top:1.5px solid var(--border);padding-top:14px;text-align:center">'
         +[
           {v:m.totUren.toFixed(1)+'u',l:'uren'},
           {v:m.totKarren,l:'karren'},
-          {v:'<span style="color:'+dKleur(totDiff)+'">'+dTxt(totDiff)+'</span>',l:'verschil'},
-          {v:'<span style="color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>',l:'score'},
-        ].map(x=>'<div><div style="font-family:var(--mono);font-size:.85rem;font-weight:800">'+x.v+'</div><div style="font-size:.6rem;color:var(--text3);font-weight:700;margin-top:1px">'+x.l+'</div></div>').join('')
+          {v:'<span style="color:'+dKleur(totDiff)+'">'+dTxt(totDiff)+'</span>',l:'totaal verschil'},
+          {v:m.snel+'⚡ '+m.opTijd+'✓ '+m.langzaam+'⚠',l:'resultaten'},
+        ].map(x=>'<div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800">'+x.v+'</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:2px">'+x.l+'</div></div>').join('')
       +'</div>'
+      +(m.record!==null?'<div style="margin-top:12px;background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:9px 13px;display:flex;align-items:center;gap:10px">'
+        +'<span style="font-size:1.2rem">🏆</span>'
+        +'<div><div style="font-size:.7rem;font-weight:800;color:#b45309;text-transform:uppercase;letter-spacing:.3px">Persoonlijk record</div>'
+        +'<div style="font-size:.8rem;font-weight:800;color:#b45309;margin-top:1px">'+m.recordKar+' — '+m.recordMin+'/'+m.recordVerwacht+' min</div></div>'
+      +'</div>':'')
+    +'</div>'
+    +'<div class="card" style="padding:16px">'
+      +'<div style="font-weight:900;font-size:.88rem;margin-bottom:2px">Avonden — nieuwste eerst</div>'
+      +'<div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">'+m.rijen.length+' avond'+(m.rijen.length!==1?'en':'')+' in totaal</div>'
+      +'<div>'+rijenHtml+'</div>'
     +'</div>';
-  });
 
-  c.innerHTML=html;
-}
+  document.getElementById('statsTerug').addEventListener('click', renderStatistieken);
+};
 // ── MAANDRAPPORT ──
 window.renderMaandrapport=async()=>{
   const c=document.getElementById('maandContent');
