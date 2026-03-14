@@ -1463,6 +1463,10 @@ window.openMedewerkerDetail=function(naam){
   if(!stats||!stats[naam])return;
   const m=stats[naam];
   const c=document.getElementById('statsContent');
+  // Uitsluitingen: App._uitgesloten = { naam: Set<datum> }
+  if(!App._uitgesloten)App._uitgesloten={};
+  if(!App._uitgesloten[naam])App._uitgesloten[naam]=new Set();
+  const uit=App._uitgesloten[naam];
 
   const sKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
   const sBadge=p=>{
@@ -1473,16 +1477,28 @@ window.openMedewerkerDetail=function(naam){
   };
   const dKleur=d=>d===null?'var(--text3)':d<=0?'var(--green)':'var(--red)';
   const dTxt=d=>d===null?'—':(d<=0?String(d):'+'+d)+' min';
-
-  const gp=m.scores.length?Math.round(m.scores.reduce((a,b)=>a+b,0)/m.scores.length):null;
-  const kleur=sKleur(gp); const barW=gp!==null?Math.min(100,gp):0;
-  const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
   const ini=naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  const gesorteerd=[...m.rijen].sort((a,b)=>b.datum.localeCompare(a.datum));
 
-  // Sparkline
-  const recent=m.scores.filter(p=>p!==null).slice(-10);
-  let spark='<span style="font-size:.7rem;color:var(--text3)">Te weinig data</span>';
-  if(recent.length>=2){
+  function herbereken(){
+    const actief=gesorteerd.filter(r=>!uit.has(r.datum));
+    const scores=actief.map(r=>r.pct).filter(p=>p!==null);
+    const gp=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+    const totUren=actief.reduce((s,r)=>s+r.uren,0);
+    const totKarren=actief.reduce((s,r)=>s+r.karren,0);
+    const totV=actief.reduce((s,r)=>s+(r.verwacht||0),0);
+    const totW=actief.reduce((s,r)=>s+(r.werkelijk||0),0);
+    const totDiff=totV>0&&totW>0?totW-totV:null;
+    const snel=actief.filter(r=>r.pct!==null&&r.pct>=95).length;
+    const goed=actief.filter(r=>r.pct!==null&&r.pct>=80&&r.pct<95).length;
+    const traag=actief.filter(r=>r.pct!==null&&r.pct<80).length;
+    const uitgesloten=uit.size;
+    return{gp,totUren,totKarren,totDiff,snel,goed,traag,uitgesloten,scores};
+  }
+
+  function maakSparkline(scores){
+    const recent=scores.filter(p=>p!==null).slice(-10);
+    if(recent.length<2)return '<span style="font-size:.7rem;color:var(--text3)">Te weinig data</span>';
     const mx=Math.max(...recent,60),mn=Math.min(...recent,40),rng=Math.max(mx-mn,10);
     const W=120,H=36,bw=9,gap=2,tot=recent.length*(bw+gap)-gap,ox=(W-tot)/2;
     let bars='';
@@ -1494,14 +1510,72 @@ window.openMedewerkerDetail=function(naam){
     const first=recent.slice(0,3).reduce((a,b)=>a+b,0)/3;
     const last=recent.slice(-3).reduce((a,b)=>a+b,0)/recent.slice(-3).length;
     const df=Math.round(last-first); const tc=df>3?'#0ea35a':df<-3?'#E2001A':'var(--text3)';
-    spark='<div style="display:flex;align-items:center;gap:8px">'
+    return '<div style="display:flex;align-items:center;gap:8px">'
       +'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible">'+bars+'</svg>'
       +'<span style="font-size:.78rem;font-weight:900;color:'+tc+'">'+(df>3?'↑':df<-3?'↓':'→')+' '+(df>0?'+':'')+df+'%</span>'
     +'</div>';
   }
 
-  const gesorteerd=[...m.rijen].sort((a,b)=>b.datum.localeCompare(a.datum));
+  function updateHeader(stat){
+    const kleur=sKleur(stat.gp);
+    const barW=stat.gp!==null?Math.min(100,stat.gp):0;
+    const el=document.getElementById('detailHeader');
+    if(!el)return;
+    el.innerHTML=
+      '<div style="display:flex;gap:14px;align-items:flex-start">'
+        +'<div style="width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0">'+ini+'</div>'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-weight:900;font-size:1.15rem">'+naam+'</div>'
+          +'<div style="font-size:.73rem;color:var(--text3);margin-top:3px">'
+            +m.rijen.length+' avonden totaal'
+            +(stat.uitgesloten?' · <span style="color:var(--orange);font-weight:800">'+stat.uitgesloten+' uitgesloten</span>':'')
+          +'</div>'
+          +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+            +'<span style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score '+(stat.uitgesloten?'(gefilterd)':'')+'</span>'
+            +'<span style="font-family:var(--mono);font-size:.9rem;font-weight:900;color:'+kleur+'">'+(stat.gp!==null?stat.gp+'%':'—')+'</span>'
+          +'</div>'
+          +'<div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:12px">'
+            +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:3px;transition:width .3s"></div>'
+          +'</div>'
+          +maakSparkline(stat.scores)
+        +'</div>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;border-top:1.5px solid var(--border);padding-top:14px;text-align:center">'
+        +[
+          {v:stat.totUren.toFixed(1)+'u',l:'uren'},
+          {v:stat.totKarren,l:'karren'},
+          {v:'<span style="color:'+dKleur(stat.totDiff)+'">'+dTxt(stat.totDiff)+'</span>',l:'totaal verschil'},
+          {v:stat.snel+'⚡ '+stat.goed+'✓ '+stat.traag+'⚠',l:'resultaten'},
+        ].map(x=>'<div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800">'+x.v+'</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:2px">'+x.l+'</div></div>').join('')
+      +'</div>'
+      +(m.record!==null?'<div style="margin-top:12px;background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:9px 13px;display:flex;align-items:center;gap:10px">'
+        +'<span style="font-size:1.2rem">🏆</span>'
+        +'<div><div style="font-size:.7rem;font-weight:800;color:#b45309;text-transform:uppercase;letter-spacing:.3px">Persoonlijk record</div>'
+        +'<div style="font-size:.8rem;font-weight:800;color:#b45309;margin-top:1px">'+m.recordKar+' — '+m.recordMin+'/'+m.recordVerwacht+' min</div></div>'
+      +'</div>':'');
+  }
+
+  function toggleUitsluiting(datum){
+    if(uit.has(datum))uit.delete(datum);else uit.add(datum);
+    // Update de rij visueel
+    const rij=document.querySelector('[data-datum="'+datum+'"]');
+    if(rij){
+      const uitgesloten=uit.has(datum);
+      rij.style.opacity=uitgesloten?'0.4':'1';
+      const btn=rij.querySelector('.uitsluit-btn');
+      if(btn){
+        btn.textContent=uitgesloten?'Meenemen':'Uitsluiten';
+        btn.style.color=uitgesloten?'var(--green)':'var(--text3)';
+        btn.style.borderColor=uitgesloten?'var(--green)':'var(--border)';
+      }
+      const label=rij.querySelector('.uitsluit-label');
+      if(label)label.style.display=uitgesloten?'inline':'none';
+    }
+    updateHeader(herbereken());
+  }
+
   const rijenHtml=gesorteerd.map(r=>{
+    const uitgesloten=uit.has(r.datum);
     const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
     const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
@@ -1512,60 +1586,52 @@ window.openMedewerkerDetail=function(naam){
         +'<span style="font-family:var(--mono);font-size:.71rem;font-weight:800;color:'+dKleur(r.diff)+'">'+dTxt(r.diff)+'</span>'
       +'</div>':'';
     const notStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">📝 '+r.notitie+'</div>':'';
-    return '<div style="border-bottom:1px solid var(--border);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start">'
+    return '<div data-datum="'+r.datum+'" style="border-bottom:1px solid var(--border);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;opacity:'+(uitgesloten?'0.4':'1')+';transition:opacity .2s">'
       +'<div>'
-        +'<div style="font-weight:700;font-size:.84rem">'+datStr+'</div>'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+          +'<div style="font-weight:700;font-size:.84rem">'+datStr+'</div>'
+          +'<span class="uitsluit-label" style="display:'+(uitgesloten?'inline':'none')+';font-size:.65rem;font-weight:800;color:var(--orange);background:var(--orange-dim);border-radius:4px;padding:1px 6px">Uitgesloten</span>'
+        +'</div>'
         +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px">'
           +'<span style="font-size:.72rem;color:var(--text3)">🕐 '+r.start+'–'+r.eind+pauzeStr+'</span>'
           +'<span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'
           +karStr
         +'</div>'+verwStr+notStr
       +'</div>'
-      +'<div>'+sBadge(r.pct)+'</div>'
+      +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
+        +sBadge(r.pct)
+        +'<button class="uitsluit-btn" data-uitdatum="'+r.datum+'" style="font-size:.68rem;font-weight:800;color:'+(uitgesloten?'var(--green)':'var(--text3)')+';background:transparent;border:1.5px solid '+(uitgesloten?'var(--green)':'var(--border)')+';border-radius:6px;padding:2px 8px;cursor:pointer;font-family:var(--font);white-space:nowrap">'+(uitgesloten?'Meenemen':'Uitsluiten')+'</button>'
+      +'</div>'
     +'</div>';
   }).join('');
 
+  const initStat=herbereken();
   c.innerHTML=
     '<button id="statsTerug" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:7px 14px;font-family:var(--font);font-size:.82rem;font-weight:800;color:var(--text2);cursor:pointer;margin-bottom:16px">'
       +'← Alle medewerkers'
     +'</button>'
-    +'<div class="card" style="padding:18px;margin-bottom:14px">'
-      +'<div style="display:flex;gap:14px;align-items:flex-start">'
-        +'<div style="width:54px;height:54px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:#fff;flex-shrink:0">'+ini+'</div>'
-        +'<div style="flex:1;min-width:0">'
-          +'<div style="font-weight:900;font-size:1.15rem">'+naam+'</div>'
-          +'<div style="font-size:.73rem;color:var(--text3);margin-top:3px">'+m.rijen.length+' avonden · '+m.totUren.toFixed(1)+' uur · '+m.totKarren+' karren</div>'
-          +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-            +'<span style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Gem. score</span>'
-            +'<span style="font-family:var(--mono);font-size:.9rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</span>'
-          +'</div>'
-          +'<div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:12px">'
-            +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:3px;transition:width .5s"></div>'
-          +'</div>'
-          +spark
-        +'</div>'
-      +'</div>'
-      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;border-top:1.5px solid var(--border);padding-top:14px;text-align:center">'
-        +[
-          {v:m.totUren.toFixed(1)+'u',l:'uren'},
-          {v:m.totKarren,l:'karren'},
-          {v:'<span style="color:'+dKleur(totDiff)+'">'+dTxt(totDiff)+'</span>',l:'totaal verschil'},
-          {v:m.snel+'⚡ '+m.opTijd+'✓ '+m.langzaam+'⚠',l:'resultaten'},
-        ].map(x=>'<div><div style="font-family:var(--mono);font-size:.88rem;font-weight:800">'+x.v+'</div><div style="font-size:.62rem;color:var(--text3);font-weight:700;margin-top:2px">'+x.l+'</div></div>').join('')
-      +'</div>'
-      +(m.record!==null?'<div style="margin-top:12px;background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:9px 13px;display:flex;align-items:center;gap:10px">'
-        +'<span style="font-size:1.2rem">🏆</span>'
-        +'<div><div style="font-size:.7rem;font-weight:800;color:#b45309;text-transform:uppercase;letter-spacing:.3px">Persoonlijk record</div>'
-        +'<div style="font-size:.8rem;font-weight:800;color:#b45309;margin-top:1px">'+m.recordKar+' — '+m.recordMin+'/'+m.recordVerwacht+' min</div></div>'
-      +'</div>':'')
-    +'</div>'
+    +'<div class="card" style="padding:18px;margin-bottom:14px"><div id="detailHeader"></div></div>'
     +'<div class="card" style="padding:16px">'
-      +'<div style="font-weight:900;font-size:.88rem;margin-bottom:2px">Avonden — nieuwste eerst</div>'
-      +'<div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">'+m.rijen.length+' avond'+(m.rijen.length!==1?'en':'')+' in totaal</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        +'<div>'
+          +'<div style="font-weight:900;font-size:.88rem">Avonden — nieuwste eerst</div>'
+          +'<div style="font-size:.72rem;color:var(--text3);margin-top:1px">Klik <b>Uitsluiten</b> om een avond buiten de score te houden</div>'
+        +'</div>'
+        +(uit.size>0?'':'')
+      +'</div>'
       +'<div>'+rijenHtml+'</div>'
     +'</div>';
 
-  document.getElementById('statsTerug').addEventListener('click', renderStatistieken);
+  updateHeader(initStat);
+  document.getElementById('statsTerug').addEventListener('click',()=>{
+    delete App._uitgesloten[naam];
+    renderStatistieken();
+  });
+  // Event delegation voor uitsluit-knoppen
+  document.querySelector('#statsContent .card:last-child').addEventListener('click',function(e){
+    const btn=e.target.closest('.uitsluit-btn');
+    if(btn&&btn.dataset.uitdatum)toggleUitsluiting(btn.dataset.uitdatum);
+  });
 };
 // ── MAANDRAPPORT ──
 window.renderMaandrapport=async()=>{
