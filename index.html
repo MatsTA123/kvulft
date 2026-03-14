@@ -1218,10 +1218,10 @@ function syncPoolNaarTeam(pi){const k=App.huidigAvond.karrenPool[pi];(k.personen
 function syncAllePool(){(App.huidigAvond.karrenPool||[]).forEach((_,i)=>syncPoolNaarTeam(i));}
 
 // ── TIMERS ──
-window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;haptic('medium');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
-window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));haptic('success');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
-window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
-window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
+window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;App._dirty=true;haptic('medium');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
+window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));App._dirty=true;haptic('success');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
+window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();App._dirty=true;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
+window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;App._dirty=true;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
 window.resetTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));k.timerStart=null;k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();};
 
 function startTimerInterval(){
@@ -1849,10 +1849,17 @@ window.slaaNieuwMedewOp=async()=>{
         if(!av.fbId)continue;
         let gewijzigd=false;
         (av.team||[]).forEach(lid=>{if(lid.naam===oudeNaam){lid.naam=naam;gewijzigd=true;}});
+        (av.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
         if(gewijzigd){
           await fbSet('avonden/'+av.fbId,av);
           bijgewerkt++;
         }
+      }
+      // Ook het huidig open avond bijwerken zodat de volgende opslaan de nieuwe naam gebruikt
+      if(App.huidigAvond){
+        (App.huidigAvond.team||[]).forEach(lid=>{if(lid.naam===oudeNaam)lid.naam=naam;});
+        (App.huidigAvond.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
+        renderTeam();
       }
       // Wis gecachte berekeningen zodat stats/maandrapport opnieuw laden
       App._statsData=null;
