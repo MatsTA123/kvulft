@@ -1450,9 +1450,9 @@ function renderStatistieken(){
     let html=
       // Banner
       '<div style="background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:14px">'
-        +'<div style="font-size:.65rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">\U0001f3c6 Totaal overzicht \u2014 '+alle.length+' avonden</div>'
+        +'<div style="font-size:.65rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">\🏆 Totaal overzicht — '+alle.length+' avonden</div>'
         +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">'
-        +[{v:alle.length,l:'avonden'},{v:medews.length,l:'medewerkers'},{v:medews.reduce((s,m)=>s+m.totKarren,0),l:'karren'},{v:gemOverall!==null?gemOverall+'%':'\u2014',l:'gem. score'}]
+        +[{v:alle.length,l:'avonden'},{v:medews.length,l:'medewerkers'},{v:medews.reduce((s,m)=>s+m.totKarren,0),l:'karren'},{v:gemOverall!==null?gemOverall+'%':'—',l:'gem. score'}]
           .map(x=>'<div><div style="font-family:var(--mono);font-size:1.35rem;font-weight:700;line-height:1">'+x.v+'</div><div style="font-size:.6rem;opacity:.75;margin-top:3px;font-weight:700">'+x.l+'</div></div>').join('')
         +'</div>'
       +'</div>'
@@ -1470,11 +1470,11 @@ function renderStatistieken(){
       const barW=gp!==null?Math.min(100,gp):0;
       const totDiff=m.totV>0&&m.totW>0?m.totW-m.totV:null;
       const dKleur=totDiff===null?'var(--text3)':totDiff<=0?'var(--green)':'var(--red)';
-      const dTxt=totDiff===null?'\u2014':(totDiff<=0?String(totDiff):'+'+totDiff)+' min';
+      const dTxt=totDiff===null?'—':(totDiff<=0?String(totDiff):'+'+totDiff)+' min';
       const ini=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
       const isTop=gp!==null&&gp===maxScore&&gp>0;
-      const trend=m.scores.length>=4?(()=>{const r=m.scores.slice(-3).reduce((a,b)=>a+b,0)/3-m.scores.slice(0,3).reduce((a,b)=>a+b,0)/3;return r>3?'\u2191':r<-3?'\u2193':'\u2192';})():'\u2192';
-      const trendClr=trend==='\u2191'?'var(--green)':trend==='\u2193'?'var(--red)':'var(--text3)';
+      const trend=m.scores.length>=4?(()=>{const r=m.scores.slice(-3).reduce((a,b)=>a+b,0)/3-m.scores.slice(0,3).reduce((a,b)=>a+b,0)/3;return r>3?'↑':r<-3?'↓':'→';})():'→';
+      const trendClr=trend==='↑'?'var(--green)':trend==='↓'?'var(--red)':'var(--text3)';
 
       // Mini sparkline (10 bars)
       const recent=m.scores.slice(-10);
@@ -1493,12 +1493,12 @@ function renderStatistieken(){
       html+='<div class="stats-card" data-naam="'+m.naam.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;display:grid;grid-template-columns:auto auto 1fr auto auto;gap:12px;align-items:center">'
         // Rank
         +'<div style="font-family:var(--mono);font-weight:900;font-size:'+(rank<3?'1.1rem':'.85rem')+';color:'+(rank===0?'#f59e0b':rank===1?'var(--text3)':rank===2?'#b45309':'var(--border2)')+';">'
-          +(rank===0?'\U0001f947':rank===1?'\U0001f948':rank===2?'\U0001f949':'#'+(rank+1))
+          +(rank===0?'\🥇':rank===1?'\🥈':rank===2?'\🥉':'#'+(rank+1))
         +'</div>'
         // Avatar
         +'<div style="width:40px;height:40px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:#fff;flex-shrink:0;position:relative">'
           +ini
-          +(isTop?'<div style="position:absolute;top:-4px;right:-4px;font-size:.7rem">\U0001f451</div>':'')
+          +(isTop?'<div style="position:absolute;top:-4px;right:-4px;font-size:.7rem">\👑</div>':'')
         +'</div>'
         // Naam + bar + meta
         +'<div style="min-width:0">'
@@ -1507,9 +1507,9 @@ function renderStatistieken(){
             +'<div style="height:100%;width:'+barW+'%;background:'+kleur+';border-radius:2px;transition:width .4s"></div>'
           +'</div>'
           +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
-            +'<span style="font-size:.68rem;color:var(--text3)">\U0001f4c5 '+m.rijen.length+'&nbsp;avonden</span>'
+            +'<span style="font-size:.68rem;color:var(--text3)">\📅 '+m.rijen.length+'&nbsp;avonden</span>'
             +'<span style="font-size:.68rem;color:var(--text3)">⏱ '+m.totUren.toFixed(1)+'u</span>'
-            +'<span style="font-size:.68rem;color:var(--text3)">\U0001f6d2 '+m.totKarren+'&nbsp;karren</span>'
+            +'<span style="font-size:.68rem;color:var(--text3)">\🛒 '+m.totKarren+'&nbsp;karren</span>'
             +'<span style="font-size:.68rem;font-weight:800;color:'+dKleur+'">'+dTxt+'</span>'
           +'</div>'
         +'</div>'
@@ -1520,7 +1520,7 @@ function renderStatistieken(){
         +'</div>'
         // Score
         +'<div style="text-align:right;flex-shrink:0">'
-          +'<div style="font-family:var(--mono);font-size:1.1rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'\u2014')+'</div>'
+          +'<div style="font-family:var(--mono);font-size:1.1rem;font-weight:900;color:'+kleur+'">'+(gp!==null?gp+'%':'—')+'</div>'
           +'<div style="font-size:.62rem;color:var(--text3);margin-top:1px">gem. score</div>'
         +'</div>'
       +'</div>';
@@ -1554,13 +1554,13 @@ window.openMedewerkerDetail=function(naam){
 
   const sKleur=p=>p===null?'var(--text3)':p>=95?'var(--green)':p>=80?'#2563eb':'var(--red)';
   const sBadge=p=>{
-    if(p===null)return '<span style="color:var(--text3);font-size:.78rem">\u2014</span>';
+    if(p===null)return '<span style="color:var(--text3);font-size:.78rem">—</span>';
     const clr=sKleur(p); const rgb=p>=95?'14,163,90':p>=80?'37,99,235':'226,0,26';
-    const lbl=p>=95?'\u26a1 Snel':p>=80?'\u2713 Goed':'\u26a0 Traag';
+    const lbl=p>=95?'⚡ Snel':p>=80?'✓ Goed':'⚠ Traag';
     return '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba('+rgb+',.12);color:'+clr+';border-radius:6px;padding:2px 8px;font-size:.74rem;font-weight:800">'+lbl+' '+p+'%</span>';
   };
   const dKleur=d=>d===null?'var(--text3)':d<=0?'var(--green)':'var(--red)';
-  const dTxt=d=>d===null?'\u2014':(d<=0?String(d):'+'+d)+' min';
+  const dTxt=d=>d===null?'—':(d<=0?String(d):'+'+d)+' min';
   const ini=naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
   const gesorteerd=[...m.rijen].sort((a,b)=>b.datum.localeCompare(a.datum));
 
@@ -1580,63 +1580,150 @@ window.openMedewerkerDetail=function(naam){
     return{gp,totUren,totKarren,totDiff,snel,goed,traag,uitgesloten,scores,actief};
   }
 
-  // Lijndiagram SVG van alle avonden chronologisch
+  // Lijndiagram SVG — interactief met hover tooltip
   function maakLijnDiagram(rijen){
     const met=rijen.filter(r=>r.pct!==null).sort((a,b)=>a.datum.localeCompare(b.datum));
     if(met.length<2)return '<div style="padding:20px;text-align:center;color:var(--text3);font-size:.78rem">Te weinig data voor grafiek (min. 2 avonden met scores)</div>';
-    const W=500,H=140,pad={t:14,r:14,b:28,l:36};
+    const W=500,H=150,pad={t:16,r:16,b:30,l:38};
     const vals=met.map(r=>r.pct);
-    const mx=Math.max(...vals,100),mn=Math.min(...vals,60);
+    const mx=Math.max(...vals,100),mn=Math.min(...vals,55);
     const rng=Math.max(mx-mn,20);
-    const xStep=(W-pad.l-pad.r)/(met.length-1);
+    const xStep=(W-pad.l-pad.r)/(Math.max(met.length-1,1));
     const yPos=v=>pad.t+(1-(v-mn)/rng)*(H-pad.t-pad.b);
     const xPos=i=>pad.l+i*xStep;
+    const gradId='lg_'+naam.replace(/\W/g,'')+'_'+Date.now();
 
-    // Referentielijn 80% en 95%
-    const y80=yPos(80),y95=yPos(95);
+    // Referentielijnen
     let refs='';
-    if(mn<=80&&80<=mx)refs+='<line x1="'+pad.l+'" y1="'+y80.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y80.toFixed(1)+'" stroke="#E2001A" stroke-width="1" stroke-dasharray="4,3" opacity=".4"/>'
-      +'<text x="'+(pad.l-2)+'" y="'+(y80+4).toFixed(1)+'" font-size="8" fill="#E2001A" opacity=".6" text-anchor="end">80%</text>';
-    if(mn<=95&&95<=mx)refs+='<line x1="'+pad.l+'" y1="'+y95.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y95.toFixed(1)+'" stroke="#0ea35a" stroke-width="1" stroke-dasharray="4,3" opacity=".4"/>'
-      +'<text x="'+(pad.l-2)+'" y="'+(y95+4).toFixed(1)+'" font-size="8" fill="#0ea35a" opacity=".6" text-anchor="end">95%</text>';
-
-    // Gradientgebied onder lijn
-    const pathPts=vals.map((v,i)=>xPos(i).toFixed(1)+','+yPos(v).toFixed(1)).join(' ');
-    const areaD='M'+xPos(0).toFixed(1)+','+(H-pad.b)+' L'+pathPts.split(' ').map((p,i)=>(i===0?'L':'')+p).join(' L')+' L'+xPos(vals.length-1).toFixed(1)+','+(H-pad.b)+' Z';
-    const lineD='M'+vals.map((v,i)=>xPos(i).toFixed(1)+','+yPos(v).toFixed(1)).join(' L');
-
-    // Punten + labels
-    let punten='',xlabels='';
-    vals.forEach((v,i)=>{
-      const x=xPos(i),y=yPos(v);
-      const clr=v>=95?'#0ea35a':v>=80?'#2563eb':'#E2001A';
-      punten+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="'+clr+'" stroke="white" stroke-width="1.5"><title>'+met[i].datum+': '+v+'%</title></circle>';
-      // X-labels elke N punten afhankelijk van aantal
-      const step=met.length<=8?1:met.length<=16?2:3;
-      if(i%step===0||i===vals.length-1){
-        const d=new Date(met[i].datum+'T12:00');
-        const lbl=d.toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
-        xlabels+='<text x="'+x.toFixed(1)+'" y="'+(H-4)+'" font-size="8" fill="currentColor" opacity=".5" text-anchor="middle">'+lbl+'</text>';
+    [80,95].forEach(ref=>{
+      if(ref>=mn-5&&ref<=mx+5){
+        const y=yPos(ref);
+        const clr=ref>=95?'#0ea35a':'#E2001A';
+        refs+='<line x1="'+pad.l+'" y1="'+y.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y.toFixed(1)+'" stroke="'+clr+'" stroke-width="1" stroke-dasharray="4,3" opacity=".35"/>'
+          +'<text x="'+(pad.l-3)+'" y="'+(y+4).toFixed(1)+'" font-size="8" fill="'+clr+'" opacity=".6" text-anchor="end">'+ref+'%</text>';
       }
     });
 
     // Y-as ticks
     let yticks='';
-    const tickVals=[mn,Math.round((mn+mx)/2),mx].filter((v,i,a)=>a.indexOf(v)===i);
-    tickVals.forEach(v=>{
+    const step2=Math.max(5,Math.round(rng/4/5)*5);
+    for(let v=Math.ceil(mn/step2)*step2;v<=mx;v+=step2){
       const y=yPos(v);
-      yticks+='<text x="'+(pad.l-4)+'" y="'+(y+4).toFixed(1)+'" font-size="8" fill="currentColor" opacity=".4" text-anchor="end">'+v+'%</text>';
-      yticks+='<line x1="'+pad.l+'" y1="'+y.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y.toFixed(1)+'" stroke="currentColor" opacity=".06" stroke-width="1"/>';
+      yticks+='<line x1="'+pad.l+'" y1="'+y.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y.toFixed(1)+'" stroke="currentColor" opacity=".05" stroke-width="1"/>'
+        +'<text x="'+(pad.l-4)+'" y="'+(y+3.5).toFixed(1)+'" font-size="8" fill="currentColor" opacity=".4" text-anchor="end">'+v+'%</text>';
+    }
+
+    // Gradient area
+    const areaD='M'+xPos(0).toFixed(1)+','+(H-pad.b)
+      +' L'+vals.map((v,i)=>xPos(i).toFixed(1)+','+yPos(v).toFixed(1)).join(' L')
+      +' L'+xPos(vals.length-1).toFixed(1)+','+(H-pad.b)+' Z';
+    const lineD='M'+vals.map((v,i)=>xPos(i).toFixed(1)+','+yPos(v).toFixed(1)).join(' L');
+
+    // X-labels
+    let xlabels='';
+    const labelStep=met.length<=8?1:met.length<=16?2:Math.ceil(met.length/8);
+    vals.forEach((v,i)=>{
+      if(i%labelStep===0||i===vals.length-1){
+        const d=new Date(met[i].datum+'T12:00');
+        const lbl=d.toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+        xlabels+='<text x="'+xPos(i).toFixed(1)+'" y="'+(H-4)+'" font-size="8" fill="currentColor" opacity=".45" text-anchor="middle">'+lbl+'</text>';
+      }
     });
 
-    return '<div style="overflow-x:auto;margin:0 -4px">'
-      +'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible;color:var(--text);min-width:280px;width:100%">'
-        +'<defs><linearGradient id="lg_'+naam.replace(/\W/g,'')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity=".18"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></linearGradient></defs>'
-        +'<path d="'+areaD+'" fill="url(#lg_'+naam.replace(/\W/g,'')+')" />'
-        +refs+yticks
-        +'<path d="'+lineD+'" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
-        +punten+xlabels
-      +'</svg>'
+    // Interactieve punten — grote hitarea + zichtbaar punt
+    let punten='';
+    vals.forEach((v,i)=>{
+      const x=xPos(i).toFixed(2),y=yPos(v).toFixed(2);
+      const clr=v>=95?'#0ea35a':v>=80?'#2563eb':'#E2001A';
+      const d=new Date(met[i].datum+'T12:00');
+      const datStr=d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      const diffStr=met[i].diff!==null?(met[i].diff<=0?met[i].diff:'+'+met[i].diff)+' min':'—';
+      const urenStr=met[i].uren?met[i].uren.toFixed(1)+'u':'—';
+      // Data attributes voor tooltip
+      punten+='<g class="grafiek-punt" data-pct="'+v+'" data-datum="'+datStr+'" data-diff="'+diffStr+'" data-uren="'+urenStr+'" data-clr="'+clr+'" style="cursor:pointer">'
+        +'<circle cx="'+x+'" cy="'+y+'" r="10" fill="transparent"/>'  // grote hitarea
+        +'<circle class="punt-dot" cx="'+x+'" cy="'+y+'" r="4" fill="'+clr+'" stroke="white" stroke-width="1.5" style="transition:r .1s"/>'
+        +'</g>';
+    });
+
+    // Tooltip HTML (buiten SVG)
+    const tooltipHtml='<div id="grafiekTooltip" style="position:absolute;display:none;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:var(--font);box-shadow:0 4px 20px rgba(0,0,0,.15);pointer-events:none;z-index:100;min-width:130px">'
+      +'<div id="gtt-datum" style="font-size:.72rem;font-weight:800;color:var(--text);margin-bottom:4px"></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+        +'<div><div id="gtt-score" style="font-family:var(--mono);font-size:1rem;font-weight:900"></div><div style="font-size:.6rem;color:var(--text3)">score</div></div>'
+        +'<div><div id="gtt-diff" style="font-family:var(--mono);font-size:.82rem;font-weight:800;color:var(--text2)"></div><div style="font-size:.6rem;color:var(--text3)">verschil</div></div>'
+        +'<div><div id="gtt-uren" style="font-family:var(--mono);font-size:.82rem;font-weight:800;color:var(--text2)"></div><div style="font-size:.6rem;color:var(--text3)">uren</div></div>'
+      +'</div>'
+      +'<div id="gtt-bar" style="height:3px;border-radius:2px;margin-top:6px;transition:background .15s"></div>'
+    +'</div>';
+
+    // Crosshair lijn
+    const crosshair='<line id="grafiekCrosshair" x1="0" y1="'+pad.t+'" x2="0" y2="'+(H-pad.b)+'" stroke="var(--text3)" stroke-width="1" stroke-dasharray="3,2" opacity="0" style="pointer-events:none"/>';
+
+    const svg='<svg id="grafiekSvg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="overflow:visible;color:var(--text);min-width:280px;width:100%">'
+      +'<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2563eb" stop-opacity=".2"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></linearGradient></defs>'
+      +crosshair
+      +'<path d="'+areaD+'" fill="url(#'+gradId+')" />'
+      +refs+yticks
+      +'<path d="'+lineD+'" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+      +punten+xlabels
+    +'</svg>';
+
+    // Script voor interactiviteit (wordt geïnjecteerd na render)
+    const scriptId='grafiekScript_'+Date.now();
+    const script='<script id="'+scriptId+'">'
+      +'(function(){'
+        +'const wrap=document.getElementById("detailGrafiek");'
+        +'if(!wrap)return;'
+        +'const tooltip=document.getElementById("grafiekTooltip");'
+        +'const crosshair=document.getElementById("grafiekCrosshair");'
+        +'const svg=document.getElementById("grafiekSvg");'
+        +'if(!tooltip||!svg)return;'
+        +'function showTip(el,e){'
+          +'const pct=el.dataset.pct,datum=el.dataset.datum,diff=el.dataset.diff,uren=el.dataset.uren,clr=el.dataset.clr;'
+          +'document.getElementById("gtt-datum").textContent=datum;'
+          +'document.getElementById("gtt-score").textContent=pct+"%";'
+          +'document.getElementById("gtt-score").style.color=clr;'
+          +'document.getElementById("gtt-diff").textContent=diff;'
+          +'document.getElementById("gtt-bar").style.background=clr;'
+          +'document.getElementById("gtt-uren").textContent=uren;'
+          +'tooltip.style.display="block";'
+          // Highlight punt
+          +'const dot=el.querySelector(".punt-dot");if(dot)dot.setAttribute("r","6");'
+          // Crosshair
+          +'const dot2=el.querySelector("circle:last-child");'
+          +'if(dot2&&crosshair){crosshair.setAttribute("x1",dot2.getAttribute("cx"));crosshair.setAttribute("x2",dot2.getAttribute("cx"));crosshair.setAttribute("opacity",".5");}'
+          +'positionTip(e);'
+        +'}'
+        +'function hideTip(el){'
+          +'tooltip.style.display="none";'
+          +'const dot=el.querySelector(".punt-dot");if(dot)dot.setAttribute("r","4");'
+          +'if(crosshair)crosshair.setAttribute("opacity","0");'
+        +'}'
+        +'function positionTip(e){'
+          +'const wr=wrap.getBoundingClientRect();'
+          +'let left=e.clientX-wr.left+12,top=e.clientY-wr.top-40;'
+          +'const tw=tooltip.offsetWidth||140,th=tooltip.offsetHeight||80;'
+          +'if(left+tw>wr.width-4)left=e.clientX-wr.left-tw-12;'
+          +'if(top<0)top=e.clientY-wr.top+12;'
+          +'tooltip.style.left=left+"px";tooltip.style.top=top+"px";'
+        +'}'
+        +'svg.querySelectorAll(".grafiek-punt").forEach(el=>{'
+          +'el.addEventListener("mouseenter",e=>showTip(el,e));'
+          +'el.addEventListener("mouseleave",()=>hideTip(el));'
+          +'el.addEventListener("mousemove",e=>{if(tooltip.style.display!=="none")positionTip(e);});'
+          // Touch support
+          +'el.addEventListener("touchstart",e=>{e.preventDefault();showTip(el,e.touches[0]);},{ passive:false});'
+          +'el.addEventListener("touchend",()=>setTimeout(()=>hideTip(el),1800));'
+        +'});'
+        +'document.getElementById("'+scriptId+'").remove();'
+      +'})();'
+    +'<\/script>';
+
+    return '<div style="position:relative;overflow:visible">'
+      +tooltipHtml
+      +'<div style="overflow-x:auto;margin:0 -4px">'+svg+'</div>'
+      +script
     +'</div>';
   }
 
@@ -1681,7 +1768,7 @@ window.openMedewerkerDetail=function(naam){
     if(stat.scores.length>=3){
       const avg=stat.scores.reduce((a,b)=>a+b,0)/stat.scores.length;
       const std=Math.sqrt(stat.scores.reduce((s,v)=>s+(v-avg)**2,0)/stat.scores.length);
-      const cons=std<=5?'\U0001f7e2 Zeer consistent':std<=12?'\U0001f7e1 Consistent':'\U0001f534 Wisselvallig';
+      const cons=std<=5?'\🟢 Zeer consistent':std<=12?'\🟡 Consistent':'\🔴 Wisselvallig';
       consistentie='<div style="display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px 9px;font-size:.69rem;font-weight:700;margin-top:6px">'+cons+' <span style="color:var(--text3)">(±'+std.toFixed(0)+'%)</span></div>';
     }
 
@@ -1696,11 +1783,11 @@ window.openMedewerkerDetail=function(naam){
         +'<div style="width:56px;height:56px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.15rem;color:#fff;flex-shrink:0">'+ini+'</div>'
         +'<div style="flex:1;min-width:0">'
           +'<div style="font-weight:900;font-size:1.15rem">'+naam+'</div>'
-          +'<div style="font-size:.73rem;color:var(--text3);margin-top:2px">'+m.rijen.length+' avonden totaal'+(stat.uitgesloten?' \u00b7 <span style="color:var(--orange);font-weight:800">'+stat.uitgesloten+' uitgesloten</span>':'')+'</div>'
+          +'<div style="font-size:.73rem;color:var(--text3);margin-top:2px">'+m.rijen.length+' avonden totaal'+(stat.uitgesloten?' · <span style="color:var(--orange);font-weight:800">'+stat.uitgesloten+' uitgesloten</span>':'')+'</div>'
           +consistentie
         +'</div>'
         +'<div style="text-align:right;flex-shrink:0">'
-          +'<div style="font-family:var(--mono);font-size:1.8rem;font-weight:900;color:'+kleur+';line-height:1">'+(stat.gp!==null?stat.gp+'%':'\u2014')+'</div>'
+          +'<div style="font-family:var(--mono);font-size:1.8rem;font-weight:900;color:'+kleur+';line-height:1">'+(stat.gp!==null?stat.gp+'%':'—')+'</div>'
           +'<div style="font-size:.62rem;color:var(--text3);font-weight:700">'+(stat.uitgesloten?'gefilterd':'gem. score')+'</div>'
         +'</div>'
       +'</div>'
@@ -1733,18 +1820,18 @@ window.openMedewerkerDetail=function(naam){
         +(beste||slechtste?'<div style="flex:1;min-width:160px">'
           +'<div style="font-size:.68rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Uitschieters</div>'
           +(beste?'<div style="background:var(--green-dim);border:1px solid var(--green);border-radius:8px;padding:7px 10px;margin-bottom:6px">'
-            +'<div style="font-size:.65rem;font-weight:800;color:var(--green);\u2605 BESTE AVOND">\u2605 Beste avond</div>'
+            +'<div style="font-size:.65rem;font-weight:800;color:var(--green);★ BESTE AVOND">★ Beste avond</div>'
             +'<div style="font-family:var(--mono);font-size:.78rem;font-weight:800;color:var(--green)">'+beste.pct+'%</div>'
             +'<div style="font-size:.65rem;color:var(--text3)">'+new Date(beste.datum+'T12:00').toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})+'</div>'
           +'</div>':'')
           +(slechtste&&slechtste!==beste?'<div style="background:var(--red-dim);border:1px solid var(--red);border-radius:8px;padding:7px 10px">'
-            +'<div style="font-size:.65rem;font-weight:800;color:var(--red);">\u2193 Slechtste avond</div>'
+            +'<div style="font-size:.65rem;font-weight:800;color:var(--red);">↓ Slechtste avond</div>'
             +'<div style="font-family:var(--mono);font-size:.78rem;font-weight:800;color:var(--red)">'+slechtste.pct+'%</div>'
             +'<div style="font-size:.65rem;color:var(--text3)">'+new Date(slechtste.datum+'T12:00').toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'})+'</div>'
           +'</div>':'')
         +'</div>':'')
         +(m.record!==null?'<div style="background:var(--orange-dim);border:1.5px solid var(--orange);border-radius:10px;padding:9px 13px;display:flex;align-items:center;gap:10px;flex:1;min-width:160px">'
-          +'<span style="font-size:1.3rem">\U0001f3c6</span>'
+          +'<span style="font-size:1.3rem">\🏆</span>'
           +'<div><div style="font-size:.68rem;font-weight:800;color:#b45309;text-transform:uppercase;letter-spacing:.3px">Persoonlijk record</div>'
           +'<div style="font-size:.82rem;font-weight:800;color:#b45309;margin-top:2px">'+m.recordKar+'</div>'
           +'<div style="font-family:var(--mono);font-size:.75rem;color:#b45309">'+m.recordMin+'/'+m.recordVerwacht+' min</div></div>'
@@ -1778,14 +1865,14 @@ window.openMedewerkerDetail=function(naam){
     const u2=uit.has(r.datum);
     const datStr=new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
     const pauzeStr=r.pauze?' ('+r.pauze+' min pauze)':'';
-    const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">\U0001f6d2 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
+    const karStr=r.karren?'<span style="font-size:.72rem;color:var(--text3)">\🛒 '+r.karren+' kar'+(r.karren!==1?'ren':'')+'</span>':'';
     const verwStr=r.verwacht>0
       ?'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">'
         +'<span style="font-size:.71rem;color:var(--text3)">Verwacht <b style="font-family:var(--mono);color:var(--text)">'+r.verwacht+' min</b></span>'
-        +'<span style="font-size:.71rem;color:var(--text3)">Werkelijk <b style="font-family:var(--mono);color:var(--text)">'+(r.werkelijk||'\u2014')+' min</b></span>'
+        +'<span style="font-size:.71rem;color:var(--text3)">Werkelijk <b style="font-family:var(--mono);color:var(--text)">'+(r.werkelijk||'—')+' min</b></span>'
         +'<span style="font-family:var(--mono);font-size:.71rem;font-weight:800;color:'+dKleur(r.diff)+'">'+dTxt(r.diff)+'</span>'
       +'</div>':'';
-    const notStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">\U0001f4dd '+r.notitie+'</div>':'';
+    const notStr=r.notitie?'<div style="font-size:.71rem;color:var(--text3);font-style:italic;margin-top:3px;padding-left:8px;border-left:2px solid var(--red)">\📝 '+r.notitie+'</div>':'';
     return '<div data-datum="'+r.datum+'" style="border-bottom:1px solid var(--border);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;opacity:'+(u2?'0.4':'1')+';transition:opacity .2s">'
       +'<div>'
         +'<div style="display:flex;align-items:center;gap:6px">'
@@ -1793,7 +1880,7 @@ window.openMedewerkerDetail=function(naam){
           +'<span class="uitsluit-label" style="display:'+(u2?'inline':'none')+';font-size:.65rem;font-weight:800;color:var(--orange);background:var(--orange-dim);border-radius:4px;padding:1px 6px">Uitgesloten</span>'
         +'</div>'
         +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:3px">'
-          +'<span style="font-size:.72rem;color:var(--text3)">\U0001f550 '+r.start+'\u2013'+r.eind+pauzeStr+'</span>'
+          +'<span style="font-size:.72rem;color:var(--text3)">\🕐 '+r.start+'–'+r.eind+pauzeStr+'</span>'
           +'<span style="font-family:var(--mono);font-size:.72rem;color:var(--text2)">'+r.uren.toFixed(1)+'u</span>'
           +karStr
         +'</div>'+verwStr+notStr
@@ -1808,20 +1895,20 @@ window.openMedewerkerDetail=function(naam){
   const initStat=herbereken();
   c.innerHTML=
     '<button id="statsTerug" style="display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:7px 14px;font-family:var(--font);font-size:.82rem;font-weight:800;color:var(--text2);cursor:pointer;margin-bottom:16px">'
-      +'\u2190 Alle medewerkers'
+      +'← Alle medewerkers'
     +'</button>'
     // Profiel kaart
     +'<div class="card" style="padding:18px;margin-bottom:12px"><div id="detailHeader"></div></div>'
     // Grafiek kaart
     +'<div class="card" style="padding:16px;margin-bottom:12px">'
-      +'<div style="font-weight:900;font-size:.88rem;margin-bottom:10px">Scoreverloop \u2014 alle avonden</div>'
+      +'<div style="font-weight:900;font-size:.88rem;margin-bottom:10px">Scoreverloop — alle avonden</div>'
       +'<div id="detailGrafiek"></div>'
     +'</div>'
     // Avonden kaart
     +'<div class="card" style="padding:16px">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
         +'<div>'
-          +'<div style="font-weight:900;font-size:.88rem">Avonden \u2014 nieuwste eerst</div>'
+          +'<div style="font-weight:900;font-size:.88rem">Avonden — nieuwste eerst</div>'
           +'<div style="font-size:.72rem;color:var(--text3);margin-top:1px">Klik <b>Uitsluiten</b> om een avond buiten de score te houden</div>'
         +'</div>'
       +'</div>'
