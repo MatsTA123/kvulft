@@ -951,7 +951,9 @@ window.doLogout=async()=>{
   if(App._dirty&&!confirm('Niet-opgeslagen wijzigingen gaan verloren. Toch uitloggen?'))return;
   if(App._timerInterval){clearInterval(App._timerInterval);App._timerInterval=null;}
   if(App._autosaveInterval){clearInterval(App._autosaveInterval);App._autosaveInterval=null;}
+  if(App._liveRefreshInterval){clearInterval(App._liveRefreshInterval);App._liveRefreshInterval=null;}
   App.alarmGegeven=new Set();App._dirty=false;
+  App._statsData=null;App._maandData=null;App._uitgesloten={};App._isSaving=false;
   geefWakeLockVrij();
   document.getElementById('syncWrap').style.display='none';
   await signOut(auth);
@@ -1015,7 +1017,7 @@ async function initSession(uid,acc){
   // Autosave: sla op na 60s inactiviteit als er wijzigingen zijn
   if(App._autosaveInterval)clearInterval(App._autosaveInterval);
   App._autosaveInterval=setInterval(()=>{
-    if(App._dirty&&App.huidigFbId&&navigator.onLine){
+    if(App._dirty&&App.huidigFbId&&navigator.onLine&&!App._isSaving){
       slaOp().catch(()=>{});
     }
   },60000);
@@ -1023,6 +1025,8 @@ async function initSession(uid,acc){
 
 // ── AVOND CRUD ──
 window.slaOp=async()=>{
+  if(App._isSaving)return;
+  App._isSaving=true;
   syncAvondFromForm();
   App.huidigAvond._account=App.uid;App.huidigAvond._filiaal=App.filiaal;
   App.huidigAvond._leider=App.huidigAvond.leidinggevende||App.leiderNaam;
@@ -1037,11 +1041,11 @@ window.slaOp=async()=>{
     const copy={...deepCopy(App.huidigAvond),fbId:App.huidigFbId};
     if(li>=0)App.avonden[li]=copy;else App.avonden.unshift(copy);
     App._statsData=null;App._maandData=null;
-    App._dirty=false;setSyncStatus('ok');renderAvondSelector();haptic('success');
+    App._isSaving=false;App._dirty=false;setSyncStatus('ok');renderAvondSelector();haptic('success');
     const d=new Date(App.huidigAvond.datum);
     document.getElementById('avondTitle').textContent=cap(App.huidigAvond.dag)+' '+d.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
     showToast(navigator.onLine?'✓ Opgeslagen in de cloud!':'💾 Lokaal opgeslagen — sync zodra je online bent');
-  }catch(e){setSyncStatus('fout');showToast('⚠ Fout: '+e.message);haptic('error');}
+  }catch(e){App._isSaving=false;setSyncStatus('fout');showToast('⚠ Fout: '+e.message);haptic('error');}
 };
 
 window.openNieuweAvond=()=>{
@@ -1196,7 +1200,7 @@ window.voegPoolKarToe=()=>{
   App._dirty=true;closeModal('modalPoolKar');renderKarrenPool();showToast('Kar "'+naam+'" toegevoegd');
 };
 window.updatePoolKarVerwacht=(idx,val)=>{App.huidigAvond.karrenPool[idx].verwacht=+val||null;App._dirty=true;syncPoolNaarTeam(idx);renderTeam();};
-window.updatePoolKarWerkelijk=(idx,val)=>{const v=+val||null;App.huidigAvond.karrenPool[idx].werkelijk=v;syncPoolNaarTeam(idx);renderTeam();};
+window.updatePoolKarWerkelijk=(idx,val)=>{const v=+val||null;App.huidigAvond.karrenPool[idx].werkelijk=v;App._dirty=true;syncPoolNaarTeam(idx);renderTeam();};
 window.verwijderPoolKar=idx=>{const kar=App.huidigAvond.karrenPool[idx];(kar.personen||[]).forEach(n=>{const l=App.huidigAvond.team.find(x=>x.naam===n);if(l)l.karten=l.karten.filter(k=>k._poolId!==kar.id);});App.huidigAvond.karrenPool.splice(idx,1);App._dirty=true;renderKarrenPool();renderTeam();};
 window.openKoppelKarModal=idx=>{
   App._poolKarIdx=idx;const kar=App.huidigAvond.karrenPool[idx],hd=kar.personen||[];
@@ -1239,14 +1243,7 @@ function startTimerInterval(){
     if(document.getElementById('tab-live').classList.contains('active'))renderLiveTimers();
   },1000);
 
-  // Auto-refresh Live tab volledig elke 30 seconden (held stats + eindtijd bijwerken)
-  if(App._liveRefreshInterval)clearInterval(App._liveRefreshInterval);
-  App._liveRefreshInterval=setInterval(()=>{
-    if(document.getElementById('tab-live').classList.contains('active')){
-      renderLive();
-    }
-  },30000);
-}
+}  // liveRefreshInterval beheerd via goTab
 
 function fmtSecs(s){return Math.floor(s/60)+'m '+String(s%60).padStart(2,'0')+'s';}
 function speelAlarm(){try{if(!App._audioCtx)App._audioCtx=new(window.AudioContext||window.webkitAudioContext)();const ctx=App._audioCtx;[0,.25,.5].forEach(off=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type='sine';o.frequency.setValueAtTime(880,ctx.currentTime+off);o.frequency.setValueAtTime(1100,ctx.currentTime+off+.08);g.gain.setValueAtTime(.4,ctx.currentTime+off);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+off+.18);o.start(ctx.currentTime+off);o.stop(ctx.currentTime+off+.2);});}catch(e){}}
@@ -1529,12 +1526,10 @@ function renderStatistieken(){
     html+='</div>';
     document.getElementById('statsContent').innerHTML=html;
 
-    // Sorteer knoppen
-    document.querySelectorAll('[data-sort]').forEach(btn=>{
-      btn.addEventListener('click',()=>{App._statsSorteer=btn.dataset.sort;herrender();});
-    });
-    // Kaartjes klikbaar
-    document.getElementById('statsRanking').addEventListener('click',function(e){
+    // Event delegation op statsContent - voorkomt listener ophoping
+    document.getElementById('statsContent').addEventListener('click',function(e){
+      const sortBtn=e.target.closest('[data-sort]');
+      if(sortBtn){App._statsSorteer=sortBtn.dataset.sort;herrender();return;}
       const card=e.target.closest('.stats-card');
       if(card)openMedewerkerDetail(card.dataset.naam);
     });
@@ -1720,11 +1715,7 @@ window.openMedewerkerDetail=function(naam){
       +'})();'
     +'<\/script>';
 
-    return '<div style="position:relative;overflow:visible">'
-      +tooltipHtml
-      +'<div style="overflow-x:auto;margin:0 -4px">'+svg+'</div>'
-      +script
-    +'</div>';
+    return {html:'<div style="position:relative;overflow:visible">'+tooltipHtml+'<div style="overflow-x:auto;margin:0 -4px">'+svg+'</div></div>',puntenData:met.map((r,i)=>({x:parseFloat(xPos(i).toFixed(2)),y:parseFloat(yPos(r.pct).toFixed(2)),pct:r.pct,datum:new Date(r.datum+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'}),diff:r.diff!==null?(r.diff<=0?String(r.diff):'+'+r.diff)+' min':'—',uren:r.uren?r.uren.toFixed(1)+'u':'—',clr:r.pct>=95?'#0ea35a':r.pct>=80?'#2563eb':'#E2001A'}))};
   }
 
   // Donut chart voor snel/goed/traag
@@ -1842,7 +1833,46 @@ window.openMedewerkerDetail=function(naam){
   function updateGrafiek(stat){
     const el=document.getElementById('detailGrafiek');
     if(!el)return;
-    el.innerHTML=maakLijnDiagram(stat.actief);
+    const result=maakLijnDiagram(stat.actief);
+    if(typeof result==='string'){el.innerHTML=result;return;}
+    el.innerHTML=result.html;
+    // Attach interactivity via JS (script in innerHTML doesn't execute)
+    const tooltip=document.getElementById('grafiekTooltip');
+    const crosshair=document.getElementById('grafiekCrosshair');
+    const svgEl=document.getElementById('grafiekSvg');
+    if(!tooltip||!svgEl)return;
+    function showTip(pt,e){
+      document.getElementById('gtt-datum').textContent=pt.datum;
+      const scoreEl=document.getElementById('gtt-score');scoreEl.textContent=pt.pct+'%';scoreEl.style.color=pt.clr;
+      document.getElementById('gtt-diff').textContent=pt.diff;
+      document.getElementById('gtt-uren').textContent=pt.uren;
+      document.getElementById('gtt-bar').style.background=pt.clr;
+      tooltip.style.display='block';
+      if(crosshair){crosshair.setAttribute('x1',pt.x);crosshair.setAttribute('x2',pt.x);crosshair.setAttribute('opacity','.5');}
+      posTip(e);
+    }
+    function hideTip(){
+      tooltip.style.display='none';
+      if(crosshair)crosshair.setAttribute('opacity','0');
+    }
+    function posTip(e){
+      const wr=el.getBoundingClientRect();
+      let left=e.clientX-wr.left+12,top=e.clientY-wr.top-50;
+      const tw=tooltip.offsetWidth||140;
+      if(left+tw>wr.width-4)left=e.clientX-wr.left-tw-12;
+      if(top<0)top=e.clientY-wr.top+12;
+      tooltip.style.left=left+'px';tooltip.style.top=top+'px';
+    }
+    svgEl.querySelectorAll('.grafiek-punt').forEach((g,i)=>{
+      const pt=result.puntenData[i];
+      if(!pt)return;
+      const dot=g.querySelector('.punt-dot');
+      g.addEventListener('mouseenter',e=>{if(dot)dot.setAttribute('r','6');showTip(pt,e);});
+      g.addEventListener('mouseleave',()=>{if(dot)dot.setAttribute('r','4');hideTip();});
+      g.addEventListener('mousemove',e=>{if(tooltip.style.display!=='none')posTip(e);});
+      g.addEventListener('touchstart',e=>{e.preventDefault();if(dot)dot.setAttribute('r','6');showTip(pt,e.touches[0]);},{passive:false});
+      g.addEventListener('touchend',()=>setTimeout(()=>{if(dot)dot.setAttribute('r','4');hideTip();},1800));
+    });
   }
 
   function toggleUitsluiting(datum){
@@ -1917,14 +1947,18 @@ window.openMedewerkerDetail=function(naam){
 
   updateHeader(initStat);
   updateGrafiek(initStat);
-  document.getElementById('statsTerug').addEventListener('click',()=>{
+  // Use onclick to avoid listener accumulation (innerHTML replaces DOM so no actual leak,
+  // but using onclick is cleaner and avoids edge cases)
+  document.getElementById('statsTerug').onclick=()=>{
     delete App._uitgesloten[naam];
     renderStatistieken();
-  });
-  document.querySelector('#statsContent .card:last-child').addEventListener('click',function(e){
+  };
+  // Event delegation for uitsluit buttons on the last card
+  const avondenCard=document.querySelector('#statsContent .card:last-child');
+  if(avondenCard)avondenCard.onclick=function(e){
     const btn=e.target.closest('.uitsluit-btn');
     if(btn&&btn.dataset.uitdatum)toggleUitsluiting(btn.dataset.uitdatum);
-  });
+  };
 };
 // ── MAANDRAPPORT ──
 window.renderMaandrapport=async()=>{
