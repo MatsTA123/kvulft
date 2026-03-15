@@ -119,6 +119,14 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .meer-panel{position:fixed;bottom:0;left:0;right:0;z-index:310;background:var(--surface);border-radius:20px 20px 0 0;border-top:1.5px solid var(--border);padding:20px 16px;padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 16px));display:none;max-height:70vh;overflow-y:auto}
 .meer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .meer-panel-title{font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+/* Header compact on mobile */
+@media(max-width:480px){
+  .sync-txt-hide{display:none}
+  .privacy-hide{display:none!important}
+  .chip-name-hide{display:none}
+  .logo-name{font-size:.88rem}
+  .logo-store{font-size:.58rem;max-width:100px}
+}
 
 /* ─── MAIN LAYOUT ─── */
 main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h) + max(env(safe-area-inset-bottom), 0px) + 20px)}
@@ -493,11 +501,11 @@ textarea{resize:vertical;min-height:58px}
   <div class="header-right">
     <div class="sync-wrap" id="syncWrap">
       <div class="sync-dot" id="syncDot"></div>
-      <span id="syncTxt">Opgeslagen</span>
+      <span id="syncTxt" class="sync-txt-hide">Opgeslagen</span>
     </div>
-    <button class="icon-btn" onclick="toggleDark()">🌙</button>
-    <button class="icon-btn" onclick="openPrivacy()" title="Privacyverklaring">🔒</button>
-    <div class="chip"><div class="chip-av" id="userAv">?</div><span id="userName">—</span></div>
+    <button class="icon-btn privacy-hide" onclick="toggleDark()">🌙</button>
+    <button class="icon-btn privacy-hide" onclick="openPrivacy()" title="Privacyverklaring">🔒</button>
+    <div class="chip"><div class="chip-av" id="userAv">?</div><span id="userName" class="chip-name-hide">—</span></div>
     <button class="icon-btn" onclick="doLogout()">Uit</button>
   </div>
 </header>
@@ -528,18 +536,27 @@ textarea{resize:vertical;min-height:58px}
 </nav>
 <div class="meer-overlay" id="meerOverlay" onclick="closeMeer()"></div>
 <div class="meer-panel" id="meerPanel">
-  <div class="meer-panel-title">Meer opties</div>
-  <div class="meer-grid">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div class="meer-panel-title">Meer opties</div>
+    <button onclick="closeMeer()" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-family:var(--font);font-weight:800;font-size:.8rem;color:var(--text3);cursor:pointer">✕</button>
+  </div>
+  <!-- Avond acties -->
+  <div style="font-size:.62rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Huidige avond</div>
+  <div class="meer-grid" style="margin-bottom:14px">
+    <button class="btn btn-secondary" onclick="closeMeer();openZiekModal(-1)">🤒 Ziek melden</button>
+    <button class="btn btn-secondary" onclick="closeMeer();openSamenvatting()">💬 Delen</button>
+    <button class="btn btn-secondary" onclick="closeMeer();goTab('print')">🖨️ Print PDF</button>
+    <button class="btn btn-orange" onclick="closeMeer();sluitAvondAf()">✅ Afsluiten</button>
+  </div>
+  <!-- Beheer -->
+  <div style="font-size:.62rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Beheer</div>
+  <div class="meer-grid" style="margin-bottom:14px">
     <button class="btn btn-secondary" onclick="closeMeer();goTab('medewerkers')">👤 Medewerkers</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('leiders')">🔑 Leiders</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('history')">📁 Geschiedenis</button>
-    <button class="btn btn-secondary" onclick="closeMeer();goTab('statistieken')">🏆 Stats</button>
     <button class="btn btn-secondary" onclick="closeMeer();goTab('maandrapport')">📅 Maandrapport</button>
-    <button class="btn btn-secondary" onclick="closeMeer();goTab('print')">🖨️ Print PDF</button>
+    <button class="btn btn-secondary" onclick="closeMeer();goTab('statistieken')">🏆 Stats</button>
     <button class="btn btn-secondary" onclick="closeMeer();openPrivacy()">🔒 Privacy</button>
-    <button class="btn btn-secondary" onclick="closeMeer();openSamenvatting()">💬 Delen</button>
-    <button class="btn btn-secondary" onclick="closeMeer();openZiekModal(-1)">🤒 Ziek</button>
-    <button class="btn btn-orange" style="grid-column:span 2" onclick="closeMeer();sluitAvondAf()">✅ Avond afsluiten</button>
   </div>
 </div>
 
@@ -1100,7 +1117,8 @@ function syncAvondFromForm(){
 
 function vulLeiderSelect(){
   const sel=document.getElementById('fLeider'),cur=sel.value||App.huidigAvond.leidinggevende||'';
-  sel.innerHTML='<option value="">— Kies leidinggevende —</option>'+App.leiders.map(l=>`<option value="${l.naam}">${l.naam} — ${l.functie||''}</option>`).join('')+App.medewerkers.filter(m=>!App.leiders.find(l=>l.naam===m.naam)).map(m=>`<option value="${m.naam}">${m.naam}</option>`).join('');
+  // Alleen leiders — geen standaard medewerkers
+  sel.innerHTML='<option value="">— Kies leidinggevende —</option>'+App.leiders.map(l=>`<option value="${l.naam}">${l.naam}${l.functie?' — '+l.functie:''}</option>`).join('');
   if(cur)sel.value=cur;
 }
 
@@ -1120,8 +1138,8 @@ function renderTeam(){
 }
 
 window.openAddLidModal=()=>{
-  const alle=[...App.medewerkers,...App.leiders.filter(l=>!App.medewerkers.find(m=>m.naam===l.naam))];
-  document.getElementById('addLidSel').innerHTML='<option value="">— Kies medewerker —</option>'+alle.map(m=>`<option value="${m.naam}">${m.naam}${m.functie?' ('+m.functie+')':''}</option>`).join('')+'<option value="__nieuw__">+ Handmatig invoeren…</option>';
+  // Alleen medewerkers — leiders worden apart beheerd via 'wie is de leidinggevende'
+  document.getElementById('addLidSel').innerHTML='<option value="">— Kies medewerker —</option>'+App.medewerkers.map(m=>`<option value="${m.naam}">${m.naam}${m.functie?' ('+m.functie+')':''}</option>`).join('')+'<option value="__nieuw__">+ Handmatig invoeren…</option>';
   document.getElementById('addLidNotitie').value='';openModal('modalAddLid');
 };
 window.voegLidToe=()=>{
