@@ -347,7 +347,7 @@ textarea{resize:vertical;min-height:58px}
 /* ─── MODAL ─── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--red);border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:520px;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1);max-height:92vh;overflow-y:auto}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--red);border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:520px;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1);max-height:92vh;max-height:92dvh;overflow-y:auto}
 .modal-overlay.open .modal{transform:translateY(0)}
 @media(min-width:600px){.modal{border-radius:var(--radius-lg);transform:translateY(20px)}.modal-overlay{align-items:center}.modal-overlay.open .modal{transform:translateY(0)}}
 .modal-title{font-weight:900;font-size:1.1rem;margin-bottom:16px;color:var(--red)}
@@ -884,7 +884,7 @@ function updateOfflineBanner(){
   let b=document.getElementById('offlineBanner');
   if(!b){
     b=document.createElement('div');b.id='offlineBanner';
-    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:#1a1a1a;color:#fff;font-family:var(--font);font-size:.75rem;font-weight:700;padding:0;display:none;flex-direction:column;align-items:stretch';
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9000;background:#1a1a1a;color:#fff;font-family:var(--font);font-size:.75rem;font-weight:700;padding-top:max(env(safe-area-inset-top,0px),0px);display:none;flex-direction:column;align-items:stretch';
     document.body.appendChild(b);
   }
   if(!navigator.onLine){
