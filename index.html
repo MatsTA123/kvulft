@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
@@ -6,10 +7,12 @@
 <title>Vulploeg Manager — Kruidvat</title>
 
 <!-- ── Favicon ── -->
+
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23E2001A'/><text x='16' y='22' font-family='Arial Black,sans-serif' font-size='16' font-weight='900' fill='white' text-anchor='middle'>KV</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23E2001A'/><text x='90' y='125' font-family='Arial Black,sans-serif' font-size='80' font-weight='900' fill='white' text-anchor='middle'>KV</text></svg>">
 
 <!-- ── PWA / webapp meta ── -->
+
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +20,9 @@
 <meta name="theme-color" content="#E2001A">
 
 <!-- ── Dark mode flicker fix — laad voorkeur vóór render ── -->
+
 <script>if(localStorage.getItem('kv_dark')==='1')document.documentElement.classList.add('dark-early')</script>
+
 <style>html.dark-early body{background:#0f0f0f;color:#f0f0f0}</style>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,35 +61,35 @@ input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
 /* ─── LOADING ─── */
-#loadingScreen{position:fixed;inset:0;z-index:9999;background:var(--red);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#loadingScreen{position:fixed;inset:0;z-index:9999;background:var(–red);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .loading-logo{font-weight:900;font-size:2rem;color:#fff;letter-spacing:2px}
 .loading-sub{color:rgba(255,255,255,.7);font-size:.85rem;font-weight:600}
 .spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ─── AUTH ─── */
-#authScreen{position:fixed;inset:0;z-index:998;background:var(--red);display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
-.auth-box{background:var(--surface);border-radius:20px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.22);animation:up .35s cubic-bezier(.16,1,.3,1)}
+#authScreen{position:fixed;inset:0;z-index:998;background:var(–red);display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
+.auth-box{background:var(–surface);border-radius:20px;padding:32px 28px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.22);animation:up .35s cubic-bezier(.16,1,.3,1)}
 @keyframes up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.auth-tabs{display:flex;background:var(--surface2);border-radius:10px;padding:3px;margin-bottom:22px;gap:3px}
-.auth-tab{flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:var(--font);font-weight:800;font-size:.82rem;color:var(--text3);cursor:pointer;transition:all .15s}
-.auth-tab.active{background:var(--surface);color:var(--red);box-shadow:0 1px 4px rgba(0,0,0,.1)}
-.auth-logo{font-weight:900;font-size:1.6rem;color:var(--red);margin-bottom:4px;text-align:center}
-.auth-logo-sub{font-size:.75rem;color:var(--text3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;text-align:center}
-.auth-field{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:10px;background:var(--surface2);color:var(--text);font-weight:700;font-size:.92rem;margin-bottom:10px;outline:none;transition:border .2s;display:block}
-.auth-field:focus{border-color:var(--red);background:var(--surface)}
-.auth-btn{width:100%;padding:13px;border-radius:10px;border:none;background:var(--red);color:#fff;font-family:var(--font);font-weight:900;font-size:.95rem;cursor:pointer;margin-bottom:14px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
-.auth-btn:hover{background:var(--red-dark)}
+.auth-tabs{display:flex;background:var(–surface2);border-radius:10px;padding:3px;margin-bottom:22px;gap:3px}
+.auth-tab{flex:1;padding:8px;border-radius:7px;border:none;background:none;font-family:var(–font);font-weight:800;font-size:.82rem;color:var(–text3);cursor:pointer;transition:all .15s}
+.auth-tab.active{background:var(–surface);color:var(–red);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.auth-logo{font-weight:900;font-size:1.6rem;color:var(–red);margin-bottom:4px;text-align:center}
+.auth-logo-sub{font-size:.75rem;color:var(–text3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;text-align:center}
+.auth-field{width:100%;padding:12px 16px;border:2px solid var(–border);border-radius:10px;background:var(–surface2);color:var(–text);font-weight:700;font-size:.92rem;margin-bottom:10px;outline:none;transition:border .2s;display:block}
+.auth-field:focus{border-color:var(–red);background:var(–surface)}
+.auth-btn{width:100%;padding:13px;border-radius:10px;border:none;background:var(–red);color:#fff;font-family:var(–font);font-weight:900;font-size:.95rem;cursor:pointer;margin-bottom:14px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.auth-btn:hover{background:var(–red-dark)}
 .auth-btn:disabled{opacity:.6;cursor:not-allowed}
-.auth-err{color:var(--red);font-size:.82rem;font-weight:700;margin-bottom:10px;display:none;padding:10px 14px;background:var(--red-dim);border-radius:8px;border:1px solid rgba(226,0,26,.2)}
-.auth-ok{color:var(--green);font-size:.82rem;font-weight:700;margin-bottom:10px;display:none;padding:10px 14px;background:var(--green-dim);border-radius:8px}
-.auth-hint{font-size:.75rem;color:var(--text2);margin-bottom:14px;background:var(--surface2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);line-height:1.5}
-.auth-hint strong{color:var(--text)}
-.auth-link{font-size:.78rem;color:var(--text3);font-weight:700;text-align:center;cursor:pointer;margin-top:-6px;margin-bottom:14px;display:block}
-.auth-link:hover{color:var(--red)}
+.auth-err{color:var(–red);font-size:.82rem;font-weight:700;margin-bottom:10px;display:none;padding:10px 14px;background:var(–red-dim);border-radius:8px;border:1px solid rgba(226,0,26,.2)}
+.auth-ok{color:var(–green);font-size:.82rem;font-weight:700;margin-bottom:10px;display:none;padding:10px 14px;background:var(–green-dim);border-radius:8px}
+.auth-hint{font-size:.75rem;color:var(–text2);margin-bottom:14px;background:var(–surface2);border-radius:8px;padding:10px 12px;border:1px solid var(–border);line-height:1.5}
+.auth-hint strong{color:var(–text)}
+.auth-link{font-size:.78rem;color:var(–text3);font-weight:700;text-align:center;cursor:pointer;margin-top:-6px;margin-bottom:14px;display:block}
+.auth-link:hover{color:var(–red)}
 
 /* ─── HEADER ─── */
-.app-header{position:sticky;top:0;z-index:200;height:var(--header-h);background:var(--red);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 12px rgba(226,0,26,.3)}
+.app-header{position:sticky;top:0;z-index:200;height:var(–header-h);background:var(–red);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 12px rgba(226,0,26,.3)}
 .logo{display:flex;align-items:center;gap:10px;color:#fff;min-width:0}
 .logo-mark{width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;flex-shrink:0}
 .logo-name{font-weight:800;font-size:1rem;white-space:nowrap}
@@ -92,237 +97,239 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .sync-wrap{display:none;align-items:center;gap:5px;font-size:.7rem;color:rgba(255,255,255,.8);font-weight:700}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
-.sync-dot.bezig{background:var(--orange);animation:blink 1s infinite}
+.sync-dot.bezig{background:var(–orange);animation:blink 1s infinite}
 .sync-dot.fout{background:#f87171}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 .icon-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 10px;color:#fff;font-size:.8rem;font-weight:700;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .icon-btn:hover{background:rgba(255,255,255,.25)}
 .chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 10px;font-size:.78rem;font-weight:700;color:#fff;display:inline-flex;align-items:center;gap:5px;max-width:110px}
 .chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.chip-av{width:22px;height:22px;border-radius:50%;background:#fff;color:var(--red);font-size:.65rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chip-av{width:22px;height:22px;border-radius:50%;background:#fff;color:var(–red);font-size:.65rem;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* ─── DESKTOP TABS ─── */
-.tab-bar{position:sticky;top:var(--header-h);z-index:190;background:var(--surface);border-bottom:2px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none}
+.tab-bar{position:sticky;top:var(–header-h);z-index:190;background:var(–surface);border-bottom:2px solid var(–border);display:flex;overflow-x:auto;scrollbar-width:none}
 .tab-bar::-webkit-scrollbar{display:none}
-.tab-btn{flex-shrink:0;font-family:var(--font);font-weight:700;font-size:.82rem;padding:0 18px;height:48px;background:none;border:none;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s}
-.tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
+.tab-btn{flex-shrink:0;font-family:var(–font);font-weight:700;font-size:.82rem;padding:0 18px;height:48px;background:none;border:none;color:var(–text2);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color .15s}
+.tab-btn.active{color:var(–red);border-bottom-color:var(–red)}
 @media(max-width:640px){.tab-bar{display:none}}
 
 /* ─── MOBILE BOTTOM NAV ─── */
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1.5px solid var(--border);z-index:200;padding-bottom:max(env(safe-area-inset-bottom), 4px)}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(–surface);border-top:1.5px solid var(–border);z-index:200;padding-bottom:max(env(safe-area-inset-bottom), 4px)}
 @media(max-width:640px){.bottom-nav{display:block}}
 .bnav-inner{display:flex;justify-content:space-around}
-.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 2px 8px;background:none;border:none;font-size:.55rem;font-weight:800;color:var(--text3);gap:3px;border-top:2.5px solid transparent;min-height:54px;min-width:0}
-.bnav-btn.active{color:var(--red);border-top-color:var(--red)}
+.bnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 2px 8px;background:none;border:none;font-size:.55rem;font-weight:800;color:var(–text3);gap:3px;border-top:2.5px solid transparent;min-height:54px;min-width:0}
+.bnav-btn.active{color:var(–red);border-top-color:var(–red)}
 .bnav-icon{font-size:1.2rem;line-height:1}
 .meer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:none;backdrop-filter:blur(2px)}
-.meer-panel{position:fixed;bottom:0;left:0;right:0;z-index:310;background:var(--surface);border-radius:20px 20px 0 0;border-top:1.5px solid var(--border);padding:20px 16px;padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 16px));display:none;max-height:70vh;overflow-y:auto}
+.meer-panel{position:fixed;bottom:0;left:0;right:0;z-index:310;background:var(–surface);border-radius:20px 20px 0 0;border-top:1.5px solid var(–border);padding:20px 16px;padding-bottom:max(20px, calc(env(safe-area-inset-bottom) + 16px));display:none;max-height:70vh;overflow-y:auto}
 .meer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.meer-panel-title{font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.meer-panel-title{font-size:.72rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px}
 /* Header compact on mobile */
 @media(max-width:480px){
-  .sync-txt-hide{display:none}
-  .privacy-hide{display:none!important}
-  .chip-name-hide{display:none}
-  .logo-name{font-size:.88rem}
-  .logo-store{font-size:.58rem;max-width:100px}
+.sync-txt-hide{display:none}
+.privacy-hide{display:none!important}
+.chip-name-hide{display:none}
+.logo-name{font-size:.88rem}
+.logo-store{font-size:.58rem;max-width:100px}
+.avond-btn-hide{display:none!important}
+.section-head{flex-wrap:nowrap}
 }
 
 /* ─── MAIN LAYOUT ─── */
-main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(--nav-h) + max(env(safe-area-inset-bottom), 0px) + 20px)}
+main{max-width:1120px;margin:0 auto;padding:16px;padding-bottom:calc(var(–nav-h) + max(env(safe-area-inset-bottom), 0px) + 20px)}
 @media(min-width:641px){main{padding-bottom:24px}}
 .tab-panel{display:none}.tab-panel.active{display:block;animation:fadein .18s ease}
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ─── TYPOGRAPHY ─── */
 .page-title{font-weight:900;font-size:1.25rem;line-height:1.2;word-break:break-word;min-width:0}
-.page-title span{color:var(--red)}
-.page-sub{color:var(--text3);font-size:.75rem;margin-top:3px;font-weight:600;line-height:1.4}
+.page-title span{color:var(–red)}
+.page-sub{color:var(–text3);font-size:.75rem;margin-top:3px;font-weight:600;line-height:1.4}
 .section-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:10px;flex-wrap:wrap}
 .section-head>div:first-child{flex:1;min-width:0;overflow:hidden}
 .section-head .btn-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex-shrink:0}
 .card-title{font-weight:800;font-size:.92rem;margin-bottom:14px;word-break:break-word}
 
 /* ─── CARD ─── */
-.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:16px;margin-bottom:14px;box-shadow:var(–shadow)}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:8px;flex-wrap:wrap;min-width:0}
 .card-header>*:first-child{flex:1;min-width:0}
 
 /* ─── FORMS ─── */
 .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:10px}
 .form-group{display:flex;flex-direction:column;gap:5px}
-label{font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
-input,select,textarea{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:.9rem;outline:none;transition:border-color .15s;width:100%}
-input:focus,select:focus,textarea:focus{border-color:var(--red);background:var(--surface)}
-input::placeholder,textarea::placeholder{color:var(--text3)}
+label{font-size:.72rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{background:var(–surface2);border:1.5px solid var(–border);border-radius:8px;padding:10px 12px;color:var(–text);font-size:.9rem;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(–red);background:var(–surface)}
+input::placeholder,textarea::placeholder{color:var(–text3)}
 textarea{resize:vertical;min-height:58px}
 
 /* ─── BUTTONS ─── */
-.btn{font-family:var(--font);font-weight:800;font-size:.82rem;padding:10px 16px;border-radius:8px;border:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;cursor:pointer}
-.btn-primary{background:var(--red);color:#fff}.btn-primary:hover{background:var(--red-dark)}
-.btn-secondary{background:var(--surface);color:var(--text);border:1.5px solid var(--border)}.btn-secondary:hover{border-color:var(--red);color:var(--red)}
-.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border)}.btn-ghost:hover{border-color:var(--border2)}
-.btn-danger{background:transparent;color:var(--red);border:1.5px solid var(--red)}.btn-danger:hover{background:var(--red);color:#fff}
-.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#0b8a4c}
-.btn-orange{background:var(--orange);color:#fff}
+.btn{font-family:var(–font);font-weight:800;font-size:.82rem;padding:10px 16px;border-radius:8px;border:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;cursor:pointer}
+.btn-primary{background:var(–red);color:#fff}.btn-primary:hover{background:var(–red-dark)}
+.btn-secondary{background:var(–surface);color:var(–text);border:1.5px solid var(–border)}.btn-secondary:hover{border-color:var(–red);color:var(–red)}
+.btn-ghost{background:transparent;color:var(–text2);border:1.5px solid var(–border)}.btn-ghost:hover{border-color:var(–border2)}
+.btn-danger{background:transparent;color:var(–red);border:1.5px solid var(–red)}.btn-danger:hover{background:var(–red);color:#fff}
+.btn-green{background:var(–green);color:#fff}.btn-green:hover{background:#0b8a4c}
+.btn-orange{background:var(–orange);color:#fff}
 .btn-sm{padding:7px 12px;font-size:.76rem}
 .btn-xs{padding:4px 9px;font-size:.7rem}
 
 /* ─── BADGES ─── */
 .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:800}
-.badge-ok{background:var(--green-dim);color:var(--green)}
-.badge-snel{background:var(--orange-dim);color:#b45309}
-.badge-langzaam{background:var(--red-dim);color:var(--red)}
-.badge-bezig{background:var(--bg2);color:var(--text3);border:1px solid var(--border)}
-.tag{display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;font-size:.72rem;font-family:var(--mono);color:var(--text3)}
+.badge-ok{background:var(–green-dim);color:var(–green)}
+.badge-snel{background:var(–orange-dim);color:#b45309}
+.badge-langzaam{background:var(–red-dim);color:var(–red)}
+.badge-bezig{background:var(–bg2);color:var(–text3);border:1px solid var(–border)}
+.tag{display:inline-block;background:var(–surface2);border:1px solid var(–border);border-radius:6px;padding:2px 7px;font-size:.72rem;font-family:var(–mono);color:var(–text3)}
 .ziek-badge{background:#fff3e0;border:1px solid #ff9800;color:#e65100;border-radius:6px;padding:1px 7px;font-size:.7rem;font-weight:800;margin-left:5px}
-.vervang-badge{background:var(--green-dim);border:1px solid var(--green);color:var(--green);border-radius:6px;padding:1px 7px;font-size:.7rem;font-weight:800;margin-left:4px}
+.vervang-badge{background:var(–green-dim);border:1px solid var(–green);color:var(–green);border-radius:6px;padding:1px 7px;font-size:.7rem;font-weight:800;margin-left:4px}
 
 /* ─── PROGRESS ─── */
-.progress-bg{background:var(--bg2);border-radius:4px;height:7px;overflow:hidden}
+.progress-bg{background:var(–bg2);border-radius:4px;height:7px;overflow:hidden}
 .progress-fill{height:100%;border-radius:4px;transition:width .4s}
-.fill-green{background:var(--green)}.fill-orange{background:var(--orange)}.fill-red{background:var(--red)}
-.vg-bg{background:var(--bg2);border-radius:3px;height:4px;overflow:hidden;margin-top:4px}
+.fill-green{background:var(–green)}.fill-orange{background:var(–orange)}.fill-red{background:var(–red)}
+.vg-bg{background:var(–bg2);border-radius:3px;height:4px;overflow:hidden;margin-top:4px}
 .vg-fill{height:100%;border-radius:3px;transition:width .4s}
 
 /* ─── STATS ─── */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px}
-.stat-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px}
-.stat-val{font-weight:900;font-size:1.7rem;line-height:1;font-family:var(--mono)}
-.stat-label{font-size:.7rem;color:var(--text3);margin-top:5px;font-weight:700}
+.stat-card{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:14px}
+.stat-val{font-weight:900;font-size:1.7rem;line-height:1;font-family:var(–mono)}
+.stat-label{font-size:.7rem;color:var(–text3);margin-top:5px;font-weight:700}
 
 /* ─── AVOND SELECTOR ─── */
 .avond-selector{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
 .avond-selector::-webkit-scrollbar{display:none}
-.avond-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px;cursor:pointer;transition:all .18s;min-width:100px;flex-shrink:0}
-.avond-card:hover{border-color:var(--red)}
-.avond-card.active{border-color:var(--red);background:var(--red-dim)}
+.avond-card{background:var(–surface);border:2px solid var(–border);border-radius:var(–radius-lg);padding:10px 14px;cursor:pointer;transition:all .18s;min-width:100px;flex-shrink:0}
+.avond-card:hover{border-color:var(–red)}
+.avond-card.active{border-color:var(–red);background:var(–red-dim)}
 .avond-dag{font-weight:900;font-size:.85rem}
-.avond-datum{font-family:var(--mono);font-size:.62rem;color:var(--text3);margin-top:2px}
-.avond-colli{display:inline-block;margin-top:5px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:1px 7px;font-size:.66rem;color:var(--text3);font-weight:700}
-.afgesloten-banner{background:var(--green-dim);border:1.5px solid var(--green);border-radius:var(--radius);padding:10px 16px;font-size:.84rem;color:var(--green);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.avond-datum{font-family:var(–mono);font-size:.62rem;color:var(–text3);margin-top:2px}
+.avond-colli{display:inline-block;margin-top:5px;background:var(–bg2);border:1px solid var(–border);border-radius:20px;padding:1px 7px;font-size:.66rem;color:var(–text3);font-weight:700}
+.afgesloten-banner{background:var(–green-dim);border:1.5px solid var(–green);border-radius:var(–radius);padding:10px 16px;font-size:.84rem;color:var(–green);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
 /* ─── COLLI CARD ─── */
-.colli-card{background:var(--red);color:#fff;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:14px;box-shadow:0 4px 20px rgba(226,0,26,.25)}
+.colli-card{background:var(–red);color:#fff;border-radius:var(–radius-lg);padding:16px 18px;margin-bottom:14px;box-shadow:0 4px 20px rgba(226,0,26,.25)}
 .colli-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .colli-info{flex:1;min-width:0}
 .colli-label{font-size:.66rem;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
-.colli-num-display{font-family:var(--mono);font-size:2rem;font-weight:700;line-height:1}
+.colli-num-display{font-family:var(–mono);font-size:2rem;font-weight:700;line-height:1}
 .colli-sub{font-size:.72rem;opacity:.75;margin-top:2px}
 .colli-progress{height:5px;background:rgba(255,255,255,.2);border-radius:3px;margin-top:12px;overflow:hidden}
 .colli-fill{height:100%;background:#fff;border-radius:3px;transition:width .3s}
 .colli-input-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.colli-direct-input{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);border-radius:10px;color:#fff;font-family:var(--mono);font-size:1.5rem;font-weight:700;text-align:center;padding:8px 12px;width:120px;outline:none;transition:all .15s}
+.colli-direct-input{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.4);border-radius:10px;color:#fff;font-family:var(–mono);font-size:1.5rem;font-weight:700;text-align:center;padding:8px 12px;width:120px;outline:none;transition:all .15s}
 .colli-direct-input:focus{background:rgba(255,255,255,.25);border-color:#fff}
 .colli-direct-input::placeholder{color:rgba(255,255,255,.5)}
 .colli-step-btns{display:flex;flex-direction:column;gap:4px}
-.colli-step-btn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);border-radius:7px;color:#fff;font-size:.85rem;font-weight:800;width:44px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(--mono)}
+.colli-step-btn{background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);border-radius:7px;color:#fff;font-size:.85rem;font-weight:800;width:44px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:var(–mono)}
 .colli-step-btn:active{transform:scale(.9);background:rgba(255,255,255,.35)}
 .colli-quick-btns{display:flex;gap:6px;flex-wrap:wrap}
-.colli-quick-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:rgba(255,255,255,.9);font-size:.68rem;font-weight:800;padding:5px 10px;cursor:pointer;font-family:var(--mono);transition:all .12s}
+.colli-quick-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:rgba(255,255,255,.9);font-size:.68rem;font-weight:800;padding:5px 10px;cursor:pointer;font-family:var(–mono);transition:all .12s}
 .colli-quick-btn:active{background:rgba(255,255,255,.3)}
 
 /* ─── EINDTIJD ─── */
-.eindtijd-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--surface);border:1.5px solid var(--border);border-left:4px solid var(--green);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px}
-.eindtijd-time{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--green)}
-.eindtijd-label{font-size:.7rem;color:var(--text3);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.eindtijd-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(–surface);border:1.5px solid var(–border);border-left:4px solid var(–green);border-radius:var(–radius);padding:12px 16px;margin-bottom:14px}
+.eindtijd-time{font-family:var(–mono);font-size:1.4rem;font-weight:700;color:var(–green)}
+.eindtijd-label{font-size:.7rem;color:var(–text3);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
 
 /* ─── TEAM CARDS ─── */
 .team-list{display:flex;flex-direction:column;gap:10px}
-.member-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.member-card{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);overflow:hidden}
 .member-card.ziek{border-color:#ff9800}
 .member-main{padding:14px 16px}
 .member-name{font-weight:900;font-size:.95rem;word-break:break-word}
 .member-meta{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;align-items:center;min-width:0}
-.member-note{font-size:.75rem;color:var(--text3);font-style:italic;border-left:2px solid var(--red);padding:2px 8px;margin-top:6px;background:var(--red-dim);border-radius:0 4px 4px 0}
+.member-note{font-size:.75rem;color:var(–text3);font-style:italic;border-left:2px solid var(–red);padding:2px 8px;margin-top:6px;background:var(–red-dim);border-radius:0 4px 4px 0}
 .member-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-.stat-mini-label{font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.stat-mini-val{font-family:var(--mono);font-size:.85rem;font-weight:600;color:var(--red)}
+.stat-mini-label{font-size:.65rem;color:var(–text3);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.stat-mini-val{font-family:var(–mono);font-size:.85rem;font-weight:600;color:var(–red)}
 .member-actions-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.karten-section{border-top:1.5px solid var(--border);padding:12px 16px;background:var(--surface2)}
+.karten-section{border-top:1.5px solid var(–border);padding:12px 16px;background:var(–surface2)}
 .kar-list{display:flex;flex-direction:column;gap:6px}
-.kar-row{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px}
+.kar-row{background:var(–surface);border:1.5px solid var(–border);border-radius:8px;padding:10px 12px}
 .kar-row-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px}
 .kar-row-bottom{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px}
 .kar-name{font-weight:800;font-size:.85rem}
 
 /* ─── KARREN POOL ─── */
 .pool-list{display:flex;flex-direction:column;gap:8px}
-.pool-row{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
-.pool-row.gekoppeld{border-color:var(--green)}
+.pool-row{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:14px 16px}
+.pool-row.gekoppeld{border-color:var(–green)}
 .pool-row-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
 .pool-row-bottom{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .pool-naam{font-weight:800;font-size:.9rem;word-break:break-word}
-.timer-start{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
-.timer-stop{background:var(--red);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer;animation:pulse 1.5s infinite}
-.timer-pauze{background:var(--orange);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
-.timer-hervat{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(--font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.timer-start{background:var(–green);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(–font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.timer-stop{background:var(–red);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(–font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer;animation:pulse 1.5s infinite}
+.timer-pauze{background:var(–orange);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(–font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
+.timer-hervat{background:var(–blue);color:#fff;border:none;border-radius:7px;padding:8px 13px;font-family:var(–font);font-weight:800;font-size:.78rem;display:inline-flex;align-items:center;gap:4px;cursor:pointer}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(226,0,26,.4)}50%{box-shadow:0 0 0 6px rgba(226,0,26,0)}}
-.timer-display{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--red)}
+.timer-display{font-family:var(–mono);font-size:.82rem;font-weight:700;color:var(–red)}
 .timer-display.over{animation:pulse 1s infinite}
 .overschrijding{background:#fff3e0;border:1px solid #ff9800;color:#e65100;border-radius:6px;padding:2px 7px;font-size:.7rem;font-weight:800;display:inline-flex;align-items:center;gap:3px}
 
 /* ─── LIVE TAB ─── */
-.live-hero{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;margin-bottom:12px}
-.live-hero-val{font-family:var(--mono);font-size:1.8rem;font-weight:700;line-height:1}
-.live-hero-label{font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:5px}
-.live-hero-sub{font-size:.72rem;color:var(--text3);margin-top:3px}
-.live-section-title{font-size:.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.live-dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:livePulse2 1.5s infinite}
+.live-hero{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:16px 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;margin-bottom:12px}
+.live-hero-val{font-family:var(–mono);font-size:1.8rem;font-weight:700;line-height:1}
+.live-hero-label{font-size:.65rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px;margin-top:5px}
+.live-hero-sub{font-size:.72rem;color:var(–text3);margin-top:3px}
+.live-section-title{font-size:.7rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.live-dot-pulse{width:7px;height:7px;border-radius:50%;background:var(–green);display:inline-block;animation:livePulse2 1.5s infinite}
 @keyframes livePulse2{0%,100%{opacity:1}50%{opacity:.2}}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:livePulse 1.5s infinite}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(–green);animation:livePulse 1.5s infinite}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
 .live-timer-pills{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
-.live-timer-pill{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.live-timer-pill.actief{border-color:var(--orange);background:var(--orange-dim)}
-.live-timer-pill.over{border-color:var(--red);background:var(--red-dim)}
-.live-timer-pill.klaar{border-color:var(--green);background:var(--green-dim)}
+.live-timer-pill{background:var(–surface);border:1.5px solid var(–border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.live-timer-pill.actief{border-color:var(–orange);background:var(–orange-dim)}
+.live-timer-pill.over{border-color:var(–red);background:var(–red-dim)}
+.live-timer-pill.klaar{border-color:var(–green);background:var(–green-dim)}
 .live-pill-left{flex:1;min-width:0}
 .live-pill-naam{font-weight:800;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(160px,35vw)}
-.live-pill-personen{font-size:.72rem;color:var(--text3);margin-top:2px}
-.live-pill-timer{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--text);flex-shrink:0}
-.live-pill-timer.over{color:var(--red)}
-.live-pill-timer.klaar{color:var(--green)}
-.live-pill-stop{background:var(--red);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(--font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
-.live-pill-start{background:var(--green);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(--font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
-.live-pill-koppel{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(--font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
+.live-pill-personen{font-size:.72rem;color:var(–text3);margin-top:2px}
+.live-pill-timer{font-family:var(–mono);font-size:1rem;font-weight:700;color:var(–text);flex-shrink:0}
+.live-pill-timer.over{color:var(–red)}
+.live-pill-timer.klaar{color:var(–green)}
+.live-pill-stop{background:var(–red);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(–font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
+.live-pill-start{background:var(–green);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(–font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
+.live-pill-koppel{background:var(–blue);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-family:var(–font);font-weight:800;font-size:.72rem;cursor:pointer;flex-shrink:0}
 .live-team-grid{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
-.live-team-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+.live-team-row{display:flex;align-items:center;gap:10px;background:var(–surface);border:1px solid var(–border);border-radius:8px;padding:8px 12px}
 .live-team-naam{font-weight:800;font-size:.85rem;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.live-team-uren{font-family:var(--mono);font-size:.75rem;color:var(--text3);flex-shrink:0}
-.live-team-karren{font-size:.72rem;font-weight:800;color:var(--text3);flex-shrink:0}
+.live-team-uren{font-family:var(–mono);font-size:.75rem;color:var(–text3);flex-shrink:0}
+.live-team-karren{font-size:.72rem;font-weight:800;color:var(–text3);flex-shrink:0}
 .live-team-status{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem}
-.live-team-status.ok{background:var(--green-dim);color:var(--green)}
-.live-team-status.bezig{background:var(--orange-dim);color:var(--orange)}
+.live-team-status.ok{background:var(–green-dim);color:var(–green)}
+.live-team-status.bezig{background:var(–orange-dim);color:var(–orange)}
 
 /* ─── OVERZICHT ─── */
 .bar-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:4px 0}
 .bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:2px}
-.bar{width:100%;border-radius:3px 3px 0 0;min-height:3px;background:var(--red);opacity:.75}
-.bar-label{font-size:.58rem;font-weight:700;color:var(--text3);text-align:center;word-break:break-word;max-width:44px}
-.bar-val{font-size:.6rem;font-weight:800;color:var(--text2)}
-.perf-bar-bg{background:var(--bg2);border-radius:3px;height:6px;overflow:hidden;margin-top:3px;min-width:60px}
+.bar{width:100%;border-radius:3px 3px 0 0;min-height:3px;background:var(–red);opacity:.75}
+.bar-label{font-size:.58rem;font-weight:700;color:var(–text3);text-align:center;word-break:break-word;max-width:44px}
+.bar-val{font-size:.6rem;font-weight:800;color:var(–text2)}
+.perf-bar-bg{background:var(–bg2);border-radius:3px;height:6px;overflow:hidden;margin-top:3px;min-width:60px}
 .perf-bar-fill{height:100%;border-radius:3px}
 
 /* ─── GESCHIEDENIS ─── */
 .search-wrap{position:relative;margin-bottom:14px}
 .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none}
-.search-input{width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:.88rem;outline:none;transition:border .15s}
-.search-input:focus{border-color:var(--red)}
-.hist-avond{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:10px}
-.hist-avond.afgesloten{border-left:4px solid var(--green)}
+.search-input{width:100%;padding:10px 16px 10px 38px;border:1.5px solid var(–border);border-radius:10px;background:var(–surface);color:var(–text);font-size:.88rem;outline:none;transition:border .15s}
+.search-input:focus{border-color:var(–red)}
+.hist-avond{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:14px 16px;margin-bottom:10px}
+.hist-avond.afgesloten{border-left:4px solid var(–green)}
 .hist-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px}
 .hist-info{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center}
 .hist-actions{display:flex;gap:6px;flex-wrap:wrap}
 
 /* ─── AFSLUITING ─── */
-.afsluiting-vergelijk{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
-.afsluiting-vergelijk-title{padding:10px 14px;font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);background:var(--surface)}
+.afsluiting-vergelijk{background:var(–surface2);border:1.5px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.afsluiting-vergelijk-title{padding:10px 14px;font-size:.72rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(–border);background:var(–surface)}
 .vergelijk-table{width:100%;border-collapse:collapse}
-.vergelijk-table th{font-size:.65rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;padding:7px 12px;text-align:left;background:var(--surface);border-bottom:1.5px solid var(--border)}
-.vergelijk-table td{padding:9px 12px;font-size:.82rem;border-bottom:1px solid var(--border);vertical-align:middle}
-.vergelijk-table tr:last-child td{border-bottom:none;font-weight:900;background:var(--surface)}
-.verg-ok{color:var(--green)}.verg-warn{color:var(--orange)}.verg-slecht{color:var(--red)}
+.vergelijk-table th{font-size:.65rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.4px;padding:7px 12px;text-align:left;background:var(–surface);border-bottom:1.5px solid var(–border)}
+.vergelijk-table td{padding:9px 12px;font-size:.82rem;border-bottom:1px solid var(–border);vertical-align:middle}
+.vergelijk-table tr:last-child td{border-bottom:none;font-weight:900;background:var(–surface)}
+.verg-ok{color:var(–green)}.verg-warn{color:var(–orange)}.verg-slecht{color:var(–red)}
 .vergelijk-bar{height:4px;border-radius:2px;margin-top:4px;min-width:4px;transition:width .4s}
 
 /* ─── SAMENVATTING ─── */
@@ -330,65 +337,67 @@ textarea{resize:vertical;min-height:58px}
 .spark-bar{width:8px;border-radius:2px 2px 0 0;min-height:3px;transition:opacity .15s}
 .spark-bar:hover{opacity:.75}
 .spark-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.trend-up{color:var(--green);font-weight:800;font-size:.72rem}
-.trend-down{color:var(--red);font-weight:800;font-size:.72rem}
-.trend-flat{color:var(--text3);font-weight:700;font-size:.72rem}
-.samenvatting-box{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:16px;font-family:var(--mono);font-size:.78rem;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:380px;overflow-y:auto}
+.trend-up{color:var(–green);font-weight:800;font-size:.72rem}
+.trend-down{color:var(–red);font-weight:800;font-size:.72rem}
+.trend-flat{color:var(–text3);font-weight:700;font-size:.72rem}
+.samenvatting-box{background:var(–surface2);border:1.5px solid var(–border);border-radius:10px;padding:16px;font-family:var(–mono);font-size:.78rem;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:380px;overflow-y:auto}
 
 /* ─── LEIDERS ─── */
-.leider-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.leider-card{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px}
 
 /* ─── CALC ─── */
-.calc-box{background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px}
-.calc-label{font-size:.7rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.calc-box{background:var(–surface2);border:1.5px solid var(–border);border-radius:10px;padding:14px;margin-bottom:12px}
+.calc-label{font-size:.7rem;font-weight:800;color:var(–text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
 .calc-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
-.calc-tip{font-size:.73rem;color:var(--red);font-weight:700;margin-top:6px;min-height:16px}
+.calc-tip{font-size:.73rem;color:var(–red);font-weight:700;margin-top:6px;min-height:16px}
 
 /* ─── MODAL ─── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--red);border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:520px;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1);max-height:92vh;max-height:92dvh;overflow-y:auto}
+.modal{background:var(–surface);border:1.5px solid var(–border);border-top:4px solid var(–red);border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:520px;transform:translateY(100%);transition:transform .28s cubic-bezier(.16,1,.3,1);max-height:92vh;max-height:92dvh;overflow-y:auto}
 .modal-overlay.open .modal{transform:translateY(0)}
-@media(min-width:600px){.modal{border-radius:var(--radius-lg);transform:translateY(20px)}.modal-overlay{align-items:center}.modal-overlay.open .modal{transform:translateY(0)}}
-.modal-title{font-weight:900;font-size:1.1rem;margin-bottom:16px;color:var(--red)}
+@media(min-width:600px){.modal{border-radius:var(–radius-lg);transform:translateY(20px)}.modal-overlay{align-items:center}.modal-overlay.open .modal{transform:translateY(0)}}
+.modal-title{font-weight:900;font-size:1.1rem;margin-bottom:16px;color:var(–red)}
 .modal-actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
 
 /* ─── TOAST ─── */
-.toast{position:fixed;bottom:calc(var(--nav-h) + max(env(safe-area-inset-bottom),0px) + 12px);left:50%;transform:translateX(-50%) translateY(20px) scale(.95);background:var(--text);color:var(--bg);font-weight:800;font-size:.82rem;padding:10px 18px;border-radius:10px;z-index:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast{position:fixed;bottom:calc(var(–nav-h) + max(env(safe-area-inset-bottom),0px) + 12px);left:50%;transform:translateX(-50%) translateY(20px) scale(.95);background:var(–text);color:var(–bg);font-weight:800;font-size:.82rem;padding:10px 18px;border-radius:10px;z-index:500;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0) scale(1);opacity:1}
 @media(min-width:641px){.toast{bottom:24px;left:auto;right:20px;transform:translateY(20px) scale(.95)}.toast.show{transform:translateY(0) scale(1)}}
 
 /* ─── EMPTY ─── */
-.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty{text-align:center;padding:40px 20px;color:var(–text3)}
 .empty-icon{font-size:2.5rem;margin-bottom:10px}
 .empty-text{font-size:.88rem;font-weight:600;line-height:1.6}
 
 /* ─── UTILS ─── */
 .data-table{width:100%;border-collapse:collapse}
-.data-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(--text3);padding:9px 12px;text-align:left;border-bottom:2px solid var(--border)}
-.data-table td{padding:10px 12px;font-size:.84rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.data-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;font-weight:800;color:var(–text3);padding:9px 12px;text-align:left;border-bottom:2px solid var(–border)}
+.data-table td{padding:10px 12px;font-size:.84rem;border-bottom:1px solid var(–border);vertical-align:middle}
 .data-table tr:last-child td{border-bottom:none}
-.data-table tr:hover td{background:var(--surface2)}
-.mono{font-family:var(--mono);font-size:.8rem}
+.data-table tr:hover td{background:var(–surface2)}
+.mono{font-family:var(–mono);font-size:.8rem}
 .table-wrap{overflow-x:auto}
 .flex{display:flex}.gap-6{gap:6px}.gap-8{gap:8px}.flex-wrap{flex-wrap:wrap}
 .hidden{display:none!important}
 
 /* ─── PRINT STYLES ─── */
 @media print{
-  body,.app-header,.tab-bar,.bottom-nav,.meer-overlay,.meer-panel,.toast,.modal-overlay{display:none!important}
-  #printArea{display:block!important}
+body,.app-header,.tab-bar,.bottom-nav,.meer-overlay,.meer-panel,.toast,.modal-overlay{display:none!important}
+#printArea{display:block!important}
 }
 #printArea{display:none}
 
 /* ─── PRINT PREVIEW AREA ─── */
-.print-preview-wrap{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:0;overflow:hidden;margin-bottom:14px}
-.print-preview-header{background:var(--surface2);border-bottom:1.5px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.print-preview-wrap{background:var(–surface);border:1.5px solid var(–border);border-radius:var(–radius-lg);padding:0;overflow:hidden;margin-bottom:14px}
+.print-preview-header{background:var(–surface2);border-bottom:1.5px solid var(–border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 </style>
+
 </head>
 <body>
 
 <!-- LOADING -->
+
 <div id="loadingScreen">
   <div class="loading-logo">kruidvat</div>
   <div class="loading-sub">Verbinden met cloud…</div>
@@ -396,6 +405,7 @@ textarea{resize:vertical;min-height:58px}
 </div>
 
 <!-- AUTH -->
+
 <div id="authScreen">
   <div class="auth-box">
     <div class="auth-logo">kruidvat</div>
@@ -439,57 +449,62 @@ textarea{resize:vertical;min-height:58px}
 </div>
 
 <!-- PRIVACY MODAL -->
+
 <div id="privacyModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);overflow-y:auto;padding:20px">
   <div style="background:var(--surface);border-radius:16px;max-width:600px;margin:0 auto;padding:28px;box-shadow:0 24px 64px rgba(0,0,0,.3);position:relative">
     <button onclick="closePrivacy()" style="position:absolute;top:16px;right:16px;background:var(--surface2);border:none;border-radius:8px;padding:6px 12px;font-weight:800;color:var(--text2);cursor:pointer;font-family:var(--font)">✕ Sluiten</button>
     <div style="font-weight:900;font-size:1.2rem;margin-bottom:4px">Privacyverklaring</div>
     <div style="font-size:.75rem;color:var(--text3);margin-bottom:20px">Kruidvat Vulploeg Manager · Laatst bijgewerkt: maart 2025</div>
 
-    <div style="font-size:.85rem;line-height:1.7;color:var(--text2)">
+```
+<div style="font-size:.85rem;line-height:1.7;color:var(--text2)">
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">1. Wie zijn wij?</div>
-      <p style="margin-bottom:14px">Deze applicatie wordt beheerd door de leidinggevende(n) van het Kruidvat-filiaal dat het account heeft aangemaakt. De applicatie is een intern hulpmiddel voor het registreren van vulploegprestaties.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">1. Wie zijn wij?</div>
+  <p style="margin-bottom:14px">Deze applicatie wordt beheerd door de leidinggevende(n) van het Kruidvat-filiaal dat het account heeft aangemaakt. De applicatie is een intern hulpmiddel voor het registreren van vulploegprestaties.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">2. Welke gegevens slaan we op?</div>
-      <p style="margin-bottom:8px">Wij verwerken de volgende persoonsgegevens:</p>
-      <ul style="margin-bottom:14px;padding-left:18px">
-        <li>Voornaam (of naam) van medewerkers</li>
-        <li>Werktijden per avond (begin, eind, pauze)</li>
-        <li>Prestaties per avond (karren, tijden, scores)</li>
-        <li>E-mailadres van de accounthouder (leidinggevende)</li>
-      </ul>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">2. Welke gegevens slaan we op?</div>
+  <p style="margin-bottom:8px">Wij verwerken de volgende persoonsgegevens:</p>
+  <ul style="margin-bottom:14px;padding-left:18px">
+    <li>Voornaam (of naam) van medewerkers</li>
+    <li>Werktijden per avond (begin, eind, pauze)</li>
+    <li>Prestaties per avond (karren, tijden, scores)</li>
+    <li>E-mailadres van de accounthouder (leidinggevende)</li>
+  </ul>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">3. Waarom verwerken we deze gegevens?</div>
-      <p style="margin-bottom:14px">De gegevens worden uitsluitend gebruikt voor interne bedrijfsvoering: het bijhouden en analyseren van vulploegprestaties, het maken van roosters en het opstellen van avondoverzichten.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">3. Waarom verwerken we deze gegevens?</div>
+  <p style="margin-bottom:14px">De gegevens worden uitsluitend gebruikt voor interne bedrijfsvoering: het bijhouden en analyseren van vulploegprestaties, het maken van roosters en het opstellen van avondoverzichten.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">4. Hoe lang bewaren we de gegevens?</div>
-      <p style="margin-bottom:14px">Gegevens worden maximaal 2 jaar na de laatste geregistreerde avond bewaard, of totdat het account door de leidinggevende wordt verwijderd. Bij verwijdering van het account worden alle gekoppelde gegevens direct en permanent verwijderd.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">4. Hoe lang bewaren we de gegevens?</div>
+  <p style="margin-bottom:14px">Gegevens worden maximaal 2 jaar na de laatste geregistreerde avond bewaard, of totdat het account door de leidinggevende wordt verwijderd. Bij verwijdering van het account worden alle gekoppelde gegevens direct en permanent verwijderd.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">5. Wie heeft toegang?</div>
-      <p style="margin-bottom:14px">Alleen de leidinggevenden van het filiaal die inloggen met het filiaal-account hebben toegang tot de gegevens. De data wordt opgeslagen via Google Firebase (Firestore), een ISO 27001-gecertificeerde clouddienst.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">5. Wie heeft toegang?</div>
+  <p style="margin-bottom:14px">Alleen de leidinggevenden van het filiaal die inloggen met het filiaal-account hebben toegang tot de gegevens. De data wordt opgeslagen via Google Firebase (Firestore), een ISO 27001-gecertificeerde clouddienst.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">6. Jouw rechten (AVG)</div>
-      <p style="margin-bottom:8px">Medewerkers van wie gegevens zijn opgeslagen hebben het recht op:</p>
-      <ul style="margin-bottom:8px;padding-left:18px">
-        <li><strong>Inzage</strong> — opvragen welke gegevens er zijn opgeslagen</li>
-        <li><strong>Correctie</strong> — onjuiste gegevens laten aanpassen. Namen kunnen worden gecorrigeerd via de medewerkersbeheer-pagina; een correctie werkt automatisch door in alle historische avonden.</li>
-        <li><strong>Verwijdering</strong> — verzoeken om verwijdering van gegevens</li>
-        <li><strong>Bezwaar</strong> — bezwaar maken tegen de verwerking</li>
-      </ul>
-      <p style="margin-bottom:14px">Voor het uitoefenen van deze rechten kunt u contact opnemen met de leidinggevende van het betreffende filiaal.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">6. Jouw rechten (AVG)</div>
+  <p style="margin-bottom:8px">Medewerkers van wie gegevens zijn opgeslagen hebben het recht op:</p>
+  <ul style="margin-bottom:8px;padding-left:18px">
+    <li><strong>Inzage</strong> — opvragen welke gegevens er zijn opgeslagen</li>
+    <li><strong>Correctie</strong> — onjuiste gegevens laten aanpassen. Namen kunnen worden gecorrigeerd via de medewerkersbeheer-pagina; een correctie werkt automatisch door in alle historische avonden.</li>
+    <li><strong>Verwijdering</strong> — verzoeken om verwijdering van gegevens</li>
+    <li><strong>Bezwaar</strong> — bezwaar maken tegen de verwerking</li>
+  </ul>
+  <p style="margin-bottom:14px">Voor het uitoefenen van deze rechten kunt u contact opnemen met de leidinggevende van het betreffende filiaal.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">7. Verwerkersovereenkomst</div>
-      <p style="margin-bottom:14px">Google Firebase (Google LLC) treedt op als verwerker van de opgeslagen data. Google heeft standaard verwerkersvoorwaarden gepubliceerd die van toepassing zijn: <a href="https://cloud.google.com/terms/data-processing-addendum" target="_blank" style="color:var(--red)">cloud.google.com/terms/data-processing-addendum</a>.</p>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">7. Verwerkersovereenkomst</div>
+  <p style="margin-bottom:14px">Google Firebase (Google LLC) treedt op als verwerker van de opgeslagen data. Google heeft standaard verwerkersvoorwaarden gepubliceerd die van toepassing zijn: <a href="https://cloud.google.com/terms/data-processing-addendum" target="_blank" style="color:var(--red)">cloud.google.com/terms/data-processing-addendum</a>.</p>
 
-      <div style="font-weight:900;color:var(--text);margin-bottom:6px">8. Vragen of klachten?</div>
-      <p style="margin-bottom:0">Vragen over privacy kunt u stellen aan de leidinggevende van uw filiaal. U heeft ook het recht een klacht in te dienen bij de Autoriteit Persoonsgegevens: <a href="https://www.autoriteitpersoonsgegevens.nl" target="_blank" style="color:var(--red)">autoriteitpersoonsgegevens.nl</a>.</p>
-    </div>
+  <div style="font-weight:900;color:var(--text);margin-bottom:6px">8. Vragen of klachten?</div>
+  <p style="margin-bottom:0">Vragen over privacy kunt u stellen aan de leidinggevende van uw filiaal. U heeft ook het recht een klacht in te dienen bij de Autoriteit Persoonsgegevens: <a href="https://www.autoriteitpersoonsgegevens.nl" target="_blank" style="color:var(--red)">autoriteitpersoonsgegevens.nl</a>.</p>
+</div>
 
-    <button onclick="closePrivacy()" style="margin-top:22px;width:100%;padding:12px;border-radius:10px;border:none;background:var(--red);color:#fff;font-family:var(--font);font-weight:900;font-size:.95rem;cursor:pointer">Begrepen — sluiten</button>
+<button onclick="closePrivacy()" style="margin-top:22px;width:100%;padding:12px;border-radius:10px;border:none;background:var(--red);color:#fff;font-family:var(--font);font-weight:900;font-size:.95rem;cursor:pointer">Begrepen — sluiten</button>
+```
+
   </div>
 </div>
 
 <!-- HEADER -->
+
 <header class="app-header" id="appHeader">
   <div class="logo">
     <div class="logo-mark">KV</div>
@@ -511,6 +526,7 @@ textarea{resize:vertical;min-height:58px}
 </header>
 
 <!-- DESKTOP TABS -->
+
 <div class="tab-bar">
   <button class="tab-btn active" data-tab="avond" onclick="goTab('avond',this)">📦 Vulavond</button>
   <button class="tab-btn" data-tab="live" onclick="goTab('live',this)">🔴 Live</button>
@@ -525,6 +541,7 @@ textarea{resize:vertical;min-height:58px}
 </div>
 
 <!-- MOBILE NAV -->
+
 <nav class="bottom-nav">
   <div class="bnav-inner">
     <button class="bnav-btn active" id="bnav-avond" onclick="goTab('avond')"><span class="bnav-icon">📦</span>Avond</button>
@@ -567,68 +584,72 @@ textarea{resize:vertical;min-height:58px}
       <div><div class="page-title">Vulavond <span id="avondTitle">instellen</span></div><div class="page-sub">Registreer medewerkers, uren en karren</div></div>
       <div class="btn-row">
         <button class="btn btn-secondary btn-sm" onclick="openNieuweAvond()">+ Nieuw</button>
-        <button class="btn btn-secondary btn-sm" onclick="openZiekModal(-1)">🤒 Ziek</button>
-        <button class="btn btn-secondary btn-sm" onclick="goTab('print')">🖨️ Print</button>
+        <button class="btn btn-secondary btn-sm avond-btn-hide" onclick="openZiekModal(-1)">🤒 Ziek</button>
+        <button class="btn btn-secondary btn-sm avond-btn-hide" onclick="goTab('print')">🖨️ Print</button>
         <button class="btn btn-orange btn-sm" onclick="sluitAvondAf()">✓ Afsluiten</button>
         <button class="btn btn-primary btn-sm" onclick="slaOp()">💾 Opslaan</button>
       </div>
     </div>
     <div id="afgeslotenBanner" class="afgesloten-banner hidden">✓ Avond afgesloten — <span id="afgeslotenTxt"></span></div>
 
-    <div class="colli-card">
-      <div class="colli-card-top">
-        <div class="colli-info">
-          <div class="colli-label">⚡ Colli verwerkt</div>
-          <div class="colli-num-display"><span id="colliNum">0</span> <span style="font-size:.85rem;opacity:.65">/ <span id="colliDoel">2000</span></span></div>
-          <div class="colli-sub" id="colliPct">0% klaar</div>
-        </div>
-      </div>
-      <div class="colli-input-row">
-        <input class="colli-direct-input" type="number" id="colliDirectInput" placeholder="0" inputmode="numeric" min="0" onchange="colliDirectSet(this.value)" oninput="colliDirectSet(this.value)">
-        <div class="colli-step-btns">
-          <button class="colli-step-btn" onclick="colliAanpassen(+1)">+1</button>
-          <button class="colli-step-btn" onclick="colliAanpassen(-1)">−1</button>
-        </div>
-      </div>
-      <div class="colli-quick-btns">
-        <button class="colli-quick-btn" onclick="colliAanpassen(+10)">+10</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(+50)">+50</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(+100)">+100</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(+200)">+200</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(+500)">+500</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(-10)">−10</button>
-        <button class="colli-quick-btn" onclick="colliAanpassen(-50)">−50</button>
-      </div>
-      <div class="colli-progress" style="margin-top:12px"><div class="colli-fill" id="colliFill" style="width:0%"></div></div>
+```
+<div class="colli-card">
+  <div class="colli-card-top">
+    <div class="colli-info">
+      <div class="colli-label">⚡ Colli verwerkt</div>
+      <div class="colli-num-display"><span id="colliNum">0</span> <span style="font-size:.85rem;opacity:.65">/ <span id="colliDoel">2000</span></span></div>
+      <div class="colli-sub" id="colliPct">0% klaar</div>
     </div>
-
-    <div class="eindtijd-banner hidden" id="eindtijdBanner">
-      <div><div class="eindtijd-label">🕐 Verwachte eindtijd</div><div class="eindtijd-time" id="eindtijdTime">--:--</div></div>
-      <div id="eindtijdDetail" style="font-size:.82rem;color:var(--text)"></div>
+  </div>
+  <div class="colli-input-row">
+    <input class="colli-direct-input" type="number" id="colliDirectInput" placeholder="0" inputmode="numeric" min="0" onchange="colliDirectSet(this.value)" oninput="colliDirectSet(this.value)">
+    <div class="colli-step-btns">
+      <button class="colli-step-btn" onclick="colliAanpassen(+1)">+1</button>
+      <button class="colli-step-btn" onclick="colliAanpassen(-1)">−1</button>
     </div>
+  </div>
+  <div class="colli-quick-btns">
+    <button class="colli-quick-btn" onclick="colliAanpassen(+10)">+10</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(+50)">+50</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(+100)">+100</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(+200)">+200</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(+500)">+500</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(-10)">−10</button>
+    <button class="colli-quick-btn" onclick="colliAanpassen(-50)">−50</button>
+  </div>
+  <div class="colli-progress" style="margin-top:12px"><div class="colli-fill" id="colliFill" style="width:0%"></div></div>
+</div>
 
-    <div id="avondSelector" class="avond-selector"></div>
+<div class="eindtijd-banner hidden" id="eindtijdBanner">
+  <div><div class="eindtijd-label">🕐 Verwachte eindtijd</div><div class="eindtijd-time" id="eindtijdTime">--:--</div></div>
+  <div id="eindtijdDetail" style="font-size:.82rem;color:var(--text)"></div>
+</div>
 
-    <div class="card">
-      <div class="card-header"><div class="card-title">⚙️ Avondgegevens</div></div>
-      <div class="form-row">
-        <div class="form-group"><label>Datum</label><input type="date" id="fDatum"></div>
-        <div class="form-group"><label>Dag</label>
-          <select id="fDag"><option value="maandag">Maandag</option><option value="dinsdag">Dinsdag</option><option value="woensdag">Woensdag</option><option value="donderdag">Donderdag</option><option value="vrijdag">Vrijdag</option><option value="zaterdag">Zaterdag</option><option value="zondag">Zondag</option></select>
-        </div>
-        <div class="form-group"><label>Totaal colli</label><input type="number" inputmode="numeric" id="fColli" value="2000"></div>
-        <div class="form-group"><label>Norm (colli/uur)</label><input type="number" inputmode="numeric" id="fNorm" value="80"></div>
-      </div>
-      <div class="form-group" style="max-width:280px"><label>Leidinggevende</label><select id="fLeider"><option value="">— Kies —</option></select></div>
+<div id="avondSelector" class="avond-selector"></div>
+
+<div class="card">
+  <div class="card-header"><div class="card-title">⚙️ Avondgegevens</div></div>
+  <div class="form-row">
+    <div class="form-group"><label>Datum</label><input type="date" id="fDatum"></div>
+    <div class="form-group"><label>Dag</label>
+      <select id="fDag"><option value="maandag">Maandag</option><option value="dinsdag">Dinsdag</option><option value="woensdag">Woensdag</option><option value="donderdag">Donderdag</option><option value="vrijdag">Vrijdag</option><option value="zaterdag">Zaterdag</option><option value="zondag">Zondag</option></select>
     </div>
+    <div class="form-group"><label>Totaal colli</label><input type="number" inputmode="numeric" id="fColli" value="2000"></div>
+    <div class="form-group"><label>Norm (colli/uur)</label><input type="number" inputmode="numeric" id="fNorm" value="80"></div>
+  </div>
+  <div class="form-group" style="max-width:280px"><label>Leidinggevende</label><select id="fLeider"><option value="">— Kies —</option></select></div>
+</div>
 
-    <div class="card">
-      <div class="card-header"><div class="card-title">👥 Team van de avond</div><button class="btn btn-secondary btn-sm" onclick="openAddLidModal()">+ Voeg toe</button></div>
-      <div id="teamList" class="team-list"><div class="empty"><div class="empty-icon">🧑</div><div class="empty-text">Nog geen medewerkers.<br>Klik "+ Voeg toe" om te beginnen.</div></div></div>
-    </div>
+<div class="card">
+  <div class="card-header"><div class="card-title">👥 Team van de avond</div><button class="btn btn-secondary btn-sm" onclick="openAddLidModal()">+ Voeg toe</button></div>
+  <div id="teamList" class="team-list"><div class="empty"><div class="empty-icon">🧑</div><div class="empty-text">Nog geen medewerkers.<br>Klik "+ Voeg toe" om te beginnen.</div></div></div>
+</div>
+```
+
   </div>
 
   <!-- ═══════════ LIVE ═══════════ -->
+
   <div id="tab-live" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Live <span>overzicht</span></div><div class="page-sub">Command center — timers &amp; koppelen</div></div>
@@ -638,12 +659,14 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ OVERZICHT ═══════════ -->
+
   <div id="tab-overzicht" class="tab-panel">
     <div class="section-head"><div><div class="page-title">Overzicht <span id="overzichtTitel">avond</span></div><div class="page-sub">Prestaties en statistieken</div></div></div>
     <div id="overzichtContent"><div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Geen avond geselecteerd.</div></div></div>
   </div>
 
   <!-- ═══════════ KARREN ═══════════ -->
+
   <div id="tab-karren" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Karren <span>pool</span></div><div class="page-sub">Meerdere personen per kar mogelijk</div></div>
@@ -656,6 +679,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ MEDEWERKERS ═══════════ -->
+
   <div id="tab-medewerkers" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Medewerkers <span>beheer</span></div><div class="page-sub">Opgeslagen in de cloud per filiaal</div></div>
@@ -677,6 +701,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ LEIDERS ═══════════ -->
+
   <div id="tab-leiders" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Leiders <span>&amp; leidinggevenden</span></div><div class="page-sub">Vulploegleiders van het filiaal</div></div>
@@ -686,6 +711,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ GESCHIEDENIS ═══════════ -->
+
   <div id="tab-history" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Geschiedenis <span>avonden</span></div><div class="page-sub">Alle avonden uit de cloud</div></div>
@@ -700,12 +726,14 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ STATISTIEKEN ═══════════ -->
+
   <div id="tab-statistieken" class="tab-panel">
     <div class="section-head"><div><div class="page-title">Statistieken <span>medewerkers</span></div><div class="page-sub">Prestaties over alle opgeslagen avonden</div></div></div>
     <div id="statsContent" class="card"><div class="empty"><div class="empty-icon">🏆</div><div class="empty-text">Nog geen data.</div></div></div>
   </div>
 
   <!-- ═══════════ MAANDRAPPORT ═══════════ -->
+
   <div id="tab-maandrapport" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Maandrapport <span>overzicht</span></div><div class="page-sub">Prestaties per medewerker per maand</div></div>
@@ -719,6 +747,7 @@ textarea{resize:vertical;min-height:58px}
   </div>
 
   <!-- ═══════════ PRINT / PDF ═══════════ -->
+
   <div id="tab-print" class="tab-panel">
     <div class="section-head">
       <div><div class="page-title">Dagoverzicht <span>printen</span></div><div class="page-sub">Volledige avond op 1 pagina — geschikt voor PDF of dubbelzijdig afdrukken</div></div>
@@ -735,6 +764,7 @@ textarea{resize:vertical;min-height:58px}
 ═══════════════════════════════ -->
 
 <!-- Medewerker toevoegen -->
+
 <div class="modal-overlay" id="modalAddLid"><div class="modal">
   <div class="modal-title">👤 Medewerker toevoegen</div>
   <div class="form-group" style="margin-bottom:12px"><label>Naam</label><select id="addLidSel"></select></div>
@@ -748,9 +778,10 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Kar toevoegen (aan medewerker) -->
+
 <div class="modal-overlay" id="modalAddKar"><div class="modal">
-  <div class="modal-title">🛒 Kar toevoegen</div>
-  <div class="form-group" style="margin-bottom:12px"><label>Kies kar</label><select id="addKarKeuze" onchange="karKeuzeGewijzigd()"><option value="__nieuw__">+ Nieuwe kar (handmatig)</option></select></div>
+  <div class="modal-title" id="addKarTitel">🛒 Kar toevoegen</div>
+  <div id="addKarKeuzeWrap" class="form-group" style="margin-bottom:12px"><label>Kies kar</label><select id="addKarKeuze" onchange="karKeuzeGewijzigd()"><option value="__nieuw__">+ Nieuwe kar (handmatig)</option></select></div>
   <div id="addKarHandmatig">
     <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="addKarNaam" placeholder="bv. Shampoo, Kar 12…"></div>
     <div class="form-row">
@@ -759,10 +790,11 @@ textarea{resize:vertical;min-height:58px}
     </div>
   </div>
   <div id="addKarPoolInfo" class="hidden" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.82rem;margin-bottom:4px"></div>
-  <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalAddKar')">Annuleren</button><button class="btn btn-primary" onclick="voegKarToe()">Toevoegen</button></div>
+  <div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('modalAddKar')">Annuleren</button><button class="btn btn-primary" id="addKarSlaOp" onclick="voegKarToe()">Toevoegen</button></div>
 </div></div>
 
 <!-- Nieuwe pool kar -->
+
 <div class="modal-overlay" id="modalPoolKar"><div class="modal">
   <div class="modal-title">🛒 Kar toevoegen aan pool</div>
   <div class="form-group" style="margin-bottom:12px"><label>Karnaam / afdeling</label><input type="text" id="poolKarNaam" placeholder="bv. Shampoo, Cosmetica…"></div>
@@ -779,6 +811,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Personen koppelen aan kar -->
+
 <div class="modal-overlay" id="modalKoppelKar"><div class="modal">
   <div class="modal-title">👥 Personen koppelen aan kar</div>
   <div id="koppelKarInfo" style="font-family:var(--mono);font-size:.82rem;background:var(--surface2);border-radius:8px;padding:10px;margin-bottom:14px"></div>
@@ -788,6 +821,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Nieuwe medewerker -->
+
 <div class="modal-overlay" id="modalNieuwMedew"><div class="modal">
   <div class="modal-title" id="modalMedewTitel">👤 Nieuwe medewerker</div>
   <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="nieuwMedewNaam" placeholder="Voor- en achternaam"></div>
@@ -797,6 +831,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Nieuwe leider -->
+
 <div class="modal-overlay" id="modalNieuwLeider"><div class="modal">
   <div class="modal-title">🔑 Leider toevoegen</div>
   <div class="form-group" style="margin-bottom:12px"><label>Naam</label><input type="text" id="nieuwLeiderNaam" placeholder="Voor- en achternaam"></div>
@@ -807,6 +842,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Ziekmelding -->
+
 <div class="modal-overlay" id="modalZiek"><div class="modal">
   <div class="modal-title">🤒 Ziekmelding</div>
   <div class="form-group" style="margin-bottom:12px"><label>Wie is ziek?</label><select id="ziekSel"></select></div>
@@ -819,6 +855,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Afsluiten -->
+
 <div class="modal-overlay" id="modalAfsluiten"><div class="modal" style="max-width:560px">
   <div class="modal-title">✓ Avond afsluiten</div>
   <div style="font-size:.85rem;color:var(--text3);margin-bottom:16px">Wordt opgeslagen als eindresultaat.</div>
@@ -835,6 +872,7 @@ textarea{resize:vertical;min-height:58px}
 </div></div>
 
 <!-- Samenvatting -->
+
 <div class="modal-overlay" id="modalSamenvatting"><div class="modal" style="max-width:540px">
   <div class="modal-title">💬 Samenvatting delen</div>
   <div id="samenvattingTxt" class="samenvatting-box"></div>
@@ -850,6 +888,7 @@ textarea{resize:vertical;min-height:58px}
 <!-- ═══════════════════════════════
      HIDDEN PRINT AREA
 ═══════════════════════════════ -->
+
 <div id="printArea"></div>
 
 <script type="module">
@@ -1131,7 +1170,7 @@ function renderTeam(){
     const gedaan=ka.filter(k=>k.werkelijk>0).length,vgPct=ka.length>0?Math.min(100,Math.round(gedaan/ka.length*100)):0;
     const vgCls=vgPct>=100?'fill-green':vgPct>=50?'fill-orange':'fill-red';
     const naamHtml=lid.naam+(lid.ziek?'<span class="ziek-badge">🤒 Ziek</span>':'')+(lid.vervanger?'<span class="vervang-badge">→ '+lid.vervanger+'</span>':'');
-    const karHtml=ka.length===0?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar"</div>':ka.map((kar,ki)=>{const st=karStatus(kar);return`<div class="kar-row"><div class="kar-row-top"><div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div></div><div class="kar-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" inputmode="numeric" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div></div></div>`;}).join('');
+    const karHtml=ka.length===0?'<div style="color:var(--text3);font-size:.8rem">Geen karren — voeg toe via "+ Kar"</div>':ka.map((kar,ki)=>{const st=karStatus(kar);return`<div class="kar-row"><div class="kar-row-top"><div><div class="kar-name">${kar.naam}</div>${kar._personen&&kar._personen.length>1?`<div style="font-size:.72rem;color:var(--text3);margin-top:2px">👥 ${kar._personen.join(', ')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="badge ${st.cls}">${st.label}</span><button class="btn btn-secondary btn-xs" onclick="bewerkKar(${i},${ki})">✏️</button><button class="btn btn-danger btn-xs" onclick="verwijderKar(${i},${ki})">✕</button></div></div><div class="kar-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht</div><div style="font-family:var(--mono);font-size:.82rem">${kar.verwacht?kar.verwacht+' min':'—'}</div></div><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Werkelijk (min)</div><input type="number" inputmode="numeric" value="${kar.werkelijk||''}" placeholder="—" style="width:80px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updateKarWerkelijk(${i},${ki},this.value)"></div></div></div>`;}).join('');
     return`<div class="member-card${lid.ziek?' ziek':''}"><div class="member-main"><div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px"><div style="flex:1"><div class="member-name">${naamHtml}</div><div class="member-meta"><span class="tag">${lid.start}–${lid.eind}</span>${lid.pauze?`<span class="tag">☕ ${lid.pauze}min`+`</span>`:''}</div></div></div>${lid.notitie?`<div class="member-note">📝 ${lid.notitie}</div>`:''}<div class="member-stats"><div><div class="stat-mini-label">Uren</div><div class="stat-mini-val">${u.toFixed(1)}u</div></div><div><div class="stat-mini-label">Target</div><div class="stat-mini-val">${t}</div></div><div><div class="stat-mini-label">Karren ${gedaan}/${ka.length}</div><div class="vg-bg" style="width:80px"><div class="vg-fill ${vgCls}" style="width:${vgPct}%"></div></div></div></div><div class="member-actions-row"><button class="btn btn-secondary btn-xs" onclick="openKarModalVoor(${i})">+ Kar</button><button class="btn btn-secondary btn-xs" onclick="openBewerkNotitie(${i})">✏ Notitie</button><button class="btn btn-secondary btn-xs" onclick="openZiekModal(${i})">🤒 Ziek</button><button class="btn btn-danger btn-xs" onclick="verwijderLid(${i})">✕</button></div></div><div class="karten-section"><div style="font-size:.72rem;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🛒 Karren</div><div class="kar-list">${karHtml}</div></div></div>`;
   }).join('');
   updateColliTeller();
@@ -1154,13 +1193,79 @@ window.openBewerkNotitie=i=>{const n=prompt('Notitie:',App.huidigAvond.team[i].n
 
 // ── KAR MODALS ──
 window.openKarModalVoor=i=>{
-  App._karMedewIdx=i;
+  App._karMedewIdx=i;App._bewerkKarIdx=null;
   const pool=App.huidigAvond.karrenPool||[];
   const sel=document.getElementById('addKarKeuze');
   sel.innerHTML='<option value="__nieuw__">+ Nieuwe kar (handmatig)</option>'+pool.map((k,pi)=>`<option value="${pi}">${k.naam}${k.verwacht?' — '+k.verwacht+' min':''}</option>`).join('');
+  document.getElementById('addKarTitel').textContent='🛒 Kar toevoegen';
+  document.getElementById('addKarSlaOp').textContent='Toevoegen';
+  document.getElementById('addKarSlaOp').onclick=voegKarToe;
+  document.getElementById('addKarKeuzeWrap').style.display='';
   document.getElementById('addKarNaam').value='';document.getElementById('addKarVerwacht').value='';document.getElementById('addKarWerkelijk').value='';
   document.getElementById('addKarHandmatig').style.display='block';document.getElementById('addKarPoolInfo').classList.add('hidden');
   openModal('modalAddKar');
+};
+window.bewerkKar=(li,ki)=>{
+  // Kar in team bewerken (niet pool-gekoppeld)
+  const kar=App.huidigAvond.team[li].karten[ki];
+  App._karMedewIdx=li;App._bewerkKarIdx=ki;
+  document.getElementById('addKarTitel').textContent='✏️ Kar bewerken';
+  document.getElementById('addKarSlaOp').textContent='Opslaan';
+  document.getElementById('addKarSlaOp').onclick=slaKarBewerkOp;
+  document.getElementById('addKarKeuzeWrap').style.display='none';
+  document.getElementById('addKarNaam').value=kar.naam||'';
+  document.getElementById('addKarVerwacht').value=kar.verwacht||'';
+  document.getElementById('addKarWerkelijk').value=kar.werkelijk||'';
+  document.getElementById('addKarHandmatig').style.display='block';
+  document.getElementById('addKarPoolInfo').classList.add('hidden');
+  openModal('modalAddKar');
+};
+window.slaKarBewerkOp=()=>{
+  const li=App._karMedewIdx,ki=App._bewerkKarIdx;
+  if(li===null||ki===null)return;
+  const naam=document.getElementById('addKarNaam').value.trim();
+  if(!naam){alert('Naam vereist.');return;}
+  const v=+document.getElementById('addKarVerwacht').value||null;
+  const w=+document.getElementById('addKarWerkelijk').value||null;
+  const kar=App.huidigAvond.team[li].karten[ki];
+  kar.naam=naam;kar.verwacht=v;kar.werkelijk=w;
+  // Sync naar pool als gekoppeld
+  if(kar._poolId){const pk=(App.huidigAvond.karrenPool||[]).find(k=>k.id===kar._poolId);if(pk){pk.naam=naam;pk.verwacht=v;pk.werkelijk=w;}}
+  App._dirty=true;closeModal('modalAddKar');renderTeam();renderKarrenPool();showToast('Kar bijgewerkt');
+};
+window.bewerkPoolKar=idx=>{
+  const kar=App.huidigAvond.karrenPool[idx];
+  App._bewerkPoolKarIdx=idx;
+  document.getElementById('addKarTitel').textContent='✏️ Kar bewerken';
+  document.getElementById('addKarSlaOp').textContent='Opslaan';
+  document.getElementById('addKarSlaOp').onclick=slaPoolKarBewerkOp;
+  document.getElementById('addKarKeuzeWrap').style.display='none';
+  document.getElementById('addKarNaam').value=kar.naam||'';
+  document.getElementById('addKarVerwacht').value=kar.verwacht||'';
+  document.getElementById('addKarWerkelijk').value=kar.werkelijk||'';
+  document.getElementById('addKarHandmatig').style.display='block';
+  document.getElementById('addKarPoolInfo').classList.add('hidden');
+  openModal('modalAddKar');
+};
+window.slaPoolKarBewerkOp=()=>{
+  const idx=App._bewerkPoolKarIdx;
+  if(idx===null||idx===undefined)return;
+  const naam=document.getElementById('addKarNaam').value.trim();
+  if(!naam){alert('Naam vereist.');return;}
+  const v=+document.getElementById('addKarVerwacht').value||null;
+  const w=+document.getElementById('addKarWerkelijk').value||null;
+  const kar=App.huidigAvond.karrenPool[idx];
+  kar.naam=naam;kar.verwacht=v;if(w!==null)kar.werkelijk=w;
+  // Sync naar gekoppelde teamleden
+  syncPoolNaarTeam(idx);
+  // Update ook de naam in teamleden karten
+  (kar.personen||[]).forEach(n=>{
+    const l=App.huidigAvond.team.find(x=>x.naam===n);
+    if(!l)return;
+    const tk=l.karten.find(k=>k._poolId===kar.id);
+    if(tk)tk.naam=naam;
+  });
+  App._dirty=true;closeModal('modalAddKar');renderKarrenPool();renderTeam();showToast('Kar bijgewerkt');
 };
 window.karKeuzeGewijzigd=()=>{
   const val=document.getElementById('addKarKeuze').value;
@@ -1200,7 +1305,7 @@ function renderKarrenPool(){
     if(!kar.timerStart){timerHtml=`<button class="timer-start" onclick="startTimer(${i})">▶ Start</button><div style="margin-top:6px"><label style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase;display:block">Werkelijk (min)</label><input type="number" inputmode="numeric" value="${kar.werkelijk||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarWerkelijk(${i},this.value)"></div>`;}
     else if(bezig){const ov=kar.verwacht?Math.round(((elapsed/60-kar.verwacht)/kar.verwacht)*100):null;const gepauzeerd=!!kar.timerPauze;timerHtml=`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${gepauzeerd?`<button class="timer-hervat" onclick="hervatTimer(${i})">▶ Hervat</button>`:`<button class="timer-pauze" onclick="pauzeTimer(${i})">⏸ Pauze</button>`}<button class="timer-stop" onclick="stopTimer(${i})">⏹ Stop</button></div><div class="timer-display${ov>=20&&!gepauzeerd?' over':''}" id="timerDisp_${i}">${gepauzeerd?'⏸ ':''} ${fmtSecs(elapsed)}</div><span id="over_${i}" ${ov>=20&&!gepauzeerd?'':'style="display:none"'} class="overschrijding">⚠ +${ov}% over</span>`;}
     else{timerHtml=`<div style="font-weight:800;color:var(--green)">✓ ${kar.werkelijk} min</div><button class="btn btn-ghost btn-xs" style="margin-top:4px" onclick="resetTimer(${i})">↺ Reset</button>`;}
-    return`<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}"><div class="pool-row-top"><div style="flex:1"><div class="pool-naam">${kar.naam}</div><div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel</button><button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button></div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="pool-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div><input type="number" inputmode="numeric" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div><div>${timerHtml}</div></div></div>`;
+    return`<div class="pool-row ${kar.personen&&kar.personen.length?'gekoppeld':''}"><div class="pool-row-top"><div style="flex:1"><div class="pool-naam">${kar.naam}</div><div style="font-size:.75rem;color:${kar.personen&&kar.personen.length?'var(--green)':'var(--text3)'};margin-top:3px">${kar.personen&&kar.personen.length?'👥 ':''} ${persStr}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-xs" onclick="openKoppelKarModal(${i})">👥 Koppel</button><button class="btn btn-ghost btn-xs" onclick="bewerkPoolKar(${i})">✏️ Bewerken</button><button class="btn btn-danger btn-xs" onclick="verwijderPoolKar(${i})">✕</button></div></div><span class="badge ${st.cls}">${st.label}</span></div><div class="pool-row-bottom"><div><div style="font-size:.65rem;color:var(--text3);font-weight:700;text-transform:uppercase">Verwacht (min)</div><input type="number" inputmode="numeric" value="${kar.verwacht||''}" placeholder="—" style="width:75px;padding:5px 8px;font-size:.82rem;margin-top:3px" onchange="updatePoolKarVerwacht(${i},this.value)"></div><div>${timerHtml}</div></div></div>`;
   }).join('');
   if(pool.some(k=>k.timerStart&&!k.timerStop))startTimerInterval();
 }
@@ -1240,8 +1345,8 @@ function syncPoolNaarTeam(pi){const k=App.huidigAvond.karrenPool[pi];(k.personen
 function syncAllePool(){(App.huidigAvond.karrenPool||[]).forEach((_,i)=>syncPoolNaarTeam(i));}
 
 // ── TIMERS ──
-window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;App._dirty=true;haptic('medium');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();startTimerInterval();};
-window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));App._dirty=true;haptic('success');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
+window.startTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];k.timerStart=Date.now();k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=k.timerPauzeTotal||0;k.werkelijk=null;App._dirty=true;haptic('medium');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();startTimerInterval();};
+window.stopTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(k.timerPauze){k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;}k.timerStop=Date.now();const nettoMs=(k.timerStop-k.timerStart)-(k.timerPauzeTotal||0);k.werkelijk=Math.max(1,Math.round(nettoMs/60000));[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));App._dirty=true;haptic('success');syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+': ✓ '+k.werkelijk+' min');};
 window.pauzeTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerStart||k.timerStop)return;k.timerPauze=Date.now();App._dirty=true;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' gepauzeerd');};
 window.hervatTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];if(!k.timerPauze)return;k.timerPauzeTotal=(k.timerPauzeTotal||0)+(Date.now()-k.timerPauze);k.timerPauze=null;App._dirty=true;haptic('light');renderKarrenPool();renderTeam();if(document.getElementById('tab-live').classList.contains('active'))renderLive();showToast(k.naam+' hervat');};
 window.resetTimer=idx=>{const k=App.huidigAvond.karrenPool[idx];[...App.alarmGegeven].filter(x=>x.startsWith(k.id+'_')).forEach(x=>App.alarmGegeven.delete(x));k.timerStart=null;k.timerStop=null;k.timerPauze=null;k.timerPauzeTotal=0;k.werkelijk=null;syncPoolNaarTeam(idx);renderKarrenPool();renderTeam();};
@@ -2188,187 +2293,191 @@ window.printMaandrapport=()=>{
     +'body{font-family:Helvetica Neue,Helvetica,Arial,sans-serif;color:#111;background:#fff;padding:12mm;font-size:10.5px}'
     +'@media print{@page{margin:8mm;size:A4 portrait}body{padding:0}.no-print{display:none!important}}'
     +'</style></head><body>'
-    +'<div class="no-print" style="position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:99">'
-      +'<button onclick="window.print()" style="background:#E2001A;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer">&#128438; Opslaan als PDF</button>'
-      +'<button onclick="window.close()" style="background:#eee;color:#333;border:none;border-radius:6px;padding:8px 12px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer">✕ Sluiten</button>'
-    +'</div>'
-    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #E2001A">'
-      +'<div>'
-        +'<div style="font-size:21px;font-weight:900;color:#E2001A;letter-spacing:-.5px">Maandrapport</div>'
-        +'<div style="font-size:13px;font-weight:700;color:#333;margin-top:2px">'+maandNaam+' &mdash; '+filiaal+'</div>'
-        +'<div style="font-size:9.5px;color:#aaa;margin-top:3px">Gegenereerd op '+printDatum+'</div>'
-      +'</div>'
-      +'<div style="text-align:right">'
-        +'<div style="font-size:8.5px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Samenvatting</div>'
-        +'<div style="display:flex;gap:14px">'
-          +[{v:avonden.length,l:'avonden'},{v:medews.length,l:'mensen'},{v:totUren.toFixed(0)+'u',l:'uren'},{v:totKarren,l:'karren'},{v:gemScore!==null?gemScore+'%':'&mdash;',l:'gem. score',c:sKleur(gemScore)}].map(x=>'<div style="text-align:center"><div style="font-family:monospace;font-size:17px;font-weight:900;color:'+(x.c||'#333')+'">'+x.v+'</div><div style="font-size:8px;color:#aaa;font-weight:700;text-transform:uppercase">'+x.l+'</div></div>').join('')
-        +'</div>'
-      +'</div>'
-    +'</div>'
-    +'<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">'
-      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#0ea35a33;border:1px solid #0ea35a"></span><b style="color:#0ea35a">Snel</b> ≥95%</span>'
-      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#2563eb33;border:1px solid #2563eb"></span><b style="color:#2563eb">Goed</b> 80&ndash;95%</span>'
-      +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#E2001A33;border:1px solid #E2001A"></span><b style="color:#E2001A">Traag</b> &lt;80%</span>'
-      +'<span style="font-size:8.5px;color:#aaa">Score = verwacht ÷ werkelijk × 100% &mdash; hoger is beter</span>'
-    +'</div>'
-    +body
-    +'</body></html>';
 
-  const w=window.open('','_blank');
-  w.document.write(page);
-  w.document.close();
-  w.focus();
-  setTimeout(()=>w.print(),700);
+```
++'<div class="no-print" style="position:fixed;top:10px;right:10px;display:flex;gap:8px;z-index:99">'
+  +'<button onclick="window.print()" style="background:#E2001A;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:inherit;font-weight:800;font-size:12px;cursor:pointer">&#128438; Opslaan als PDF</button>'
+  +'<button onclick="window.close()" style="background:#eee;color:#333;border:none;border-radius:6px;padding:8px 12px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer">✕ Sluiten</button>'
++'</div>'
++'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #E2001A">'
+  +'<div>'
+    +'<div style="font-size:21px;font-weight:900;color:#E2001A;letter-spacing:-.5px">Maandrapport</div>'
+    +'<div style="font-size:13px;font-weight:700;color:#333;margin-top:2px">'+maandNaam+' &mdash; '+filiaal+'</div>'
+    +'<div style="font-size:9.5px;color:#aaa;margin-top:3px">Gegenereerd op '+printDatum+'</div>'
+  +'</div>'
+  +'<div style="text-align:right">'
+    +'<div style="font-size:8.5px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Samenvatting</div>'
+    +'<div style="display:flex;gap:14px">'
+      +[{v:avonden.length,l:'avonden'},{v:medews.length,l:'mensen'},{v:totUren.toFixed(0)+'u',l:'uren'},{v:totKarren,l:'karren'},{v:gemScore!==null?gemScore+'%':'&mdash;',l:'gem. score',c:sKleur(gemScore)}].map(x=>'<div style="text-align:center"><div style="font-family:monospace;font-size:17px;font-weight:900;color:'+(x.c||'#333')+'">'+x.v+'</div><div style="font-size:8px;color:#aaa;font-weight:700;text-transform:uppercase">'+x.l+'</div></div>').join('')
+    +'</div>'
+  +'</div>'
++'</div>'
++'<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">'
+  +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#0ea35a33;border:1px solid #0ea35a"></span><b style="color:#0ea35a">Snel</b> ≥95%</span>'
+  +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#2563eb33;border:1px solid #2563eb"></span><b style="color:#2563eb">Goed</b> 80&ndash;95%</span>'
+  +'<span style="font-size:8.5px;display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#E2001A33;border:1px solid #E2001A"></span><b style="color:#E2001A">Traag</b> &lt;80%</span>'
+  +'<span style="font-size:8.5px;color:#aaa">Score = verwacht ÷ werkelijk × 100% &mdash; hoger is beter</span>'
++'</div>'
++body
++'</body></html>';
+```
+
+const w=window.open(’’,’_blank’);
+w.document.write(page);
+w.document.close();
+w.focus();
+setTimeout(()=>w.print(),700);
 };
 window.openNieuwMedewModal=()=>{
-  App._bewerkMedewId=null;
-  document.getElementById('nieuwMedewNaam').value='';
-  document.getElementById('nieuwMedewFunctie').value='';
-  document.getElementById('modalMedewTitel').textContent='👤 Nieuwe medewerker';
-  document.getElementById('medewWaarschuwing').style.display='none';
-  document.getElementById('modalMedewSlaOp').textContent='Opslaan';
-  openModal('modalNieuwMedew');
+App._bewerkMedewId=null;
+document.getElementById(‘nieuwMedewNaam’).value=’’;
+document.getElementById(‘nieuwMedewFunctie’).value=’’;
+document.getElementById(‘modalMedewTitel’).textContent=‘👤 Nieuwe medewerker’;
+document.getElementById(‘medewWaarschuwing’).style.display=‘none’;
+document.getElementById(‘modalMedewSlaOp’).textContent=‘Opslaan’;
+openModal(‘modalNieuwMedew’);
 };
 window.bewerkMedew=fbId=>{
-  const m=App.medewerkers.find(x=>x.fbId===fbId);
-  if(!m)return;
-  App._bewerkMedewId=fbId;
-  document.getElementById('nieuwMedewNaam').value=m.naam;
-  document.getElementById('nieuwMedewFunctie').value=m.functie||'';
-  document.getElementById('modalMedewTitel').textContent='✏️ Medewerker bewerken';
-  document.getElementById('medewWaarschuwing').style.display='block';
-  document.getElementById('modalMedewSlaOp').textContent='Opslaan';
-  openModal('modalNieuwMedew');
+const m=App.medewerkers.find(x=>x.fbId===fbId);
+if(!m)return;
+App._bewerkMedewId=fbId;
+document.getElementById(‘nieuwMedewNaam’).value=m.naam;
+document.getElementById(‘nieuwMedewFunctie’).value=m.functie||’’;
+document.getElementById(‘modalMedewTitel’).textContent=‘✏️ Medewerker bewerken’;
+document.getElementById(‘medewWaarschuwing’).style.display=‘block’;
+document.getElementById(‘modalMedewSlaOp’).textContent=‘Opslaan’;
+openModal(‘modalNieuwMedew’);
 };
 window.slaaNieuwMedewOp=async()=>{
-  const naam=document.getElementById('nieuwMedewNaam').value.trim();
-  const functie=document.getElementById('nieuwMedewFunctie').value.trim();
-  if(!naam){alert('Naam vereist.');return;}
-  setSyncStatus('bezig');
-  try{
-    if(App._bewerkMedewId){
-      if(!navigator.onLine){showToast('⚠ Geen verbinding — naam wijzigen vereist internet.');setSyncStatus('fout');return;}
-      // Bewerk bestaande medewerker
-      const fbId=App._bewerkMedewId;
-      const oud=App.medewerkers.find(x=>x.fbId===fbId);
-      const oudeNaam=oud.naam;
-      await fbSet('accounts/'+App.uid+'/medewerkers/'+fbId,{naam,functie,created:oud.created||Date.now()});
-      oud.naam=naam; oud.functie=functie;
-      App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
-      // Update naam in alle lokale avonden
-      let bijgewerkt=0;
-      for(const av of App.avonden){
-        if(!av.fbId)continue;
-        let gewijzigd=false;
-        (av.team||[]).forEach(lid=>{if(lid.naam===oudeNaam){lid.naam=naam;gewijzigd=true;}});
-        (av.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
-        if(gewijzigd){
-          const{fbId:_fid,id:_id,...avData}=av;
-          await fbSet('avonden/'+av.fbId,avData);
-          bijgewerkt++;
-        }
-      }
-      // Ook het huidig open avond bijwerken zodat de volgende opslaan de nieuwe naam gebruikt
-      if(App.huidigAvond){
-        (App.huidigAvond.team||[]).forEach(lid=>{if(lid.naam===oudeNaam)lid.naam=naam;});
-        (App.huidigAvond.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
-        renderTeam();
-      }
-      // Wis gecachte berekeningen zodat stats/maandrapport opnieuw laden
-      App._statsData=null;
-      App._maandData=null;
-      setSyncStatus('ok');
-      closeModal('modalNieuwMedew');
-      renderMedewBeheer();
-      vulLeiderSelect();
-      showToast('Opgeslagen'+(bijgewerkt?' \u00b7 '+bijgewerkt+' avond'+(bijgewerkt!==1?'en':'')+' bijgewerkt':''));
-    } else {
-      // Nieuwe medewerker
-      const fbId=await fbAdd('accounts/'+App.uid+'/medewerkers',{naam,functie,created:Date.now()});
-      App.medewerkers.push({id:fbId,fbId,naam,functie});
-      App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
-      setSyncStatus('ok');
-      closeModal('modalNieuwMedew');
-      renderMedewBeheer();
-      vulLeiderSelect();
-      showToast('Medewerker opgeslagen');
-    }
-  }catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}
+const naam=document.getElementById(‘nieuwMedewNaam’).value.trim();
+const functie=document.getElementById(‘nieuwMedewFunctie’).value.trim();
+if(!naam){alert(‘Naam vereist.’);return;}
+setSyncStatus(‘bezig’);
+try{
+if(App._bewerkMedewId){
+if(!navigator.onLine){showToast(‘⚠ Geen verbinding — naam wijzigen vereist internet.’);setSyncStatus(‘fout’);return;}
+// Bewerk bestaande medewerker
+const fbId=App._bewerkMedewId;
+const oud=App.medewerkers.find(x=>x.fbId===fbId);
+const oudeNaam=oud.naam;
+await fbSet(‘accounts/’+App.uid+’/medewerkers/’+fbId,{naam,functie,created:oud.created||Date.now()});
+oud.naam=naam; oud.functie=functie;
+App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
+// Update naam in alle lokale avonden
+let bijgewerkt=0;
+for(const av of App.avonden){
+if(!av.fbId)continue;
+let gewijzigd=false;
+(av.team||[]).forEach(lid=>{if(lid.naam===oudeNaam){lid.naam=naam;gewijzigd=true;}});
+(av.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
+if(gewijzigd){
+const{fbId:_fid,id:_id,…avData}=av;
+await fbSet(‘avonden/’+av.fbId,avData);
+bijgewerkt++;
+}
+}
+// Ook het huidig open avond bijwerken zodat de volgende opslaan de nieuwe naam gebruikt
+if(App.huidigAvond){
+(App.huidigAvond.team||[]).forEach(lid=>{if(lid.naam===oudeNaam)lid.naam=naam;});
+(App.huidigAvond.karrenPool||[]).forEach(kar=>{if(kar.personen)kar.personen=kar.personen.map(n=>n===oudeNaam?naam:n);});
+renderTeam();
+}
+// Wis gecachte berekeningen zodat stats/maandrapport opnieuw laden
+App._statsData=null;
+App._maandData=null;
+setSyncStatus(‘ok’);
+closeModal(‘modalNieuwMedew’);
+renderMedewBeheer();
+vulLeiderSelect();
+showToast(‘Opgeslagen’+(bijgewerkt?’ \u00b7 ‘+bijgewerkt+’ avond’+(bijgewerkt!==1?‘en’:’’)+’ bijgewerkt’:’’));
+} else {
+// Nieuwe medewerker
+const fbId=await fbAdd(‘accounts/’+App.uid+’/medewerkers’,{naam,functie,created:Date.now()});
+App.medewerkers.push({id:fbId,fbId,naam,functie});
+App.medewerkers.sort((a,b)=>a.naam.localeCompare(b.naam));
+setSyncStatus(‘ok’);
+closeModal(‘modalNieuwMedew’);
+renderMedewBeheer();
+vulLeiderSelect();
+showToast(‘Medewerker opgeslagen’);
+}
+}catch(e){setSyncStatus(‘fout’);showToast(‘Fout: ‘+e.message);}
 };
-window.verwijderMedew=async fbId=>{if(!confirm('Medewerker verwijderen?'))return;try{await fbDel('accounts/'+App.uid+'/medewerkers/'+fbId);App.medewerkers=App.medewerkers.filter(m=>m.fbId!==fbId);renderMedewBeheer();showToast('Verwijderd');}catch(e){showToast('Fout: '+e.message);}};
-function renderMedewBeheer(){const c=document.getElementById('medewContent');if(!App.medewerkers.length){c.innerHTML='<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>';return;}c.innerHTML='<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Acties</th></tr></thead><tbody>'+App.medewerkers.map(m=>`<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td><td style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="bewerkMedew('${m.fbId}')">✏️</button><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`).join('')+'</tbody></table></div>';}
+window.verwijderMedew=async fbId=>{if(!confirm(‘Medewerker verwijderen?’))return;try{await fbDel(‘accounts/’+App.uid+’/medewerkers/’+fbId);App.medewerkers=App.medewerkers.filter(m=>m.fbId!==fbId);renderMedewBeheer();showToast(‘Verwijderd’);}catch(e){showToast(‘Fout: ‘+e.message);}};
+function renderMedewBeheer(){const c=document.getElementById(‘medewContent’);if(!App.medewerkers.length){c.innerHTML=’<div class="empty"><div class="empty-icon">👤</div><div class="empty-text">Nog geen medewerkers.</div></div>’;return;}c.innerHTML=’<div class="table-wrap"><table class="data-table"><thead><tr><th>Naam</th><th>Functie</th><th>Acties</th></tr></thead><tbody>’+App.medewerkers.map(m=>`<tr><td><strong>${m.naam}</strong></td><td><span class="tag">${m.functie||'—'}</span></td><td style="display:flex;gap:6px"><button class="btn btn-secondary btn-sm" onclick="bewerkMedew('${m.fbId}')">✏️</button><button class="btn btn-danger btn-sm" onclick="verwijderMedew('${m.fbId}')">Verwijder</button></td></tr>`).join(’’)+’</tbody></table></div>’;}
 
 // ── LEIDERS ──
-window.openNieuwLeiderModal=()=>{document.getElementById('nieuwLeiderNaam').value='';openModal('modalNieuwLeider');};
-window.slaaNieuwLeiderOp=async()=>{const naam=document.getElementById('nieuwLeiderNaam').value.trim(),functie=document.getElementById('nieuwLeiderFunctie').value;if(!naam){alert('Naam vereist.');return;}setSyncStatus('bezig');try{const fbId=await fbAdd('accounts/'+App.uid+'/leiders',{naam,functie,created:Date.now()});App.leiders.push({fbId,naam,functie});setSyncStatus('ok');closeModal('modalNieuwLeider');renderLeidersBeheer();vulLeiderSelect();showToast('Leider opgeslagen');}catch(e){setSyncStatus('fout');showToast('Fout: '+e.message);}};
-window.verwijderLeider=async fbId=>{if(!confirm('Leider verwijderen?'))return;try{await fbDel('accounts/'+App.uid+'/leiders/'+fbId);App.leiders=App.leiders.filter(l=>l.fbId!==fbId);renderLeidersBeheer();vulLeiderSelect();showToast('Verwijderd');}catch(e){showToast('Fout: '+e.message);}};
-function renderLeidersBeheer(){const c=document.getElementById('leidersContent');if(!App.leiders.length){c.innerHTML='<div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Nog geen leiders.</div></div>';return;}c.innerHTML='<div class="card">'+App.leiders.map(l=>`<div class="leider-card"><div><div style="font-weight:900;font-size:.95rem">${l.naam}</div><span class="tag">${l.functie||'—'}</span></div><button class="btn btn-danger btn-sm" onclick="verwijderLeider('${l.fbId}')">Verwijder</button></div>`).join('')+'</div>';}
+window.openNieuwLeiderModal=()=>{document.getElementById(‘nieuwLeiderNaam’).value=’’;openModal(‘modalNieuwLeider’);};
+window.slaaNieuwLeiderOp=async()=>{const naam=document.getElementById(‘nieuwLeiderNaam’).value.trim(),functie=document.getElementById(‘nieuwLeiderFunctie’).value;if(!naam){alert(‘Naam vereist.’);return;}setSyncStatus(‘bezig’);try{const fbId=await fbAdd(‘accounts/’+App.uid+’/leiders’,{naam,functie,created:Date.now()});App.leiders.push({fbId,naam,functie});setSyncStatus(‘ok’);closeModal(‘modalNieuwLeider’);renderLeidersBeheer();vulLeiderSelect();showToast(‘Leider opgeslagen’);}catch(e){setSyncStatus(‘fout’);showToast(‘Fout: ‘+e.message);}};
+window.verwijderLeider=async fbId=>{if(!confirm(‘Leider verwijderen?’))return;try{await fbDel(‘accounts/’+App.uid+’/leiders/’+fbId);App.leiders=App.leiders.filter(l=>l.fbId!==fbId);renderLeidersBeheer();vulLeiderSelect();showToast(‘Verwijderd’);}catch(e){showToast(‘Fout: ‘+e.message);}};
+function renderLeidersBeheer(){const c=document.getElementById(‘leidersContent’);if(!App.leiders.length){c.innerHTML=’<div class="empty"><div class="empty-icon">🔑</div><div class="empty-text">Nog geen leiders.</div></div>’;return;}c.innerHTML=’<div class="card">’+App.leiders.map(l=>`<div class="leider-card"><div><div style="font-weight:900;font-size:.95rem">${l.naam}</div><span class="tag">${l.functie||'—'}</span></div><button class="btn btn-danger btn-sm" onclick="verwijderLeider('${l.fbId}')">Verwijder</button></div>`).join(’’)+’</div>’;}
 
 // ── AFSLUITEN ──
 window.sluitAvondAf=()=>{
-  document.getElementById('afsluitGepland').value=App.huidigAvond.colli||0;document.getElementById('afsluitWerkelijk').value='';document.getElementById('afsluitNotitie').value='';
-  const av=App.huidigAvond,norm=av.norm||80,team=av.team||[];
-  if(team.length){
-    let rows='',totTarget=0,totWerk=0;
-    team.forEach(lid=>{const u=berekenUren(lid.start,lid.eind,lid.pauze),targetColli=Math.round(u*norm),ka=lid.karten||[],totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);let werkColli=null;if(totV>0&&totW>0){werkColli=Math.round(targetColli*(totV/totW));}totTarget+=targetColli;if(werkColli!==null)totWerk+=werkColli;const diff=werkColli!==null?werkColli-targetColli:null,pct2=werkColli!==null?Math.round((werkColli/targetColli)*100):null;let cls='',statusTxt='—',barW=50,barC='var(--text3)';if(pct2!==null){if(pct2>=95){cls='verg-ok';statusTxt='✓ '+pct2+'%';barC='var(--green)';barW=Math.min(100,pct2);}else if(pct2>=80){cls='verg-warn';statusTxt='~ '+pct2+'%';barC='var(--orange)';barW=pct2;}else{cls='verg-slecht';statusTxt='⚠ '+pct2+'%';barC='var(--red)';barW=pct2;}}const diffTxt=diff!==null?(diff>=0?'<span style="color:var(--green)">+'+diff+'</span>':'<span style="color:var(--red)">'+diff+'</span>'):'—';rows+=`<tr><td><strong>${lid.naam}</strong><div style="font-size:.68rem;color:var(--text3)">${lid.start}–${lid.eind} · ${u.toFixed(1)}u</div></td><td class="mono">${targetColli}</td><td class="mono">${werkColli!==null?werkColli:'—'}</td><td class="mono">${diffTxt}</td><td><div class="${cls}" style="font-size:.75rem;font-weight:800">${statusTxt}</div>${pct2!==null?`<div class="vergelijk-bar" style="width:${barW}%;background:${barC}"></div>`:''}</td></tr>`;});
-    const totPct=totTarget>0&&totWerk>0?Math.round((totWerk/totTarget)*100):null,totDiff=totWerk-totTarget;
-    rows+=`<tr style="background:var(--surface2)"><td><strong>Totaal team</strong></td><td class="mono"><strong>${totTarget}</strong></td><td class="mono"><strong>${totWerk||'—'}</strong></td><td class="mono">${totWerk?`<strong>${totDiff>=0?'+':''}${totDiff}</strong>`:'—'}</td><td>${totPct?`<strong style="color:${totPct>=95?'var(--green)':totPct>=80?'var(--orange)':'var(--red)'}">${totPct}%</strong>`:'—'}</td></tr>`;
-    document.getElementById('afsluitVergelijkInhoud').innerHTML=`<div style="padding:4px 0"><table class="vergelijk-table"><thead><tr><th>Medewerker</th><th>Target</th><th>Werkelijk</th><th>Verschil</th><th>Score</th></tr></thead><tbody>${rows}</tbody></table></div><div style="padding:10px 14px;font-size:.72rem;color:var(--text3);border-top:1px solid var(--border)">💡 Werkelijke colli berekend op basis van tijdsverhouding.</div>`;
-    document.getElementById('afsluitVergelijk').style.display='block';
-  }else document.getElementById('afsluitVergelijk').style.display='none';
-  openModal('modalAfsluiten');
+document.getElementById(‘afsluitGepland’).value=App.huidigAvond.colli||0;document.getElementById(‘afsluitWerkelijk’).value=’’;document.getElementById(‘afsluitNotitie’).value=’’;
+const av=App.huidigAvond,norm=av.norm||80,team=av.team||[];
+if(team.length){
+let rows=’’,totTarget=0,totWerk=0;
+team.forEach(lid=>{const u=berekenUren(lid.start,lid.eind,lid.pauze),targetColli=Math.round(u*norm),ka=lid.karten||[],totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);let werkColli=null;if(totV>0&&totW>0){werkColli=Math.round(targetColli*(totV/totW));}totTarget+=targetColli;if(werkColli!==null)totWerk+=werkColli;const diff=werkColli!==null?werkColli-targetColli:null,pct2=werkColli!==null?Math.round((werkColli/targetColli)*100):null;let cls=’’,statusTxt=’—’,barW=50,barC=‘var(–text3)’;if(pct2!==null){if(pct2>=95){cls=‘verg-ok’;statusTxt=‘✓ ‘+pct2+’%’;barC=‘var(–green)’;barW=Math.min(100,pct2);}else if(pct2>=80){cls=‘verg-warn’;statusTxt=’~ ‘+pct2+’%’;barC=‘var(–orange)’;barW=pct2;}else{cls=‘verg-slecht’;statusTxt=‘⚠ ‘+pct2+’%’;barC=‘var(–red)’;barW=pct2;}}const diffTxt=diff!==null?(diff>=0?’<span style="color:var(--green)">+’+diff+’</span>’:’<span style="color:var(--red)">’+diff+’</span>’):’—’;rows+=`<tr><td><strong>${lid.naam}</strong><div style="font-size:.68rem;color:var(--text3)">${lid.start}–${lid.eind} · ${u.toFixed(1)}u</div></td><td class="mono">${targetColli}</td><td class="mono">${werkColli!==null?werkColli:'—'}</td><td class="mono">${diffTxt}</td><td><div class="${cls}" style="font-size:.75rem;font-weight:800">${statusTxt}</div>${pct2!==null?`<div class="vergelijk-bar" style="width:${barW}%;background:${barC}"></div>`:''}</td></tr>`;});
+const totPct=totTarget>0&&totWerk>0?Math.round((totWerk/totTarget)*100):null,totDiff=totWerk-totTarget;
+rows+=`<tr style="background:var(--surface2)"><td><strong>Totaal team</strong></td><td class="mono"><strong>${totTarget}</strong></td><td class="mono"><strong>${totWerk||'—'}</strong></td><td class="mono">${totWerk?`<strong>${totDiff>=0?’+’:’’}${totDiff}</strong>`:'—'}</td><td>${totPct?`<strong style="color:${totPct>=95?'var(--green)':totPct>=80?'var(--orange)':'var(--red)'}">${totPct}%</strong>`:'—'}</td></tr>`;
+document.getElementById(‘afsluitVergelijkInhoud’).innerHTML=`<div style="padding:4px 0"><table class="vergelijk-table"><thead><tr><th>Medewerker</th><th>Target</th><th>Werkelijk</th><th>Verschil</th><th>Score</th></tr></thead><tbody>${rows}</tbody></table></div><div style="padding:10px 14px;font-size:.72rem;color:var(--text3);border-top:1px solid var(--border)">💡 Werkelijke colli berekend op basis van tijdsverhouding.</div>`;
+document.getElementById(‘afsluitVergelijk’).style.display=‘block’;
+}else document.getElementById(‘afsluitVergelijk’).style.display=‘none’;
+openModal(‘modalAfsluiten’);
 };
-window.bevestigAfsluiten=async()=>{App.huidigAvond.afgesloten=true;App.huidigAvond.werkelijkColli=+document.getElementById('afsluitWerkelijk').value||null;App.huidigAvond.eindnotitie=document.getElementById('afsluitNotitie').value.trim();App.huidigAvond.leidinggevende=document.getElementById('fLeider').value;closeModal('modalAfsluiten');await slaOp();document.getElementById('afgeslotenTxt').textContent=(App.huidigAvond.werkelijkColli?App.huidigAvond.werkelijkColli+' colli':'Avond afgerond')+(App.huidigAvond.eindnotitie?' — '+App.huidigAvond.eindnotitie:'');document.getElementById('afgeslotenBanner').classList.remove('hidden');};
+window.bevestigAfsluiten=async()=>{App.huidigAvond.afgesloten=true;App.huidigAvond.werkelijkColli=+document.getElementById(‘afsluitWerkelijk’).value||null;App.huidigAvond.eindnotitie=document.getElementById(‘afsluitNotitie’).value.trim();App.huidigAvond.leidinggevende=document.getElementById(‘fLeider’).value;closeModal(‘modalAfsluiten’);await slaOp();document.getElementById(‘afgeslotenTxt’).textContent=(App.huidigAvond.werkelijkColli?App.huidigAvond.werkelijkColli+’ colli’:‘Avond afgerond’)+(App.huidigAvond.eindnotitie?’ — ‘+App.huidigAvond.eindnotitie:’’);document.getElementById(‘afgeslotenBanner’).classList.remove(‘hidden’);};
 
 // ── ZIEK ──
-window.openZiekModal=pre=>{document.getElementById('ziekSel').innerHTML='<option value="">— Kies —</option>'+(App.huidigAvond.team||[]).map((m,i)=>`<option value="${i}" ${i===pre?'selected':''}>${m.naam}</option>`).join('');document.getElementById('ziekVervanger').innerHTML='<option value="">— Geen —</option>'+App.medewerkers.filter(m=>!(App.huidigAvond.team||[]).find(l=>l.naam===m.naam)).map(m=>`<option value="${m.naam}">${m.naam}</option>`).join('');openModal('modalZiek');};
-window.slaZiekOp=()=>{const idx=parseInt(document.getElementById('ziekSel').value);if(isNaN(idx)||idx<0){alert('Kies een medewerker.');return;}const v=document.getElementById('ziekVervanger').value,vs=document.getElementById('ziekStart').value,ve=document.getElementById('ziekEind').value;App.huidigAvond.team[idx].ziek=true;App.huidigAvond.team[idx].vervanger=v||null;if(v)App.huidigAvond.team.push({naam:v,start:vs,eind:ve,pauze:0,notitie:'Vervanger voor '+App.huidigAvond.team[idx].naam,karten:[],ziek:false,vervanger:null});App._dirty=true;closeModal('modalZiek');renderTeam();showToast('Ziekmelding opgeslagen');};
+window.openZiekModal=pre=>{document.getElementById(‘ziekSel’).innerHTML=’<option value="">— Kies —</option>’+(App.huidigAvond.team||[]).map((m,i)=>`<option value="${i}" ${i===pre?'selected':''}>${m.naam}</option>`).join(’’);document.getElementById(‘ziekVervanger’).innerHTML=’<option value="">— Geen —</option>’+App.medewerkers.filter(m=>!(App.huidigAvond.team||[]).find(l=>l.naam===m.naam)).map(m=>`<option value="${m.naam}">${m.naam}</option>`).join(’’);openModal(‘modalZiek’);};
+window.slaZiekOp=()=>{const idx=parseInt(document.getElementById(‘ziekSel’).value);if(isNaN(idx)||idx<0){alert(‘Kies een medewerker.’);return;}const v=document.getElementById(‘ziekVervanger’).value,vs=document.getElementById(‘ziekStart’).value,ve=document.getElementById(‘ziekEind’).value;App.huidigAvond.team[idx].ziek=true;App.huidigAvond.team[idx].vervanger=v||null;if(v)App.huidigAvond.team.push({naam:v,start:vs,eind:ve,pauze:0,notitie:’Vervanger voor ’+App.huidigAvond.team[idx].naam,karten:[],ziek:false,vervanger:null});App._dirty=true;closeModal(‘modalZiek’);renderTeam();showToast(‘Ziekmelding opgeslagen’);};
 
 // ── SAMENVATTING ──
 window.openSamenvatting=()=>{
-  const av=App.huidigAvond,norm=av.norm||80;
-  if(!av.team||!av.team.length){alert('Voeg eerst medewerkers toe.');return;}
-  const d=new Date(av.datum);let totU=0,totT=0;av.team.forEach(l=>{const u=berekenUren(l.start,l.eind,l.pauze);totU+=u;totT+=Math.round(u*norm);});
-  let txt='📦 VULPLOEG OVERZICHT — '+d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).toUpperCase()+'\n'+'━'.repeat(32)+'\n'+'🏪 Filiaal:  '+App.filiaal+'\n'+(av.leidinggevende?'🔑 Leiding:  '+av.leidinggevende+'\n':'')+'🏷️  Vracht:   '+av.colli+' colli\n'+'⏱️  Norm:     '+norm+' colli/uur\n'+'👥  Team:     '+totU.toFixed(1)+' uur\n'+(parseFloat((totU-av.colli/norm).toFixed(1))>=0?'✅':'⚠️')+'  Dekking:  '+Math.min(100,Math.round(totT/av.colli*100))+'% ('+totT+'/'+av.colli+')\n\n'+'👥 TEAM\n';
-  av.team.forEach(l=>{const u=berekenUren(l.start,l.eind,l.pauze);txt+=(l.ziek?'🤒 ':'')+'• '+l.naam+' ('+l.start+'–'+l.eind+', '+Math.round(u*norm)+' colli)'+(l.notitie?' — '+l.notitie:'')+(l.ziek&&l.vervanger?' → '+l.vervanger:'')+'\n';});
-  const k=av.karrenPool||[];if(k.length){txt+='\n📦 KARREN\n';k.forEach(x=>{txt+='• '+x.naam+(x.personen&&x.personen.length?' → '+x.personen.join(', '):'')+(x.werkelijk?' ('+x.werkelijk+' min)':'')+'\n';});}
-  if(av.afgesloten&&av.werkelijkColli)txt+='\n✅ RESULTAAT: '+av.werkelijkColli+' colli'+(av.eindnotitie?'\n📝 '+av.eindnotitie:'');
-  txt+='\n\n🏪 Kruidvat Vulploeg Manager';
-  document.getElementById('samenvattingTxt').textContent=txt;openModal('modalSamenvatting');
+const av=App.huidigAvond,norm=av.norm||80;
+if(!av.team||!av.team.length){alert(‘Voeg eerst medewerkers toe.’);return;}
+const d=new Date(av.datum);let totU=0,totT=0;av.team.forEach(l=>{const u=berekenUren(l.start,l.eind,l.pauze);totU+=u;totT+=Math.round(u*norm);});
+let txt=‘📦 VULPLOEG OVERZICHT — ‘+d.toLocaleDateString(‘nl-NL’,{weekday:‘long’,day:‘numeric’,month:‘long’}).toUpperCase()+’\n’+‘━’.repeat(32)+’\n’+‘🏪 Filiaal:  ‘+App.filiaal+’\n’+(av.leidinggevende?‘🔑 Leiding:  ‘+av.leidinggevende+’\n’:’’)+‘🏷️  Vracht:   ‘+av.colli+’ colli\n’+‘⏱️  Norm:     ‘+norm+’ colli/uur\n’+‘👥  Team:     ‘+totU.toFixed(1)+’ uur\n’+(parseFloat((totU-av.colli/norm).toFixed(1))>=0?‘✅’:‘⚠️’)+’  Dekking:  ’+Math.min(100,Math.round(totT/av.colli*100))+’% (’+totT+’/’+av.colli+’)\n\n’+‘👥 TEAM\n’;
+av.team.forEach(l=>{const u=berekenUren(l.start,l.eind,l.pauze);txt+=(l.ziek?‘🤒 ‘:’’)+’• ‘+l.naam+’ (’+l.start+’–’+l.eind+’, ‘+Math.round(u*norm)+’ colli)’+(l.notitie?’ — ‘+l.notitie:’’)+(l.ziek&&l.vervanger?’ → ‘+l.vervanger:’’)+’\n’;});
+const k=av.karrenPool||[];if(k.length){txt+=’\n📦 KARREN\n’;k.forEach(x=>{txt+=’• ‘+x.naam+(x.personen&&x.personen.length?’ → ‘+x.personen.join(’, ‘):’’)+(x.werkelijk?’ (’+x.werkelijk+’ min)’:’’)+’\n’;});}
+if(av.afgesloten&&av.werkelijkColli)txt+=’\n✅ RESULTAAT: ‘+av.werkelijkColli+’ colli’+(av.eindnotitie?’\n📝 ‘+av.eindnotitie:’’);
+txt+=’\n\n🏪 Kruidvat Vulploeg Manager’;
+document.getElementById(‘samenvattingTxt’).textContent=txt;openModal(‘modalSamenvatting’);
 };
-window.kopieer=()=>{const t=document.getElementById('samenvattingTxt').textContent;navigator.clipboard.writeText(t).then(()=>showToast('Gekopieerd!')).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast('Gekopieerd!');});};
-window.deelWA=()=>window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('samenvattingTxt').textContent),'_blank');
+window.kopieer=()=>{const t=document.getElementById(‘samenvattingTxt’).textContent;navigator.clipboard.writeText(t).then(()=>showToast(‘Gekopieerd!’)).catch(()=>{const ta=document.createElement(‘textarea’);ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand(‘copy’);ta.remove();showToast(‘Gekopieerd!’);});};
+window.deelWA=()=>window.open(‘https://wa.me/?text=’+encodeURIComponent(document.getElementById(‘samenvattingTxt’).textContent),’_blank’);
 
 // ── COLLI ──
 window.colliDirectSet=val=>{const v=Math.max(0,Math.min(App.huidigAvond.colli||99999,+val||0));App.huidigAvond.colliVerwerkt=v;App._dirty=true;updateColliTeller();};
 window.colliAanpassen=d=>{App.huidigAvond.colliVerwerkt=Math.max(0,Math.min(App.huidigAvond.colli||99999,(App.huidigAvond.colliVerwerkt||0)+d));App._dirty=true;updateColliTeller();};
-function updateColliTeller(){const h=App.huidigAvond.colliVerwerkt||0,d=App.huidigAvond.colli||2000,pct=d>0?Math.min(100,Math.round(h/d*100)):0;const n=document.getElementById('colliNum');if(n)n.textContent=h;const dl=document.getElementById('colliDoel');if(dl)dl.textContent=d;const p=document.getElementById('colliPct');if(p)p.textContent=pct+'% klaar'+(pct>=100?' 🎉':'');const f=document.getElementById('colliFill');if(f)f.style.width=pct+'%';const inp=document.getElementById('colliDirectInput');if(inp&&document.activeElement!==inp)inp.value=h||'';updateEindtijd();}
-function updateEindtijd(){const banner=document.getElementById('eindtijdBanner');if(!banner)return;const team=App.huidigAvond.team||[];if(!team.length){banner.classList.add('hidden');return;}const norm=App.huidigAvond.norm||80,doel=App.huidigAvond.colli||2000,rest=Math.max(0,doel-(App.huidigAvond.colliVerwerkt||0)),now=new Date(),nm=now.getHours()*60+now.getMinutes();let em=nm,restR=rest;for(let t=nm;t<=nm+720;t++){let cpm=0;team.forEach(l=>{if(!l.start||!l.eind)return;const[sh,sm]=l.start.split(':').map(Number),[eh,ee]=l.eind.split(':').map(Number);if(t>=sh*60+sm&&t<eh*60+ee)cpm+=norm/60;});if(cpm===0&&t>nm+5)break;em=t;restR-=cpm;if(restR<=0)break;}document.getElementById('eindtijdTime').textContent=String(Math.floor(em/60)%24).padStart(2,'0')+':'+String(Math.round(em%60)).padStart(2,'0');const totM=team.reduce((s,l)=>{if(!l.start||!l.eind)return s;const[sh,sm]=l.start.split(':').map(Number),[eh,ee]=l.eind.split(':').map(Number);return s+Math.max(0,(eh*60+ee)-Math.max(sh*60+sm,nm)-(l.pauze||0));},0),kan=(totM/60)*norm>=(rest>0?rest:0);document.getElementById('eindtijdDetail').innerHTML=(rest>0?rest:0)+' colli resterend · '+(kan?'<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>':'<span style="color:var(--red);font-weight:800">⚠ tekort</span>');banner.classList.remove('hidden');}
+function updateColliTeller(){const h=App.huidigAvond.colliVerwerkt||0,d=App.huidigAvond.colli||2000,pct=d>0?Math.min(100,Math.round(h/d*100)):0;const n=document.getElementById(‘colliNum’);if(n)n.textContent=h;const dl=document.getElementById(‘colliDoel’);if(dl)dl.textContent=d;const p=document.getElementById(‘colliPct’);if(p)p.textContent=pct+’% klaar’+(pct>=100?’ 🎉’:’’);const f=document.getElementById(‘colliFill’);if(f)f.style.width=pct+’%’;const inp=document.getElementById(‘colliDirectInput’);if(inp&&document.activeElement!==inp)inp.value=h||’’;updateEindtijd();}
+function updateEindtijd(){const banner=document.getElementById(‘eindtijdBanner’);if(!banner)return;const team=App.huidigAvond.team||[];if(!team.length){banner.classList.add(‘hidden’);return;}const norm=App.huidigAvond.norm||80,doel=App.huidigAvond.colli||2000,rest=Math.max(0,doel-(App.huidigAvond.colliVerwerkt||0)),now=new Date(),nm=now.getHours()*60+now.getMinutes();let em=nm,restR=rest;for(let t=nm;t<=nm+720;t++){let cpm=0;team.forEach(l=>{if(!l.start||!l.eind)return;const[sh,sm]=l.start.split(’:’).map(Number),[eh,ee]=l.eind.split(’:’).map(Number);if(t>=sh*60+sm&&t<eh*60+ee)cpm+=norm/60;});if(cpm===0&&t>nm+5)break;em=t;restR-=cpm;if(restR<=0)break;}document.getElementById(‘eindtijdTime’).textContent=String(Math.floor(em/60)%24).padStart(2,‘0’)+’:’+String(Math.round(em%60)).padStart(2,‘0’);const totM=team.reduce((s,l)=>{if(!l.start||!l.eind)return s;const[sh,sm]=l.start.split(’:’).map(Number),[eh,ee]=l.eind.split(’:’).map(Number);return s+Math.max(0,(eh*60+ee)-Math.max(sh*60+sm,nm)-(l.pauze||0));},0),kan=(totM/60)*norm>=(rest>0?rest:0);document.getElementById(‘eindtijdDetail’).innerHTML=(rest>0?rest:0)+’ colli resterend · ‘+(kan?’<span style="color:var(--green);font-weight:800">✓ Team haalt het</span>’:’<span style="color:var(--red);font-weight:800">⚠ tekort</span>’);banner.classList.remove(‘hidden’);}
 
 // ── CALC ──
-window.calcColliToTijd=()=>{const c=+document.getElementById('calcColli').value||0,n=App.huidigAvond.norm||80;if(c>0){const m=Math.round((c/n)*60);document.getElementById('calcMin').value=m;document.getElementById('calcTip').textContent=c+' colli ÷ '+n+' × 60 = '+m+' min';}else{document.getElementById('calcMin').value='';document.getElementById('calcTip').textContent='';}};
-window.calcTijdToColli=()=>{const m=+document.getElementById('calcMin').value||0,n=App.huidigAvond.norm||80;if(m>0){const c=Math.round((m/60)*n);document.getElementById('calcColli').value=c;document.getElementById('calcTip').textContent=m+' min × '+n+' ÷ 60 = '+c+' colli';}else{document.getElementById('calcColli').value='';document.getElementById('calcTip').textContent='';}};
+window.calcColliToTijd=()=>{const c=+document.getElementById(‘calcColli’).value||0,n=App.huidigAvond.norm||80;if(c>0){const m=Math.round((c/n)*60);document.getElementById(‘calcMin’).value=m;document.getElementById(‘calcTip’).textContent=c+’ colli ÷ ‘+n+’ × 60 = ‘+m+’ min’;}else{document.getElementById(‘calcMin’).value=’’;document.getElementById(‘calcTip’).textContent=’’;}};
+window.calcTijdToColli=()=>{const m=+document.getElementById(‘calcMin’).value||0,n=App.huidigAvond.norm||80;if(m>0){const c=Math.round((m/60)*n);document.getElementById(‘calcColli’).value=c;document.getElementById(‘calcTip’).textContent=m+’ min × ‘+n+’ ÷ 60 = ‘+c+’ colli’;}else{document.getElementById(‘calcColli’).value=’’;document.getElementById(‘calcTip’).textContent=’’;}};
 
 // ═══════════════════════════════════════════════════════════
 // ── PRINT TAB ──
 // ═══════════════════════════════════════════════════════════
 
 function renderPrintTab(){
-  const c=document.getElementById('printPreviewContent');
-  const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
-  if(!team.length){c.innerHTML='<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-text">Selecteer eerst een avond met medewerkers.</div></div>';return;}
-  const d=new Date(av.datum),ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  c.innerHTML=`<div class="print-preview-wrap"><div class="print-preview-header"><div><div style="font-weight:900;font-size:.95rem">${ds}</div><div style="font-size:.75rem;color:var(--text3);margin-top:2px">${App.filiaal||'Kruidvat'} · ${team.length} medewerkers · Norm: ${norm} colli/uur</div></div><button class="btn btn-primary btn-sm" onclick="printDagOverzicht()">🖨️ Afdrukken / PDF</button></div><div style="padding:12px 16px;font-size:.8rem;color:var(--text3)">Alle ${team.length} medewerkers op 1 pagina — schaal past automatisch aan.</div></div>`;
+const c=document.getElementById(‘printPreviewContent’);
+const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
+if(!team.length){c.innerHTML=’<div class="empty"><div class="empty-icon">🖨️</div><div class="empty-text">Selecteer eerst een avond met medewerkers.</div></div>’;return;}
+const d=new Date(av.datum),ds=d.toLocaleDateString(‘nl-NL’,{weekday:‘long’,day:‘numeric’,month:‘long’,year:‘numeric’});
+c.innerHTML=`<div class="print-preview-wrap"><div class="print-preview-header"><div><div style="font-weight:900;font-size:.95rem">${ds}</div><div style="font-size:.75rem;color:var(--text3);margin-top:2px">${App.filiaal||'Kruidvat'} · ${team.length} medewerkers · Norm: ${norm} colli/uur</div></div><button class="btn btn-primary btn-sm" onclick="printDagOverzicht()">🖨️ Afdrukken / PDF</button></div><div style="padding:12px 16px;font-size:.8rem;color:var(--text3)">Alle ${team.length} medewerkers op 1 pagina — schaal past automatisch aan.</div></div>`;
 }
 
 window.printDagOverzicht=()=>{
-  const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
-  if(!team.length){alert('Geen medewerkers.');return;}
-  const d=new Date(av.datum),ds=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
-  const totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
+const av=App.huidigAvond,team=av.team||[],norm=av.norm||80;
+if(!team.length){alert(‘Geen medewerkers.’);return;}
+const d=new Date(av.datum),ds=d.toLocaleDateString(‘nl-NL’,{weekday:‘long’,day:‘numeric’,month:‘long’,year:‘numeric’});
+const totU=team.reduce((s,l)=>s+berekenUren(l.start,l.eind,l.pauze),0);
+const totTarget=team.reduce((s,l)=>s+Math.round(berekenUren(l.start,l.eind,l.pauze)*norm),0);
 
-  let body=`
+let body=`
+
   <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #E2001A;padding-bottom:10px;margin-bottom:16px">
     <div>
       <div style="font-size:20px;font-weight:900;color:#E2001A">Kruidvat Vulploeg</div>
@@ -2378,64 +2487,68 @@ window.printDagOverzicht=()=>{
     <div style="text-align:right;font-size:9px;color:#aaa">Afgedrukt: ${new Date().toLocaleString('nl-NL')}</div>
   </div>`;
 
-  team.forEach(lid=>{
-    const u=berekenUren(lid.start,lid.eind,lid.pauze),target=Math.round(u*norm),ka=lid.karten||[];
-    const totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
-    const verschil=totV>0&&totW>0?totW-totV:null,pctScr=totV>0&&totW>0?Math.round((totV/totW)*100):null;
-    let scoreStr='—',scoreColor='#555';
-    if(pctScr!==null){if(pctScr>=95){scoreStr='✓ Snel';scoreColor='#0ea35a';}else if(pctScr>=80){scoreStr='~ Goed';scoreColor='#f59e0b';}else{scoreStr='⚠ Traag';scoreColor='#E2001A';}}
+team.forEach(lid=>{
+const u=berekenUren(lid.start,lid.eind,lid.pauze),target=Math.round(u*norm),ka=lid.karten||[];
+const totV=ka.reduce((s,k)=>s+(k.verwacht||0),0),totW=ka.reduce((s,k)=>s+(k.werkelijk||0),0);
+const verschil=totV>0&&totW>0?totW-totV:null,pctScr=totV>0&&totW>0?Math.round((totV/totW)*100):null;
+let scoreStr=’—’,scoreColor=’#555’;
+if(pctScr!==null){if(pctScr>=95){scoreStr=‘✓ Snel’;scoreColor=’#0ea35a’;}else if(pctScr>=80){scoreStr=’~ Goed’;scoreColor=’#f59e0b’;}else{scoreStr=‘⚠ Traag’;scoreColor=’#E2001A’;}}
 
-    body+=`
-    <div style="border:1px solid #ddd;border-radius:6px;overflow:hidden;margin-bottom:10px;break-inside:avoid">
-      <div style="background:#111;color:#fff;padding:7px 12px;display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <span style="font-size:12px;font-weight:900">${lid.naam}</span>
-          ${lid.ziek?'<span style="background:#ff9800;border-radius:3px;padding:1px 6px;font-size:9px;margin-left:6px">ZIEK</span>':''}
-          <span style="font-size:9px;opacity:.65;margin-left:8px">${lid.start}–${lid.eind}${lid.pauze?' · '+lid.pauze+'m pauze':''} · ${u.toFixed(1)}u · target: ${target} colli${lid.vervanger?' · Vervanger: '+lid.vervanger:''}</span>
-        </div>
-        <div style="text-align:right;font-size:10px;font-weight:800;color:${scoreColor}">${scoreStr}${verschil!==null?`<span style="font-size:8.5px;font-weight:600;opacity:.8;margin-left:4px">(${verschil<=0?verschil:'+'+verschil} min)</span>`:''}</div>
-      </div>
-      ${lid.notitie?`<div style="background:#fff8e1;border-bottom:1px solid #ffe082;padding:4px 12px;font-size:9px;color:#b45309">📝 ${lid.notitie}</div>`:''}
-      <table style="width:100%;border-collapse:collapse;font-size:10px">
-        <thead><tr style="background:#f7f7f7">
-          <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center;width:28px">#</th>
-          <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:left">Kar / Afdeling</th>
-          <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Verwacht (min)</th>
-          <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Werkelijk (min)</th>
-          <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Verschil</th>
-        </tr></thead>
-        <tbody>`;
+```
+body+=`
+<div style="border:1px solid #ddd;border-radius:6px;overflow:hidden;margin-bottom:10px;break-inside:avoid">
+  <div style="background:#111;color:#fff;padding:7px 12px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <span style="font-size:12px;font-weight:900">${lid.naam}</span>
+      ${lid.ziek?'<span style="background:#ff9800;border-radius:3px;padding:1px 6px;font-size:9px;margin-left:6px">ZIEK</span>':''}
+      <span style="font-size:9px;opacity:.65;margin-left:8px">${lid.start}–${lid.eind}${lid.pauze?' · '+lid.pauze+'m pauze':''} · ${u.toFixed(1)}u · target: ${target} colli${lid.vervanger?' · Vervanger: '+lid.vervanger:''}</span>
+    </div>
+    <div style="text-align:right;font-size:10px;font-weight:800;color:${scoreColor}">${scoreStr}${verschil!==null?`<span style="font-size:8.5px;font-weight:600;opacity:.8;margin-left:4px">(${verschil<=0?verschil:'+'+verschil} min)</span>`:''}</div>
+  </div>
+  ${lid.notitie?`<div style="background:#fff8e1;border-bottom:1px solid #ffe082;padding:4px 12px;font-size:9px;color:#b45309">📝 ${lid.notitie}</div>`:''}
+  <table style="width:100%;border-collapse:collapse;font-size:10px">
+    <thead><tr style="background:#f7f7f7">
+      <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center;width:28px">#</th>
+      <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:left">Kar / Afdeling</th>
+      <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Verwacht (min)</th>
+      <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Werkelijk (min)</th>
+      <th style="padding:5px 10px;font-weight:700;color:#888;text-transform:uppercase;font-size:8px;border-bottom:1px solid #e5e5e5;text-align:center">Verschil</th>
+    </tr></thead>
+    <tbody>`;
 
-    if(!ka.length){body+=`<tr><td colspan="5" style="padding:8px;text-align:center;color:#bbb;font-style:italic;font-size:9px">Geen karren geregistreerd</td></tr>`;}
-    else{
-      ka.forEach((kar,ki)=>{
-        const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null;
-        body+=`<tr style="border-bottom:1px solid #f0f0f0">
-          <td style="padding:5px 10px;text-align:center;color:#ccc;font-size:9px">${ki+1}</td>
-          <td style="padding:5px 10px;font-weight:600">${kar.naam}</td>
-          <td style="padding:5px 10px;text-align:center">${v||'—'}</td>
-          <td style="padding:5px 10px;text-align:center;font-weight:700">${w||'—'}</td>
-          <td style="padding:5px 10px;text-align:center;font-weight:700;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#999'}">${diff!==null?(diff<=0?diff:'+'+diff)+' min':'—'}</td>
-        </tr>`;
-      });
-    }
-
-    if(totV>0||totW>0){body+=`<tr style="background:#f7f7f7;font-weight:800">
-      <td colspan="2" style="padding:5px 10px;font-size:9.5px">Totaal</td>
-      <td style="padding:5px 10px;text-align:center">${totV||'—'}</td>
-      <td style="padding:5px 10px;text-align:center">${totW||'—'}</td>
-      <td style="padding:5px 10px;text-align:center;color:${verschil!==null?(verschil<=0?'#0ea35a':'#E2001A'):'#999'}">${verschil!==null?(verschil<=0?verschil:'+'+verschil)+' min':'—'}</td>
-    </tr>`;}
-
-    body+=`</tbody></table>
-      <div style="padding:5px 12px;border-top:1px solid #eee">
-        <div style="font-size:7.5px;font-weight:800;color:#bbb;text-transform:uppercase;margin-bottom:3px">Notities leidinggevende</div>
-        <div style="min-height:20px;border:1px solid #ebebeb;border-radius:3px;background:#fafafa">&nbsp;</div>
-      </div>
-    </div>`;
+if(!ka.length){body+=`<tr><td colspan="5" style="padding:8px;text-align:center;color:#bbb;font-style:italic;font-size:9px">Geen karren geregistreerd</td></tr>`;}
+else{
+  ka.forEach((kar,ki)=>{
+    const v=kar.verwacht||null,w=kar.werkelijk||null,diff=v&&w?w-v:null;
+    body+=`<tr style="border-bottom:1px solid #f0f0f0">
+      <td style="padding:5px 10px;text-align:center;color:#ccc;font-size:9px">${ki+1}</td>
+      <td style="padding:5px 10px;font-weight:600">${kar.naam}</td>
+      <td style="padding:5px 10px;text-align:center">${v||'—'}</td>
+      <td style="padding:5px 10px;text-align:center;font-weight:700">${w||'—'}</td>
+      <td style="padding:5px 10px;text-align:center;font-weight:700;color:${diff!==null?(diff<=0?'#0ea35a':'#E2001A'):'#999'}">${diff!==null?(diff<=0?diff:'+'+diff)+' min':'—'}</td>
+    </tr>`;
   });
+}
 
-  body+=`
+if(totV>0||totW>0){body+=`<tr style="background:#f7f7f7;font-weight:800">
+  <td colspan="2" style="padding:5px 10px;font-size:9.5px">Totaal</td>
+  <td style="padding:5px 10px;text-align:center">${totV||'—'}</td>
+  <td style="padding:5px 10px;text-align:center">${totW||'—'}</td>
+  <td style="padding:5px 10px;text-align:center;color:${verschil!==null?(verschil<=0?'#0ea35a':'#E2001A'):'#999'}">${verschil!==null?(verschil<=0?verschil:'+'+verschil)+' min':'—'}</td>
+</tr>`;}
+
+body+=`</tbody></table>
+  <div style="padding:5px 12px;border-top:1px solid #eee">
+    <div style="font-size:7.5px;font-weight:800;color:#bbb;text-transform:uppercase;margin-bottom:3px">Notities leidinggevende</div>
+    <div style="min-height:20px;border:1px solid #ebebeb;border-radius:3px;background:#fafafa">&nbsp;</div>
+  </div>
+</div>`;
+```
+
+});
+
+body+=`
+
   <div style="border:2px solid #111;border-radius:6px;padding:10px 14px;margin-top:4px;break-inside:avoid;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
     <div style="display:flex;gap:18px;flex-wrap:wrap">
       <div><div style="font-size:7.5px;color:#aaa;font-weight:800;text-transform:uppercase">Medewerkers</div><div style="font-size:18px;font-weight:900">${team.length}</div></div>
@@ -2451,155 +2564,157 @@ window.printDagOverzicht=()=>{
   </div>
   ${av.eindnotitie?`<div style="margin-top:8px;padding:6px 12px;background:#f5f5f5;border-radius:4px;font-size:9.5px;color:#555;font-style:italic">📝 ${av.eindnotitie}</div>`:''}`;
 
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title>
+const w=window.open(’’,’_blank’);
+w.document.write(`<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><title>Vulploeg ${ds}</title>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#111;background:#fff;padding:12mm}
 @media print{@page{margin:8mm;size:A4 portrait}body{padding:0}}
 </style></head><body>${body}</body></html>`);
-  w.document.close();w.focus();setTimeout(()=>w.print(),600);
-};
 
+w.document.close();w.focus();setTimeout(()=>w.print(),600);
+};
 
 // ── DARK MODE ──
-window.toggleDark=()=>{const d=document.body.classList.toggle('dark');document.documentElement.classList.toggle('dark-early',d);localStorage.setItem('kv_dark',d?'1':'0');};
-function laadDark(){if(localStorage.getItem('kv_dark')==='1'){document.body.classList.add('dark');document.documentElement.classList.add('dark-early');}}
+window.toggleDark=()=>{const d=document.body.classList.toggle(‘dark’);document.documentElement.classList.toggle(‘dark-early’,d);localStorage.setItem(‘kv_dark’,d?‘1’:‘0’);};
+function laadDark(){if(localStorage.getItem(‘kv_dark’)===‘1’){document.body.classList.add(‘dark’);document.documentElement.classList.add(‘dark-early’);}}
 
 // ── PRIVACY & AVG ──
-window.openPrivacy=()=>{document.getElementById('privacyModal').style.display='block';document.body.style.overflow='hidden';};
-window.closePrivacy=()=>{document.getElementById('privacyModal').style.display='none';document.body.style.overflow='';};
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrivacy();});
+window.openPrivacy=()=>{document.getElementById(‘privacyModal’).style.display=‘block’;document.body.style.overflow=‘hidden’;};
+window.closePrivacy=()=>{document.getElementById(‘privacyModal’).style.display=‘none’;document.body.style.overflow=’’;};
+document.addEventListener(‘keydown’,e=>{if(e.key===‘Escape’)closePrivacy();});
 
 window.exportMijnData=async()=>{
-  if(!App.uid){showToast('Niet ingelogd.');return;}
-  showToast('⏳ Data exporteren…');
-  try{
-    const[acc,medewerkers,leiders,avondenSnap]=await Promise.all([
-      fbGet('accounts/'+App.uid),
-      fbCol('accounts/'+App.uid+'/medewerkers'),
-      fbCol('accounts/'+App.uid+'/leiders'),
-      getDocs(query(collection(db,'avonden'),where('_account','==',App.uid)))
-    ]);
-    const avonden=avondenSnap.docs.map(d=>({id:d.id,...d.data()}));
-    const export_={
-      exportDatum:new Date().toISOString(),
-      account:{filiaal:acc.filiaal,email:acc.email,aangemaakt:acc.created,avgAkkoord:acc.avgAkkoord||false},
-      medewerkers:medewerkers.map(m=>({naam:m.naam,functie:m.functie})),
-      leiders:leiders.map(l=>({naam:l.naam,functie:l.functie})),
-      avonden:avonden.map(a=>({datum:a.datum,dag:a.dag,colli:a.colli,leidinggevende:a.leidinggevende,medewerkers:(a.team||[]).map(t=>({naam:t.naam,start:t.start,eind:t.eind,pauze:t.pauze}))}))
-    };
-    const blob=new Blob([JSON.stringify(export_,null,2)],{type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;a.download='vulploeg_data_export_'+new Date().toISOString().split('T')[0]+'.json';a.click();
-    URL.revokeObjectURL(url);
-    showToast('✓ Data geëxporteerd als JSON');
-  }catch(e){showToast('Fout: '+e.message);}
+if(!App.uid){showToast(‘Niet ingelogd.’);return;}
+showToast(‘⏳ Data exporteren…’);
+try{
+const[acc,medewerkers,leiders,avondenSnap]=await Promise.all([
+fbGet(‘accounts/’+App.uid),
+fbCol(‘accounts/’+App.uid+’/medewerkers’),
+fbCol(‘accounts/’+App.uid+’/leiders’),
+getDocs(query(collection(db,‘avonden’),where(’*account’,’==’,App.uid)))
+]);
+const avonden=avondenSnap.docs.map(d=>({id:d.id,…d.data()}));
+const export*={
+exportDatum:new Date().toISOString(),
+account:{filiaal:acc.filiaal,email:acc.email,aangemaakt:acc.created,avgAkkoord:acc.avgAkkoord||false},
+medewerkers:medewerkers.map(m=>({naam:m.naam,functie:m.functie})),
+leiders:leiders.map(l=>({naam:l.naam,functie:l.functie})),
+avonden:avonden.map(a=>({datum:a.datum,dag:a.dag,colli:a.colli,leidinggevende:a.leidinggevende,medewerkers:(a.team||[]).map(t=>({naam:t.naam,start:t.start,eind:t.eind,pauze:t.pauze}))}))
+};
+const blob=new Blob([JSON.stringify(export_,null,2)],{type:‘application/json’});
+const url=URL.createObjectURL(blob);
+const a=document.createElement(‘a’);a.href=url;a.download=‘vulploeg_data_export_’+new Date().toISOString().split(‘T’)[0]+’.json’;a.click();
+URL.revokeObjectURL(url);
+showToast(‘✓ Data geëxporteerd als JSON’);
+}catch(e){showToast(‘Fout: ‘+e.message);}
 };
 window.verwijderAlleData=async()=>{
-  if(!App.uid)return;
-  const stap1=confirm('⚠️ Weet je zeker dat je ALLE data wilt verwijderen?\n\nDit verwijdert:\n• Alle avonden\n• Alle medewerkers\n• Alle leiders\n• Je accountgegevens\n\nDit kan NIET ongedaan worden gemaakt.');
-  if(!stap1)return;
-  const stap2=confirm('Laatste waarschuwing: alle data wordt permanent verwijderd. Doorgaan?');
-  if(!stap2)return;
-  showToast('🗑️ Data verwijderen…');
-  try{
-    // Verwijder alle subcollecties
-    const [avonden,medewerkers,leiders]=await Promise.all([fbCol('avonden'),fbCol('accounts/'+App.uid+'/medewerkers'),fbCol('accounts/'+App.uid+'/leiders')]);
-    const avondenVanFiliaal=avonden.filter(a=>a._account===App.uid);
-    await Promise.all([
-      ...avondenVanFiliaal.map(a=>fbDel('avonden/'+a.fbId)),
-      ...medewerkers.map(m=>fbDel('accounts/'+App.uid+'/medewerkers/'+m.fbId)),
-      ...leiders.map(l=>fbDel('accounts/'+App.uid+'/leiders/'+l.fbId)),
-    ]);
-    await fbDel('accounts/'+App.uid);
-    // Verwijder Firebase Auth account
-    await auth.currentUser.delete();
-    showToast('✓ Alle data verwijderd');
-  }catch(e){
-    if(e.code==='auth/requires-recent-login'){
-      alert('Om je account te verwijderen moet je opnieuw inloggen. Log uit en log opnieuw in, dan kun je het account verwijderen.');
-    }else{
-      alert('Fout bij verwijderen: '+e.message);
-    }
-  }
+if(!App.uid)return;
+const stap1=confirm(‘⚠️ Weet je zeker dat je ALLE data wilt verwijderen?\n\nDit verwijdert:\n• Alle avonden\n• Alle medewerkers\n• Alle leiders\n• Je accountgegevens\n\nDit kan NIET ongedaan worden gemaakt.’);
+if(!stap1)return;
+const stap2=confirm(‘Laatste waarschuwing: alle data wordt permanent verwijderd. Doorgaan?’);
+if(!stap2)return;
+showToast(‘🗑️ Data verwijderen…’);
+try{
+// Verwijder alle subcollecties
+const [avonden,medewerkers,leiders]=await Promise.all([fbCol(‘avonden’),fbCol(‘accounts/’+App.uid+’/medewerkers’),fbCol(‘accounts/’+App.uid+’/leiders’)]);
+const avondenVanFiliaal=avonden.filter(a=>a._account===App.uid);
+await Promise.all([
+…avondenVanFiliaal.map(a=>fbDel(‘avonden/’+a.fbId)),
+…medewerkers.map(m=>fbDel(‘accounts/’+App.uid+’/medewerkers/’+m.fbId)),
+…leiders.map(l=>fbDel(‘accounts/’+App.uid+’/leiders/’+l.fbId)),
+]);
+await fbDel(‘accounts/’+App.uid);
+// Verwijder Firebase Auth account
+await auth.currentUser.delete();
+showToast(‘✓ Alle data verwijderd’);
+}catch(e){
+if(e.code===‘auth/requires-recent-login’){
+alert(‘Om je account te verwijderen moet je opnieuw inloggen. Log uit en log opnieuw in, dan kun je het account verwijderen.’);
+}else{
+alert(’Fout bij verwijderen: ’+e.message);
+}
+}
 };
 
 // ── NAVIGATIE ──
 window.goTab=(name,btn)=>{
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-  const panel=document.getElementById('tab-'+name);if(panel)panel.classList.add('active');
-  const db2=document.querySelector(`.tab-btn[data-tab="${name}"]`);if(db2)db2.classList.add('active');
-  const mb=document.getElementById('bnav-'+name);if(mb)mb.classList.add('active');
-  ({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,karren:renderKarrenPool,statistieken:renderStatistieken,live:renderLive,print:renderPrintTab,maandrapport:renderMaandrapport}[name]||function(){})();
+document.querySelectorAll(’.tab-panel’).forEach(p=>p.classList.remove(‘active’));
+document.querySelectorAll(’.tab-btn’).forEach(b=>b.classList.remove(‘active’));
+document.querySelectorAll(’.bnav-btn’).forEach(b=>b.classList.remove(‘active’));
+const panel=document.getElementById(‘tab-’+name);if(panel)panel.classList.add(‘active’);
+const db2=document.querySelector(`.tab-btn[data-tab="${name}"]`);if(db2)db2.classList.add(‘active’);
+const mb=document.getElementById(‘bnav-’+name);if(mb)mb.classList.add(‘active’);
+({overzicht:renderOverzicht,history:renderHistory,medewerkers:renderMedewBeheer,leiders:renderLeidersBeheer,karren:renderKarrenPool,statistieken:renderStatistieken,live:renderLive,print:renderPrintTab,maandrapport:renderMaandrapport}[name]||function(){})();
 
-  // Live tab: start auto-refresh interval; stop when andere tab
-  if(name==='live'){
-    if(!App._liveRefreshInterval){
-      App._liveRefreshInterval=setInterval(()=>{
-        if(document.getElementById('tab-live').classList.contains('active'))renderLive();
-      },30000);
-    }
-  } else {
-    if(App._liveRefreshInterval){clearInterval(App._liveRefreshInterval);App._liveRefreshInterval=null;}
-  }
+// Live tab: start auto-refresh interval; stop when andere tab
+if(name===‘live’){
+if(!App._liveRefreshInterval){
+App._liveRefreshInterval=setInterval(()=>{
+if(document.getElementById(‘tab-live’).classList.contains(‘active’))renderLive();
+},30000);
+}
+} else {
+if(App._liveRefreshInterval){clearInterval(App._liveRefreshInterval);App._liveRefreshInterval=null;}
+}
 
-  // Scroll naar boven op mobiel bij tab-wissel
-  window.scrollTo({top:0,behavior:'smooth'});
+// Scroll naar boven op mobiel bij tab-wissel
+window.scrollTo({top:0,behavior:‘smooth’});
 };
 
-window.toggleMeer=()=>{const m=document.getElementById('meerPanel'),o=document.getElementById('meerOverlay'),open=m.style.display!=='block';m.style.display=open?'block':'none';o.style.display=open?'block':'none';};
-window.closeMeer=()=>{document.getElementById('meerPanel').style.display='none';document.getElementById('meerOverlay').style.display='none';};
+window.toggleMeer=()=>{const m=document.getElementById(‘meerPanel’),o=document.getElementById(‘meerOverlay’),open=m.style.display!==‘block’;m.style.display=open?‘block’:‘none’;o.style.display=open?‘block’:‘none’;};
+window.closeMeer=()=>{document.getElementById(‘meerPanel’).style.display=‘none’;document.getElementById(‘meerOverlay’).style.display=‘none’;};
 
 // ── HAPTIC FEEDBACK ──
-function haptic(type='light'){
-  if(!navigator.vibrate)return;
-  if(type==='light')navigator.vibrate(8);
-  else if(type==='medium')navigator.vibrate(18);
-  else if(type==='success')navigator.vibrate([10,50,10]);
-  else if(type==='error')navigator.vibrate([30,20,30]);
+function haptic(type=‘light’){
+if(!navigator.vibrate)return;
+if(type===‘light’)navigator.vibrate(8);
+else if(type===‘medium’)navigator.vibrate(18);
+else if(type===‘success’)navigator.vibrate([10,50,10]);
+else if(type===‘error’)navigator.vibrate([30,20,30]);
 }
 
 // ── WAKE LOCK — scherm actief houden tijdens avond ──
 let _wakeLock=null;
 async function vraagWakeLock(){
-  if(!('wakeLock' in navigator))return;
-  try{_wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+if(!(‘wakeLock’ in navigator))return;
+try{_wakeLock=await navigator.wakeLock.request(‘screen’);}catch(e){}
 }
 async function geefWakeLockVrij(){
-  if(_wakeLock){try{await _wakeLock.release();}catch(e){}}_wakeLock=null;
+if(_wakeLock){try{await _wakeLock.release();}catch(e){}}_wakeLock=null;
 }
-document.addEventListener('visibilitychange',async()=>{
-  if(document.visibilityState==='visible'&&App.huidigAvond&&!App.huidigAvond.afgesloten)vraagWakeLock();
+document.addEventListener(‘visibilitychange’,async()=>{
+if(document.visibilityState===‘visible’&&App.huidigAvond&&!App.huidigAvond.afgesloten)vraagWakeLock();
 });
 
 // ── MODALS & TOAST ──
-window.openModal=id=>document.getElementById(id).classList.add('open');
-window.closeModal=id=>document.getElementById(id).classList.remove('open');
-document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+window.openModal=id=>document.getElementById(id).classList.add(‘open’);
+window.closeModal=id=>document.getElementById(id).classList.remove(‘open’);
+document.querySelectorAll(’.modal-overlay’).forEach(o=>o.addEventListener(‘click’,e=>{if(e.target===o)o.classList.remove(‘open’);}));
 
 let _tt;
-window.showToast=msg=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2800);};
+window.showToast=msg=>{const t=document.getElementById(‘toast’);t.textContent=msg;t.classList.add(‘show’);clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove(‘show’),2800);};
 
 // ── UTILS ──
-function berekenUren(s,e,p){if(!s||!e)return 0;const[sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);let m=(eh*60+em)-(sh*60+sm);if(m<0)m+=1440;return Math.max(0,(m-(p||0))/60);}
-function karStatus(kar){if(!kar.werkelijk||!kar.verwacht)return{cls:'badge-bezig',label:'⏳ Bezig'};const p=kar.werkelijk/kar.verwacht;if(p<=.9)return{cls:'badge-snel',label:'⚡ Snel'};if(p<=1.1)return{cls:'badge-ok',label:'✓ Op tijd'};return{cls:'badge-langzaam',label:'⚠ Langzaam'};}
+function berekenUren(s,e,p){if(!s||!e)return 0;const[sh,sm]=s.split(’:’).map(Number),[eh,em]=e.split(’:’).map(Number);let m=(eh*60+em)-(sh*60+sm);if(m<0)m+=1440;return Math.max(0,(m-(p||0))/60);}
+function karStatus(kar){if(!kar.werkelijk||!kar.verwacht)return{cls:‘badge-bezig’,label:‘⏳ Bezig’};const p=kar.werkelijk/kar.verwacht;if(p<=.9)return{cls:‘badge-snel’,label:‘⚡ Snel’};if(p<=1.1)return{cls:‘badge-ok’,label:‘✓ Op tijd’};return{cls:‘badge-langzaam’,label:‘⚠ Langzaam’};}
 function deepCopy(o){return JSON.parse(JSON.stringify(o));}
-function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):'';}
+function cap(s){return s?s.charAt(0).toUpperCase()+s.slice(1):’’;}
 
 // ── FORM LISTENERS ──
-window.addEventListener('beforeunload',e=>{if(App._dirty){e.preventDefault();e.returnValue='';}});
-['fDatum','fDag','fColli','fNorm','fLeider'].forEach(id=>{const el=document.getElementById(id);if(!el)return;el.addEventListener('change',()=>{App._dirty=true;syncAvondFromForm();updateColliTeller();});});
-document.getElementById('fDatum').addEventListener('change',function(){
-  const datum=this.value;if(!datum)return;
-  const dn=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
-  document.getElementById('fDag').value=dn[new Date(datum+'T00:00:00').getDay()];
+window.addEventListener(‘beforeunload’,e=>{if(App._dirty){e.preventDefault();e.returnValue=’’;}});
+[‘fDatum’,‘fDag’,‘fColli’,‘fNorm’,‘fLeider’].forEach(id=>{const el=document.getElementById(id);if(!el)return;el.addEventListener(‘change’,()=>{App._dirty=true;syncAvondFromForm();updateColliTeller();});});
+document.getElementById(‘fDatum’).addEventListener(‘change’,function(){
+const datum=this.value;if(!datum)return;
+const dn=[‘zondag’,‘maandag’,‘dinsdag’,‘woensdag’,‘donderdag’,‘vrijdag’,‘zaterdag’];
+document.getElementById(‘fDag’).value=dn[new Date(datum+‘T00:00:00’).getDay()];
 });
 
 laadDark();
 updateOfflineBanner();
 </script>
+
 </body>
 </html>
